@@ -1,0 +1,271 @@
+<?php
+
+namespace app\models;
+
+use Yii;
+use yii\db\ActiveRecord;
+use yii\helpers\Html;
+use app\models\PublicSeasonUser;
+use app\models\MachinePool;
+use app\models\MatchUser;
+use app\models\Eliminationgraph;
+
+/**
+ * This is the model class for table "sessionuser".
+ *
+ * @property integer $id
+ * @property string $notes
+ * @property integer $status
+ * @property integer $user_id
+ * @property integer $session_id
+ * @property integer $recorder_id
+ * @property integer $created_at
+ * @property integer $updated_at
+ *
+ * @property User $user
+ * @property Session $session
+ * @property User $recorder
+ */
+class SessionUser extends \yii\db\ActiveRecord
+{
+    private $tiebreaker = 0;
+
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return 'sessionuser';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['status', 'user_id', 'session_id', 'recorder_id'], 'required'],
+            [['status', 'user_id', 'session_id', 'recorder_id', 'created_at', 'updated_at'], 'integer'],
+            [['notes'], 'string', 'max' => 255],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['session_id'], 'exist', 'skipOnError' => true, 'targetClass' => Session::className(), 'targetAttribute' => ['session_id' => 'id']],
+            [['recorder_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['recorder_id' => 'id']],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'notes' => 'Notes',
+            'status' => 'Status',
+            'user_id' => 'User ID',
+            'session_id' => 'Session ID',
+            'recorder_id' => 'Recorder ID',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
+            'currentMatchString' => 'Current Match',
+            'currentMatchAction' => 'Go',
+            'currentSeed' => 'Seed',
+            'bestPlaceFinish' => 'Best',
+            'worstPlaceFinish' => 'Worst',
+            'playoffsortcode' => 'Sort Code',
+
+            'seasonMatchpoints' => 'Season MP',
+            'seasonmpg' => 'Season MP/Game',
+
+        ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(Player::className(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSession()
+    {
+        return $this->hasOne(Session::className(), ['id' => 'session_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRecorder()
+    {
+        return $this->hasOne(Player::className(), ['id' => 'recorder_id']);
+    }
+
+    public function getSeason() {
+      return $this->session->season;
+    }
+
+    public function getPublicSeasonUser() {
+      return PublicSeasonUser::findOne(['user_id' => $this->user_id, 'season_id' => $this->season->id]);     
+    }
+
+    public function getSeasonMatchpoints() {
+      return $this->publicSeasonUser->matchpoints;
+    }
+
+    public function getSeasonmpg() {
+      return $this->publicSeasonUser->mpg;
+    }
+
+    public function getTiebreaker() {
+      if ($this->tiebreaker === 0) {
+        $this->tiebreaker = Security::generateRandomString();
+      }
+      return $this->tiebreaker;
+    }
+
+    public function getSelectionThreshold() {
+      $machinelist = $this->session->selectableMachines;
+      $result = 9999;
+      foreach ($machinelist as $machine) {
+        $poolcount = MachinePool::getPoolCount($this->session_id, $machine->id, $this->user_id);
+        if ($poolcount < $result) {
+          $result = $poolcount;
+        }
+      }
+      return $result;
+    }
+
+    public function getSelectableMachineList() {
+      $machinelist = $this->session->selectableMachines;
+      $threshold = $this->selectionThreshold;
+      $answer = [];
+      foreach ($machinelist as $machine) {
+        $poolcount = MachinePool::getPoolCount($this->session_id, $machine->id, $this->user_id);
+        if ($poolcount > $threshold) continue; // chosen this machine enough times already.
+        $status = $machine->mostRecentStatusString;
+        $answer[$machine->id] = $machine->name;
+        if ($status === "Available") {
+        } else {
+          $answer[$machine->id] .= " ($status)";
+        }
+      }
+      return $answer;
+    }
+  
+    public function getUnselectableMachineList() {
+      $machinelist = $this->session->unselectableMachines;
+      $answer = "";
+      foreach ($machinelist as $mac) {
+        $answer .= $mac->name;
+        $answer .= " ";
+      }
+      return $answer;
+    }
+
+    public function getCurrentMatchuser() {
+      return Matchuser::find()->joinWith(['match'])
+                       ->where(['match.session_id' => $this->session_id,
+                                'user_id' => $this->user_id,
+                              ])
+                       ->orderBy(['id' => SORT_DESC])->one();
+    }
+
+    public function getCurrentMatch() {
+      $matchuser = $this->currentMatchuser;
+      if ($matchuser == null) throw new \yii\base\UserException("getCurrentMatch called without a current match");
+      return $this->currentMatchuser->match;
+    }
+
+    public function getCurrentSeed() {
+      $matchuser = $this->currentMatchuser;
+      $graph = Eliminationgraph::findCode($matchuser->match->code);
+      if ($matchuser->starting_playernum == 1) {
+        $answer = 1 + $graph->seed_p1;
+      } else if ($matchuser->starting_playernum == 2) {
+        $answer = 1 + $graph->seed_p2;
+      } else {
+        return null;
+      }
+      return $answer;
+    }
+
+    public function getBest() {
+      $matchuser = $this->currentMatch;
+      return Eliminationgraph::findCode($matchuser->code)->seed_max;
+    }
+
+    public function getWorst() {
+      $matchuser = $this->currentMatch;
+      return Eliminationgraph::findCode($matchuser->code)->seed_min;
+    }
+
+    public function getPlayoffsortcode() {
+      return $this->best * 1000 + $this->currentSeed;
+    }
+
+    public function getCurrentMatchString() {
+      return $this->currentMatch->code;
+    }
+
+    public function getCurrentMatchBracket() {
+      return $this->currentMatch->bracket;
+    }
+
+    public function getCurrentMatchStatus() {
+      return $this->currentMatch->statusString;
+    }
+
+    public function getCurrentMatchAction() {
+      return Html::a( "Go",
+                      ["/match/go", 'id' => $this->currentMatch->id],
+                      [
+                        'title' => 'Go',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
+    }
+
+    public function getLastStatusString() {
+      $matchuser = $this->matchuserRecent;
+      $match = $matchuser->match;
+      if ($match->status == 2) {
+        return "In Match ".$match->code;
+      }
+      if ($match->status == 0) {
+        return "Waiting for opponent for Match ".$match->code;
+      }
+      if ($match->status == 3) {
+        return "Completed Match ".$match->code;
+      }
+    }
+
+    /**
+     * @inheritdoc
+     * @return SessionUserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new SessionUserQuery(get_called_class());
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => 'bedezign\yii2\audit\AuditTrailBehavior',
+            ],
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+            ],
+        ];
+    }
+}
