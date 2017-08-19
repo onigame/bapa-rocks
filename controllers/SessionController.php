@@ -30,12 +30,12 @@ class SessionController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete', 'start', 'removeplayer', 'addplayer'],
+                'only' => ['update', 'create', 'delete', 'start', 'removeplayer', 'addplayer', 'finish'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['update', 'create', 'start', 'removeplayer', 'addplayer'],
-                        'roles' => ['GenericManagerPermission'],
+                        'actions' => ['update', 'create', 'start', 'removeplayer', 'addplayer', 'finish'],
+                        'roles' => ['Manager'],
                     ],
                 ],
             ],
@@ -98,7 +98,7 @@ class SessionController extends Controller
             'matchDataProvider' => $dataProvider,
           ]);
         }
-        if ($model->status == 1) {
+        if ($model->status == 2) {
           $searchModel = new MatchSearch();
           $dataProvider = $searchModel->search(['session_id' => $id]);
           return $this->render('view_completed', [
@@ -107,6 +107,13 @@ class SessionController extends Controller
             'matchDataProvider' => $dataProvider,
           ]);
         }
+    }
+
+    public function actionFinish($id) {
+      $session = $this->findModel($id);
+      $session->status = 2;
+      $session->save();
+      return $this->redirect(['view', 'id' => $id]);
     }
 
     public function actionAddplayer($session_id, $seasonuser_id) {

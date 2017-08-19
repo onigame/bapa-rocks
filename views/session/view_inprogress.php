@@ -14,4 +14,11 @@ $this->params['breadcrumbs'][] = $model->name;
 
 <?= $this->render('@app/views/session/_content', [ 'model' => $model ]) ?>
 
+    <?= Html::a('Finish This Session', ['finish', 'id' => $model->id], ['class' => 'btn btn-success',
+       'data' => [
+         'confirm' => ('Did you make sure the session should be closed?'),
+       ],
+    ]) ?>
+
+
 </div>

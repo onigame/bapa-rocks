@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 use app\models\SessionUser;
 
 /**
@@ -162,6 +163,18 @@ class Session extends \yii\db\ActiveRecord
     public function getUnselectableMachines() {
        return $this->location->unselectableMachines;
     }
+
+    public function getGoButton() {
+      return Html::a( "Go",
+                      ["/session/view", 'id' => $this->id],
+                      [
+                        'title' => 'Go',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
+    }
+
 
     /**
      * @inheritdoc

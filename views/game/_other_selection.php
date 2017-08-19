@@ -18,11 +18,11 @@ use yii\widgets\Pjax;
     <!-- no player order selection, order already done. -->
 <?php } else if ($model->playerOrderSelector->id == Yii::$app->user->identity->id) { ?>
    You (<?= $model->playerOrderSelector->name ?>) will choose to be:
-    <?= Html::a('Player 1', ['playerorder', 'id' => $model->id, 'order' => 1], ['class' => 'btn btn-success']) ?>
-    <?= Html::a('Player 2', ['playerorder', 'id' => $model->id, 'order' => 2], ['class' => 'btn btn-success']) ?>
+    <?= Html::a('Player 1', ['/game/playerorder', 'id' => $model->id, 'order' => 1], ['class' => 'btn btn-success']) ?>
+    <?= Html::a('Player 2', ['/game/playerorder', 'id' => $model->id, 'order' => 2], ['class' => 'btn btn-success']) ?>
 <?php } else { ?>
   <?= $model->playerOrderSelector->name ?> (not you) will choose to be:
-    <?= Html::a('Player 1', ['playerorder', 'id' => $model->id, 'order' => 1], ['class' => 'btn btn-success',
+    <?= Html::a('Player 1', ['/game/playerorder', 'id' => $model->id, 'order' => 1], ['class' => 'btn btn-success',
        'data' => [
          'confirm' => ('You are '.Yii::$app->user->identity->profile->name
                .'. Did you get permission from '
@@ -30,7 +30,7 @@ use yii\widgets\Pjax;
                .' to make this selection?'),
        ],
     ]) ?>
-    <?= Html::a('Player 2', ['playerorder', 'id' => $model->id, 'order' => 2], ['class' => 'btn btn-success',
+    <?= Html::a('Player 2', ['/game/playerorder', 'id' => $model->id, 'order' => 2], ['class' => 'btn btn-success',
        'data' => [
          'confirm' => ('You are '.Yii::$app->user->identity->profile->name
                .'. Did you get permission from '

@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use app\models\QueueGame;
 
 /**
  * This is the model class for table "machinestatus".
@@ -85,33 +86,6 @@ class MachineStatus extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'recorder_id']);
     }
 
-    public function getStatusString() {
-      if ($this->status == 1) return "Available";
-      if ($this->status == 2) {
-        $queuelength = $this->machine->getQueuelength();
-        if ($queuelength == 0) return "In play by ".$this->game->playersString;
-        return "In play by $this->game->playersString; +$queuelength other groups in queue)";
-      }
-      if ($this->status == 3) return "Broken";
-      if ($this->status == 4) return "Gone";
-      return "Unknown";
-    }
-
-    public static function mostRecent($machine_id) {
-      $ms = MachineStatus::find()->where(['machine_id' => $machine_id])->orderBy(["updated_at" => SORT_DESC])->one();
-      if ($ms == null) {
-        $ms = new MachineStatus();
-        $ms->status = 1;
-        $ms->machine_id = $machine_id;
-        $ms->recorder_id = Yii::$app->user->id;
-        if (!$ms->save()) {
-          Yii::error($ms->errors);
-          throw new \yii\base\UserException("Error saving");
-        }
-      }
-      return $ms;
-    }
-
     /**
      * @inheritdoc
      * @return MachineStatusQuery the active query used by this AR class.
@@ -119,6 +93,20 @@ class MachineStatus extends \yii\db\ActiveRecord
     public static function find()
     {
         return new MachineStatusQuery(get_called_class());
+    }
+
+    public function afterSave($insert, $changedAttributes) {
+        if ($this->status == 3 || $this->status == 4) {
+          // machine is now broken or gone, remove any queued games.
+          foreach (QueueGame::find()->where(['machine_id' => $this->machine_id])->all() as $queuegame) {
+            $queuegame->game->cancelSelection();
+          }
+          // Remove any games that were in progress on it.
+          foreach (Game::find()->where(['machine_id' => $this->machine_id, 'status' => 3])->all() as $progressgame) {
+            $progressgame->disqualifySelection();
+          }
+        }
+        parent::afterSave($insert, $changedAttributes);
     }
 
     public function behaviors()

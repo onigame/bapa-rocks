@@ -21,21 +21,21 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="game-view">
 
+<?= $this->render('_game_choices', [
+'model' => $model,
+]) ?>
+
 <?= DetailView::widget([
 'model' => $model,
 'attributes' => [
 //		'match_id',
 		[ 'label' => 'Machine', 'value' => $model->machineCell ],
-		'statusString',
+		[ 'attribute' => 'statusString', 'format' => 'html'],
 		'playerOrderSelector.name',
 		'machineSelector.name',
 		'masterSelector.name',
 		[ 'label' => 'Players', 'value' => $model->match->matchusersString ],
 ],
-]) ?>
-
-<?= $this->render('_game_choices', [
-'model' => $model,
 ]) ?>
 
 </div>

@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $model->code;
             [ 'label' => 'Session', 'value' => $model->session->name, ],
             'code',
             'formatString',
-            'statusString',
+            [ 'label' => 'Status', 'value' => $model->statusString, 'format' => 'html', ],
             'matchusersString',
         ],
     ]) ?>
@@ -42,31 +42,17 @@ $this->params['breadcrumbs'][] = $model->code;
 
     <?= GridView::widget([
         'dataProvider' => $gameData,
+//        'options' => ['style' => 'font-size:10px'],
+        'responsiveWrap' => false,
         'columns' => [
-            'number',
+            [ 'attribute' => 'number', 'value' => function($model) { return "Game ".$model->number; } ],
 //            'id',
 //            'match_id',
             [ 'label' => 'Machine', 'attribute' => 'MachineCell', ],
-            'statusString',
+            [ 'attribute' => 'statusString', 'format' => 'html', ],
 //            'statusDetailCode',
             [ 'label' => 'Winner', 'attribute' => 'WinnerName', 'format' => 'html'],
-
-            ['class' => 'yii\grid\ActionColumn',
-              'template' => '{game/go}',
-              'buttons' => [
-                'game/go' => function ($url, $match, $key) {
-                    return Html::a(
-                      "Go",
-                      $url,
-                      [
-                        'title' => 'Go',
-                        'data-pjax' => '0',
-                        'class' => 'btn-sm btn-success',
-                      ]
-                    );
-                }
-              ],
-            ],
+            [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
         ],
     ]); ?>
 

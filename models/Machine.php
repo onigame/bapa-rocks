@@ -4,7 +4,9 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 use app\models\QueueGame;
+use app\models\Machinerecentstatus;
 
 /**
  * This is the model class for table "machine".
@@ -95,6 +97,10 @@ class Machine extends \yii\db\ActiveRecord
         return $this->hasMany(Machinestatus::className(), ['machine_id' => 'id']);
     }
 
+    public function getMachinerecentstatus() {
+        return $this->hasOne(Machinerecentstatus::className(), ['id' => 'id']);
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -107,37 +113,26 @@ class Machine extends \yii\db\ActiveRecord
       return count($this->queuegames);
     }
 
-    public function getMostRecentStatus() {
-      return MachineStatus::mostRecent($this->id);
-    }
-
-    public function getSelectable() {
-      $status = $this->mostRecentStatus;
-      if ($status == NULL) return true;
-      if ($status->status == 1) return true;
-      if ($status->status == 2) return true;
-      return false;
-    }
-
-    public function getAvailable() {
-      $status = $this->mostRecentStatus;
-      if ($status == NULL) return true;
-      if ($status->status == 1) return true;
-      return false;
-    }
-
-    public function getMostRecentStatusString() {
-      $status = $this->mostRecentStatus;
-      if ($status == NULL) return "Available";
-      return $status->statusString;
-    }
-
     public function maybeStartQueuedGame() {
       $next = QueueGame::find()->where(['machine_id' => $this->id])->orderBy(['created_at' => SORT_ASC])->one();
       if ($next == null) return;  // Queue empty
       $game = $next->game;
       $next->delete();
       $game->startOrEnqueueGame();
+    }
+
+    public function buttonHtml($text, $newstatus, $color) {
+      return Html::a( $text,
+                      ["/machine/statuschange", 
+                       'id' => $this->id,
+                       'status' => $newstatus,
+                      ],
+                      [
+                        'title' => 'Go',
+                        'data-pjax' => '1',
+                        'class' => 'btn-sm '.$color,
+                      ]
+                    );
     }
 
     /**

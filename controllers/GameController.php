@@ -219,8 +219,7 @@ class GameController extends Controller
 
     public function actionCancelmachine($id) {
       $game = $this->findModel($id);
-      //throw new \yii\base\UserException("Sorry, this isn't implemented yet.");
-      Yii::$app->session->setFlash('error', "Sorry!  This isn't implemented yet.");
+      $game->cancelSelection();
       return $this->redirect(['view', 'id' => $game->id]);
     }
 
@@ -229,7 +228,7 @@ class GameController extends Controller
     public function actionPlayerorder($id, $order) {
       $game = $this->findModel($id);
       if ($game->status != 1) {
-        throw new \yii\base\UserException("Wrong status for choosing player order!");
+        throw new \yii\base\UserException("Wrong status for choosing player order! GameID = ". $game->id);
       }
       $game::getDb()->transaction(function($db) use ($game, $order) {
         $s1 = new Score();
@@ -268,17 +267,14 @@ class GameController extends Controller
     public function actionSelectmachine($id, $machine_id) {
       $game = $this->findModel($id);
       if ($game->status != 1) {
-        throw new \yii\base\UserException("Wrong status for choosing player order!");
+        throw new \yii\base\UserException("Wrong status for selecting machine! GameID = ". $game->id);
       }
       if ($machine_id == -1) {
         Yii::$app->session->setFlash('error', "Invalid machine selection!");
         return $this->redirect(['view', 'id' => $game->id]);
       }
       $machine = Machine::findOne($machine_id);
-      $machinestatus = $machine->mostRecentStatus;
-      if ($machinestatus == null) {
-        throw new \yii\base\UserException("machine status is null!");
-      }
+      $machinestatus = $machine->machinerecentstatus;
       if ($machinestatus->status == 3) {
         throw new \yii\base\UserException("Cannot choose broken machine!");
       }

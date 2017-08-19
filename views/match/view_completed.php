@@ -21,17 +21,6 @@ $this->params['breadcrumbs'][] = $model->code;
 
     <h1>Match <?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
@@ -39,7 +28,7 @@ $this->params['breadcrumbs'][] = $model->code;
             [ 'label' => 'Session', 'value' => $model->session->name, ],
             'code',
             'formatString',
-            'statusString',
+            [ 'label' => 'Status', 'value' => $model->statusString, 'format' => 'html', ],
             'matchusersString',
         ],
     ]) ?>
@@ -52,31 +41,16 @@ $this->params['breadcrumbs'][] = $model->code;
 
     <?= GridView::widget([
         'dataProvider' => $gameData,
+        'responsiveWrap' => false,
         'columns' => [
             'number',
 //            'id',
 //            'match_id',
             [ 'label' => 'Machine', 'attribute' => 'MachineCell', ],
-            'statusString',
+            [ 'attribute' => 'statusString', 'format' => 'html' ],
 //            'statusDetailCode',
             [ 'label' => 'Winner', 'attribute' => 'WinnerName', 'format' => 'html'],
-
-            ['class' => 'yii\grid\ActionColumn',
-              'template' => '{game/go}',
-              'buttons' => [
-                'game/go' => function ($url, $match, $key) {
-                    return Html::a(
-                      "Go",
-                      $url,
-                      [
-                        'title' => 'Go',
-                        'data-pjax' => '0',
-                        'class' => 'btn-sm btn-success',
-                      ]
-                    );
-                }
-              ],
-            ],
+            [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
         ],
     ]); ?>
 

@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'locationName',
             'typeName',
             'statusString',
-            'date',
+            ['attribute' => 'date', 'format' => 'date',],
 
             ['class' => 'yii\grid\ActionColumn',
              'template' => '{session/view}',

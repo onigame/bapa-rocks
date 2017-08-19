@@ -22,6 +22,7 @@ use yii\widgets\ActiveForm;
    echo kartik\grid\GridView::widget([
      'dataProvider' => $scoreData,
      'layout' => '{items}',
+     'responsiveWrap' => false,
      'columns' => [
         [ 'attribute' => 'playernumber', 'label' => 'P#',
           'contentOptions' => ['style' => 'text-align:right'],

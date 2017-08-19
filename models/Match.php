@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 use app\models\MatchUser;
 use app\models\Eliminationgraph;
 
@@ -65,17 +66,28 @@ class Match extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getGoButton() {
+      return Html::a( "Go",
+                      ["/match/go", 'id' => $this->id],
+                      [
+                        'title' => 'Go',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
+    }
+
     public function getFormatString() {
       if ($this->format == 1) {
-        return "2-player, Best of 3";
+        return "2-player, first to 2 wins (3 games max)";
       } else if ($this->format == 3) {
         return "3-player, 5 games";
       } else if ($this->format == 4) {
         return "4-player, 4 games";
       } else if ($this->format == 5) {
-        return "2-player, Best of 5";
+        return "2-player, first to 3 wins (5 games max)";
       } else if ($this->format == 7) {
-        return "2-player, Best of 5";
+        return "2-player, first to 4 wins (7 games max)";
       } else {
         return "Unknown Format, Code: " . $this->format;
       }
@@ -210,6 +222,14 @@ class Match extends \yii\db\ActiveRecord
       return $result;
     }
 
+    public function getOpponentNames() {
+      $names = [];
+      foreach ($this->matchusers as $matchuser) {
+        if ($matchuser->user_id != Yii::$app->user->id) $names[] = $matchuser->user->name;
+      }
+      return join(", ", $names);
+    }
+
     public function getNamedPlayerCount() {
         return count($this->matchusers);
     }
@@ -305,10 +325,11 @@ class Match extends \yii\db\ActiveRecord
     public function maybeStartMatch() {
       // don't start the Match if we don't have full players.
       if (!$this->playersFilled) return false;
-
-      $this->status = 2;
-      $this->save();
-      $this->maybeStartGame();
+      if ($this->status == 0) {
+        $this->status = 2;
+        $this->save();
+        $this->maybeStartGame();
+      }
     }
 
     // starts the match.  Should be called when the player roster fills up,
@@ -422,8 +443,34 @@ class Match extends \yii\db\ActiveRecord
       $losermatch = Match::find()->where(['session_id' => $this->session_id,
                                            'code' => $losercode])->one();
 
-      if ($winnermatch != null) $winnermatch->addPlayoffPlayer($winnercode, $winner_id, $winnerseed);
-      if ($losermatch != null) $losermatch->addPlayoffPlayer($losercode, $loser_id, $loserseed);
+      if ($winnermatch == null) {
+        // player is done, let's update the seasonuser item
+        $seasonuser = SeasonUser::find()->where(['user_id' => $winner_id, 'season_id' => $this->session->season_id])->one();
+        $matches = [];
+        preg_match('/^ZZ0*(\d+)/', $winnercode, $matches);
+        $seasonuser->playoff_rank = $matches[1];
+        $seasonuser->save();
+      } else {
+        if ($winnermatch->namedPlayerCount >= 2) {
+          Yii::warning(join(", ", [$winnermatch->id, $winner_id, $winnercode, $winnerseed]));
+          throw new \yii\base\UserException("trying to add player to full match");
+        }
+        $winnermatch->addPlayoffPlayer($winnercode, $winner_id, $winnerseed);
+      }
+      if ($losermatch == null) {
+        // player is done, let's update the seasonuser item
+        $seasonuser = SeasonUser::find()->where(['user_id' => $loser_id, 'season_id' => $this->session->season_id])->one();
+        $matches = [];
+        preg_match('/^ZZ0*(\d+)/', $losercode, $matches);
+        $seasonuser->playoff_rank = $matches[1];
+        $seasonuser->save();
+      } else {
+        if ($losermatch->namedPlayerCount >= 2) {
+          Yii::warning(join(", ", $winnermatch->id, $winner_id, $winnercode, $winnerseed));
+          throw new \yii\base\UserException("trying to add player to full match");
+        }
+        $losermatch->addPlayoffPlayer($losercode, $loser_id, $loserseed);
+      }
     }
 
     public function addPlayoffPlayer($code, $user_id, $seed) {

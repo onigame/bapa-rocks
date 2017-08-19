@@ -1,16 +1,14 @@
 <?php
 
+use kartik\grid\GridView;
+
 /* @var $this yii\web\View */
 
 $this->title = 'BAPA Manager';
 ?>
 <div class="site-index">
 
-    <div class="jumbotron">
-        <h1>BAPA Rocks!</h1>
-
-        <p class="lead">The new BAPA Manager will eventually be here...</p>
-
+    <h1>BAPA Rocks!</h1>
 <?php      
         if (Yii::$app->user->isGuest) {
 ?>
@@ -27,53 +25,32 @@ $this->title = 'BAPA Manager';
 <?php      
         } else {
 ?>
-        <p> Thanks for Signing in!  Now please enter your real name into
-          <a class="btn btn-success" href="/user/settings/profile">your profile</a>.
-<?php      
+    <h2>Your Status</h2>
+        <?= \app\models\Player::findOne(Yii::$app->user->id)->statusHtml ?>
+    <h2>Current Sessions</h2>
+<?php
+          $sessionData = new yii\data\ActiveDataProvider([
+            'query' => app\models\Session::find()->where(['status' => 1]),
+            'sort' => [
+               'defaultOrder' => [
+                  'created_at' => SORT_ASC,
+               ]
+            ],
+          ]);
+          echo GridView::widget([
+            'dataProvider' => $sessionData,
+            'columns' => [
+              ['class' => 'yii\grid\SerialColumn'],
+              'seasonName',
+              'name',
+              'locationName',
+              'typeName',
+              'statusString',
+              [ 'attribute' => 'date', 'format' => 'date'],
+              [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
+            ],
+          ]);
         };
 ?>
 
-<!--
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
--->
-    </div>
-
-<!--
-    <div class="body-content">
-
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
-            </div>
-        </div>
-
-    </div>
--->
 </div>

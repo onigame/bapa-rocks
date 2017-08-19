@@ -15,23 +15,34 @@ use kartik\grid\GridView;
 
     <h2>Players</h2>
 <?php
-    $sessionuserData = new yii\data\ActiveDataProvider([
-          'query' => app\models\SessionUser::find()->where(['session_id' => $model->id]),
-/*
+    $playoffresultsData = new yii\data\ActiveDataProvider([
+          'query' => app\models\Playoffresults::find()->where(['session_id' => $model->id]),
           'sort' => [
-             'attributes' => [
-                'playoffsortcode' => [
-                  'asc' => ['playoffsortcode' => SORT_ASC ],
-                  'desc' => ['playoffsortcode' => SORT_DESC ],
-                  'default' => SORT_ASC
-                ],
-             ],
-             'defaultOrder' => ['currentMatch' => SORT_ASC]
+             'defaultOrder' => [
+                'seed_max' => SORT_ASC,
+                'seed' => SORT_ASC,
+             ]
           ],
-*/
         ]);
 ?>
-   <?= $this->render('@app/views/sessionuser/_content', [ 'sessionuserData' => $sessionuserData ]) ?>
+   <?= $this->render('@app/views/playoffresults/_content', [ 'playoffresultsData' => $playoffresultsData ]) ?>
+
+    <h2>Machines at <?= $model->locationName ?></h2>
+
+<?php
+    $machineData = new yii\data\ActiveDataProvider([
+          'query' => app\models\Machinerecentstatus::find()->where(['location_id' => $model->location_id]),
+          'pagination' => [
+            'pageSize' => 100,
+          ],
+          'sort' => [
+             'defaultOrder' => [
+                'name' => SORT_ASC,
+             ]
+          ],
+        ]);
+?>
+   <?= $this->render('@app/views/machinerecentstatus/_content', [ 'machineData' => $machineData ]) ?>
 
     <h2>All Matches</h2>
 <?php
@@ -50,25 +61,9 @@ use kartik\grid\GridView;
             'bracket',
             'formatString',
             'matchusersString',
-            'statusString',
+            ['attribute' => 'statusString', 'format' => 'html'],
 //            'statusDetailCode',
-
-            ['class' => 'yii\grid\ActionColumn',
-              'template' => '{match/go}',
-              'buttons' => [
-                'match/go' => function ($url, $match, $key) {
-                    return Html::a(
-                      "Go",
-                      $url,
-                      [
-                        'title' => 'Go',
-                        'data-pjax' => '0',
-                        'class' => 'btn-sm btn-success',
-                      ]
-                    );
-                }
-              ],
-            ],
+            [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
         ],
     ]); ?>
 

@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $model->code;
             [ 'label' => 'Session', 'value' => $model->session->name, ],
             'code',
             'formatString',
-            'statusString',
+            [ 'label' => 'Status', 'value' => $model->statusString, 'format' => 'html', ],
             'matchusersString',
         ],
     ]) ?>

@@ -69,10 +69,6 @@ class SessionUser extends \yii\db\ActiveRecord
             'updated_at' => 'Updated At',
             'currentMatchString' => 'Current Match',
             'currentMatchAction' => 'Go',
-            'currentSeed' => 'Seed',
-            'bestPlaceFinish' => 'Best',
-            'worstPlaceFinish' => 'Worst',
-            'playoffsortcode' => 'Sort Code',
 
             'seasonMatchpoints' => 'Season MP',
             'seasonmpg' => 'Season MP/Game',
@@ -146,7 +142,7 @@ class SessionUser extends \yii\db\ActiveRecord
       foreach ($machinelist as $machine) {
         $poolcount = MachinePool::getPoolCount($this->session_id, $machine->id, $this->user_id);
         if ($poolcount > $threshold) continue; // chosen this machine enough times already.
-        $status = $machine->mostRecentStatusString;
+        $status = $machine->string;
         $answer[$machine->id] = $machine->name;
         if ($status === "Available") {
         } else {
@@ -164,84 +160,6 @@ class SessionUser extends \yii\db\ActiveRecord
         $answer .= " ";
       }
       return $answer;
-    }
-
-    public function getCurrentMatchuser() {
-      return Matchuser::find()->joinWith(['match'])
-                       ->where(['match.session_id' => $this->session_id,
-                                'user_id' => $this->user_id,
-                              ])
-                       ->orderBy(['id' => SORT_DESC])->one();
-    }
-
-    public function getCurrentMatch() {
-      $matchuser = $this->currentMatchuser;
-      if ($matchuser == null) throw new \yii\base\UserException("getCurrentMatch called without a current match");
-      return $this->currentMatchuser->match;
-    }
-
-    public function getCurrentSeed() {
-      $matchuser = $this->currentMatchuser;
-      $graph = Eliminationgraph::findCode($matchuser->match->code);
-      if ($matchuser->starting_playernum == 1) {
-        $answer = 1 + $graph->seed_p1;
-      } else if ($matchuser->starting_playernum == 2) {
-        $answer = 1 + $graph->seed_p2;
-      } else {
-        return null;
-      }
-      return $answer;
-    }
-
-    public function getBest() {
-      $matchuser = $this->currentMatch;
-      return Eliminationgraph::findCode($matchuser->code)->seed_max;
-    }
-
-    public function getWorst() {
-      $matchuser = $this->currentMatch;
-      return Eliminationgraph::findCode($matchuser->code)->seed_min;
-    }
-
-    public function getPlayoffsortcode() {
-      return $this->best * 1000 + $this->currentSeed;
-    }
-
-    public function getCurrentMatchString() {
-      return $this->currentMatch->code;
-    }
-
-    public function getCurrentMatchBracket() {
-      return $this->currentMatch->bracket;
-    }
-
-    public function getCurrentMatchStatus() {
-      return $this->currentMatch->statusString;
-    }
-
-    public function getCurrentMatchAction() {
-      return Html::a( "Go",
-                      ["/match/go", 'id' => $this->currentMatch->id],
-                      [
-                        'title' => 'Go',
-                        'data-pjax' => '0',
-                        'class' => 'btn-sm btn-success',
-                      ]
-                    );
-    }
-
-    public function getLastStatusString() {
-      $matchuser = $this->matchuserRecent;
-      $match = $matchuser->match;
-      if ($match->status == 2) {
-        return "In Match ".$match->code;
-      }
-      if ($match->status == 0) {
-        return "Waiting for opponent for Match ".$match->code;
-      }
-      if ($match->status == 3) {
-        return "Completed Match ".$match->code;
-      }
     }
 
     /**

@@ -79,6 +79,17 @@ class Game extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getGoButton() {
+      return Html::a( "Go",
+                      ["/game/go", 'id' => $this->id],
+                      [
+                        'title' => 'Go',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -137,10 +148,10 @@ class Game extends \yii\db\ActiveRecord
     }
 
     public function getStatusString() {
-      if ($this->status == 0) return ("Awaiting Master Selection");
-      if ($this->status == 1) return ("Awaiting Machine/Player-Order Selection");
-      if ($this->status == 2) return ("Awaiting Machine: ".$this->machine->name);
-      if ($this->status == 3) return ("In Progress: ".$this->machine->name);
+      if ($this->status == 0) return ("Awaiting<br>Master Selection");
+      if ($this->status == 1) return ("Awaiting<br>Machine/Player-Order Selection");
+      if ($this->status == 2) return ("Awaiting<br>Machine: ".$this->machine->abbreviation);
+      if ($this->status == 3) return ("In Progress:<br>".$this->machine->name);
       if ($this->status == 4) return ("Completed");
       if ($this->status == 5) return ("Disqualified");
       return "Unknown Status";
@@ -212,30 +223,75 @@ class Game extends \yii\db\ActiveRecord
       return true;
     }
 
+    public function disqualifySelection() {
+      $game = $this;
+      $game->status = 5;
+      $game->save();
+      $machine->maybeStartQueuedGame();
+      $game->match->maybeStartGame();
+    }
+
+    public function cancelSelection() {
+      $game = $this;
+      if ($game->status == 2) {
+        // waiting for a machine, we should be in the queue.
+        $queuegame = QueueGame::find()->where(['game_id' => $game->id])->one();
+        if ($queuegame == null) {
+          Yii::$app->session->setFlash('error', "This game is not in the queue!  Error GameID=".$id);
+        } else {
+          $game->machine_id = NULL;
+          $game->status = 1;
+          $game::getDb()->transaction(function($db) use ($game, $queuegame) {
+            $queuegame->delete();
+            $game->save();
+          });
+        }
+      } else if ($game->status == 3) {
+        // already on a machine, in the middle of a game.
+        // we need to reset the score to zero.
+        $machine = $game->machine; // needed to pop the next queue person up.
+        $game->machine_id = NULL;
+        $game->status = 1;
+        $game::getDb()->transaction(function($db) use ($game) {
+          $game->save();
+          foreach ($game->scores as $score) {
+            $score->value = null;
+            $score->save();
+          }
+        });
+        $machine->maybeStartQueuedGame();
+      } else {
+        Yii::$app->session->setFlash('error', "Only an in-progress game or a queued game can select another machine.");
+      }
+    }
+
     public function startOrEnqueueGame() {
       $game = $this;
       $game::getDb()->transaction(function($db) use ($game) {
-        $machinestatus = $game->machine->mostRecentStatus;
-        if ($machinestatus->status == 1) {
+        $mrs = $game->machine->machinerecentstatus;
+        if ($mrs->status == 1) {
+          $machinestatus = new MachineStatus;
           $machinestatus->status = 2; // in play
           $machinestatus->game_id = $game->id;
+          $machinestatus->machine_id = $mrs->id;
+          $machinestatus->recorder_id = Yii::$app->user->id;
           $game->status = 3; // in progress
-        } else if ($machinestatus->status == 2) {
+          if (!$game->save() || !$machinestatus->save()) {
+            Yii::error($game->errors);
+            Yii::error($machinestatus->errors);
+            throw new \yii\base\UserException("Error saving machinestatus or game in startOrEnqueueGame");
+          }
+        } else if ($mrs->status == 2) {
           // need to add to queue
           $qg = new QueueGame();
-          $qg->machine_id = $machinestatus->machine_id;
+          $qg->machine_id = $mrs->id;
           $qg->game_id = $game->id;
           if (!$qg->save()) {
             Yii::error($qg->errors);
-            throw new \yii\base\UserException("Error saving");
+            throw new \yii\base\UserException("Error saving queuegame in startOrEnqueueGame");
           }
         } else {
-          throw new \yii\base\UserException("Machine status weird!");
-        }
-        if (!$game->save() || !$machinestatus->save()) {
-          Yii::error($game->errors);
-          Yii::error($machinestatus->errors);
-          throw new \yii\base\UserException("Error saving");
+          throw new \yii\base\UserException("Machine ".$game->machine->name." is not open! Status = ".$mrs->status);
         }
       });
     }
