@@ -135,6 +135,7 @@ class SeasonController extends Controller
     public function actionCreate()
     {
         $model = new Season();
+        $model->status = 1; // all new seasons start out as started for now.
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);

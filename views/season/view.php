@@ -46,6 +46,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
+    <h3>Sessions</h3>
+
 <?php 
       $sessionData = new yii\data\ActiveDataProvider([
           'query' => app\models\Session::find()->where(['season_id' => $model->id])->orderBy(['date' => SORT_ASC]),
@@ -57,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'seasonName',
+//            'seasonName',
             'name',
             'locationName',
             'typeName',

@@ -12,6 +12,7 @@ use yii\helpers\Html;
  * @property integer $id
  * @property integer $status
  * @property string $name
+ * @property integer $previous_season_id
  * @property integer $created_at
  * @property integer $updated_at
  *
@@ -35,7 +36,7 @@ class Season extends \yii\db\ActiveRecord
     {
         return [
             [['status', 'name'], 'required'],
-            [['status', 'created_at', 'updated_at'], 'integer'],
+            [['status', 'previous_season_id', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 255],
         ];
     }
@@ -49,6 +50,7 @@ class Season extends \yii\db\ActiveRecord
             'id' => 'ID',
             'status' => 'Status',
             'name' => 'Name',
+            'previous_season_id' => 'Previous Season (used for PP calculations)',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
