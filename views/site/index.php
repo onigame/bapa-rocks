@@ -28,6 +28,31 @@ $this->title = 'BAPA Manager';
 ?>
     <h2>Your Status</h2>
         <?= \app\models\Player::findOne(Yii::$app->user->id)->statusHtml ?>
+    <h2>Upcoming Regular Sessions</h2>
+<?php
+          $sessionData = new yii\data\ActiveDataProvider([
+            'query' => app\models\Session::find()->where(['status' => 0, 'type' => 1]),
+            'sort' => [
+               'defaultOrder' => [
+                  'created_at' => SORT_ASC,
+               ]
+            ],
+          ]);
+          echo GridView::widget([
+            'dataProvider' => $sessionData,
+            'columns' => [
+              ['class' => 'yii\grid\SerialColumn'],
+              'seasonName',
+              'name',
+              'locationName',
+              'typeName',
+              'statusString',
+              [ 'attribute' => 'date', 'format' => 'date'],
+              [ 'label' => 'Am I in?', 'attribute' => 'JoinButton', 'format' => 'html'],
+              [ 'label' => 'Details', 'attribute' => 'GoButton', 'format' => 'html'],
+            ],
+          ]);
+?>
     <h2>Current Sessions</h2>
 <?php
           $sessionData = new yii\data\ActiveDataProvider([

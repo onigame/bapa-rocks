@@ -107,7 +107,15 @@ class SessionUser extends \yii\db\ActiveRecord
     }
 
     public function getSeason() {
-      return $this->session->season;
+      return $this->hasOne(Season::className(), ['id' => 'season_id'])->via('session');
+    }
+
+    public function getAllSessionMatches() {
+      return $this->hasMany(Match::className(), ['session_id' => 'id'])->via('session');
+    }
+
+    public function getMatchUsers() {
+      return $this->hasMany(MatchUser::className(), ['user_id' => $this->user_id, 'match_id' => 'id'])->via('allSessionMatches');     
     }
 
     public function getPublicSeasonUser() {

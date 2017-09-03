@@ -30,12 +30,17 @@ class SessionController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete', 'start', 'removeplayer', 'addplayer', 'finish'],
+                'only' => ['update', 'create', 'delete', 'start', 'removeplayer', 'addplayer', 'finish', 'leave', 'join'],
                 'rules' => [
                     [
                         'allow' => true,
                         'actions' => ['update', 'create', 'start', 'removeplayer', 'addplayer', 'finish'],
                         'roles' => ['Manager'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['leave', 'join'],
+                        'roles' => ['@'],
                     ],
                 ],
             ],
@@ -116,6 +121,31 @@ class SessionController extends Controller
       return $this->redirect(['view', 'id' => $id]);
     }
 
+    public function actionJoin($id) {
+      $player_id = Yii::$app->user->id;
+      $sessionUser = SessionUser::find()->where(['session_id' => $id,
+                                                 'user_id' => $player_id])
+                                        ->one();
+      if ($sessionUser != null) {
+        throw new \yii\base\UserException("You are already playing!");
+      }
+
+      $session = Session::findOne($id);
+      $seasonUser = SessionUser::find()->where(['season_id' => $session->season->id,
+                                                'user_id' => $player_id])
+                                       ->one();
+      if ($seasonUser == null) {
+        $session->season->addplayer($player_id);
+        $seasonUser = SessionUser::find()->where(['season_id' => $session->season->id,
+                                                  'user_id' => $player_id])
+                                         ->one();
+        if ($seasonUser == null) {
+          throw new \yii\base\UserException("Creation of SessionUser failed somehow");
+        }
+      }
+      $session->addPlayer($seasonUser);
+    }
+
     public function actionAddplayer($session_id, $seasonuser_id) {
       $sessionUser = SessionUser::find()->where(['session_id' => $session_id,
                                                  'user_id' => PublicSeasonUser::findOne($seasonuser_id)->user_id])
@@ -123,15 +153,10 @@ class SessionController extends Controller
       if ($sessionUser != null) {
         throw new \yii\base\UserException("That player is already playing!");
       }
-      $newSessionUser = new SessionUser();
-      $newSessionUser->user_id = PublicSeasonUser::findOne($seasonuser_id)->user_id;
-      $newSessionUser->session_id = $session_id;
-      $newSessionUser->status = 2;
-      $newSessionUser->recorder_id = Yii::$app->user->id;
-      if (!$newSessionUser->save()) {
-        Yii::error($newSessionUser->errors);
-        throw new \yii\base\UserException("Error saving sessionUser");
-      }
+
+      $session = Session::findOne($session_id);
+      $session->addPlayer(SeasonUser::findOne($seasonuser_id));
+
       $this->actionView($session_id);
       //return $this->redirect(['view', 'id' => $session_id]);
     }

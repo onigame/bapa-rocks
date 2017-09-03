@@ -71,6 +71,7 @@ class Session extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'playoffdata' => 'Playoff Data (load from checkboxes)',
+            'joinButton' => 'Am I in?',
 
             'seasonName' => 'Season',
             'typeName' => 'Type',
@@ -164,17 +165,52 @@ class Session extends \yii\db\ActiveRecord
        return $this->location->unselectableMachines;
     }
 
+    public function getJoinButton() {
+      $sus = $this->sessionusers;
+      if ($sus != null && $sus->where(['user_id' => Yii::$app->user->id])->one() != null) {
+        return "Yes; " . Html::a( "Leave",
+                      ["/session/leave", 'id' => $this->id],
+                      [
+                        'title' => 'Leave',
+                        'data-pjax' => '1',
+                        'class' => 'btn-sm btn-warning',
+                      ]
+                    );
+      } else {
+        return "No; " . Html::a( "Join",
+                      ["/session/join", 'id' => $this->id],
+                      [
+                        'title' => 'Join',
+                        'data-pjax' => '1',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
+      }
+    }
+
     public function getGoButton() {
       return Html::a( "Go",
                       ["/session/view", 'id' => $this->id],
                       [
                         'title' => 'Go',
-                        'data-pjax' => '0',
+                        'data-pjax' => '1',
                         'class' => 'btn-sm btn-success',
                       ]
                     );
     }
 
+    public function addPlayer($seasonuser) {
+      $newSessionUser = new SessionUser();
+      $newSessionUser->user_id = $seasonuser->user_id;
+      $newSessionUser->session_id = $this->id;
+      $newSessionUser->status = 1;
+      $newSessionUser->recorder_id = Yii::$app->user->id;
+      $newSessionUser->previous_performance = $seasonuser->previousPerformance;
+      if (!$newSessionUser->save()) {
+        Yii::error($newSessionUser->errors);
+        throw new \yii\base\UserException("Error saving sessionUser");
+      }
+    }
 
     /**
      * @inheritdoc

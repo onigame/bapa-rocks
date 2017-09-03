@@ -100,6 +100,24 @@ class SeasonUser extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getSessionUsers()
+    {
+        return $this->hasMany(Sessionuser::className(), ['user_id' => 'user_id', 'session_id' => 'id'])
+          ->via(sessions)
+        ;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSessions()
+    {
+        return $this->hasMany(Sessions::className(), ['season_id' => 'season_id'])->orderBy(['date' => SORT_DESC]);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getSeason()
     {
         return $this->hasOne(Season::className(), ['id' => 'season_id']);
@@ -124,6 +142,23 @@ class SeasonUser extends \yii\db\ActiveRecord
         return "Yes";
       } else {
         return "No";
+      }
+    }
+
+    public function getPreviousPerformance() {
+      $sus = $this->sessionusers;
+      if ($sus == null) {
+        // they haven't played this season yet, so how'd they do in the playoffs?
+        $ps = $this->season->previous_season;
+        if ($ps != null) {
+          $psu = $ps->seasonusers->where(['user_id' => $this->user_id]);
+          if ($psu != null && $psu->playoff_division === 'A') return 12;
+        }
+        return mt_rand(7, 10);
+      } else {
+        // what was their last score?
+        $mu = $sus->one()->matchUsers->one();
+        return $my->matchpoints();
       }
     }
 
