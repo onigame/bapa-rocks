@@ -140,10 +140,7 @@ class PublicSeasonUser extends SeasonUser
     }
 
     public function getTiebreaker() {
-      if ($this->tiebreaker === 0) {
-        $this->tiebreaker = Security::generateRandomString();
-      }
-      return $this->tiebreaker;
+      return Yii::$app->getSecurity()->generateRandomString();
     }
 
     /**

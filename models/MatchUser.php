@@ -4,12 +4,13 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use app\models\Score;
 
 /**
  * This is the model class for table "matchuser".
  *
  * @property integer $id
- * @property integer $matchpoints
+ * @property integer $bonuspoints
  * @property integer $game_count
  * @property integer $opponent_count
  * @property integer $match_id
@@ -36,8 +37,8 @@ class MatchUser extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['matchpoints', 'game_count', 'opponent_count', 'match_id', 'user_id', 'starting_playernum'], 'required'],
-            [['matchpoints', 'game_count', 'opponent_count', 'match_id', 'user_id', 'created_at', 'updated_at', 'starting_playernum'], 'integer'],
+            [['bonuspoints', 'game_count', 'opponent_count', 'match_id', 'user_id', 'starting_playernum'], 'required'],
+            [['bonuspoints', 'game_count', 'opponent_count', 'match_id', 'user_id', 'created_at', 'updated_at', 'starting_playernum'], 'integer'],
             [['match_id'], 'exist', 'skipOnError' => true, 'targetClass' => Match::className(), 'targetAttribute' => ['match_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -52,6 +53,7 @@ class MatchUser extends \yii\db\ActiveRecord
             'id' => 'ID',
             'starting_playernum' => 'Starting Player Number',
             'matchpoints' => 'Matchpoints',
+            'bonuspoints' => 'MP Adj.',
             'game_count' => 'Game Count',
             'opponent_count' => 'Opponent Count',
             'match_id' => 'Match ID',
@@ -79,6 +81,33 @@ class MatchUser extends \yii\db\ActiveRecord
 
     public function getName() {
       return $this->user->profile->name;
+    }
+
+    public function getScores() {
+      $games = $this->match->games;
+      $scores = [];
+      foreach ($games as $game) {
+        foreach (Score::find()->where(['game_id' => $game->id, 'user_id' => $this->user_id])->all() as $score) {
+          $scores[] = $score;
+        }
+      }
+      return $scores;
+    }
+
+    public function getMatchpoints() {
+      $sum = 0;
+      foreach ($this->scores as $score) {
+        $sum += $score->matchpoints;
+      }
+      return ($sum + $this->bonuspoints);
+    }
+
+    public static function compareMatchpoints($matchuser_a, $matchuser_b) {
+      $mp_a = $matchuser_a->matchpoints;
+      $mp_b = $matchuser_b->matchpoints;
+      if ($mp_a == $mp_b) return 0;
+      if ($mp_a > $mp_b) return -1;
+      if ($mp_a < $mp_b) return 1;
     }
 
     /**

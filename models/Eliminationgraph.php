@@ -148,7 +148,7 @@ class Eliminationgraph extends \yii\db\ActiveRecord
       $prev_match = Eliminationgraph::findCode($prev_code);
       if ($prev_match != null && $prev_match->getOpponentSeed($playerseed) >= $playercount) {
         // previous round was a bye
-        return EliminationGraph::prevString($prev_code, $playerseed, $playercount);
+        return Eliminationgraph::prevString($prev_code, $playerseed, $playercount);
       }
 
       return "[" . ($prev_win ? "Winner of " : "Loser of ") . $prev_code . "]";

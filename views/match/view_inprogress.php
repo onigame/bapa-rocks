@@ -45,8 +45,8 @@ $this->params['breadcrumbs'][] = $model->code;
 //        'options' => ['style' => 'font-size:10px'],
         'responsiveWrap' => false,
         'columns' => [
+            'id',
             [ 'attribute' => 'number', 'value' => function($model) { return "Game ".$model->number; } ],
-//            'id',
 //            'match_id',
             [ 'label' => 'Machine', 'attribute' => 'MachineCell', ],
             [ 'attribute' => 'statusString', 'format' => 'html', ],

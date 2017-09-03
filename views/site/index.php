@@ -1,6 +1,7 @@
 <?php
 
 use kartik\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 
@@ -50,7 +51,65 @@ $this->title = 'BAPA Manager';
               [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
             ],
           ]);
+?>
+    <h2>Past Sessions</h2>
+<?php
+          $sessionData = new yii\data\ActiveDataProvider([
+            'query' => app\models\Session::find()->where(['status' => 2]),
+            'pagination' => [ 'pageSize' => 3 ],
+            'sort' => [
+               'defaultOrder' => [
+                  'created_at' => SORT_ASC,
+               ]
+            ],
+          ]);
+          echo GridView::widget([
+            'dataProvider' => $sessionData,
+            'columns' => [
+              ['class' => 'yii\grid\SerialColumn'],
+              'seasonName',
+              'name',
+              'locationName',
+              'typeName',
+              'statusString',
+              [ 'attribute' => 'date', 'format' => 'date'],
+              [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
+            ],
+          ]);
+?>
+
+<?php
         };
+?>
+
+<?php
+  if (Yii::$app->user->can('GenericManagerPermission')) {
+?>
+   <h2>Management Tools</h2>
+<?php
+      echo "<p>";
+      echo Html::a( "Seasons",
+                      ["/season"],
+                      [
+                        'title' => 'Seasons',
+                        'data-pjax' => '0',
+                        'class' => 'btn btn-success',
+                      ]
+                    );
+      echo "</p>";
+?>
+<?php
+      echo "<p>";
+      echo Html::a( "Locations",
+                      ["/location"],
+                      [
+                        'title' => 'Locations',
+                        'data-pjax' => '0',
+                        'class' => 'btn btn-success',
+                      ]
+                    );
+      echo "</p>";
+  }
 ?>
 
 </div>

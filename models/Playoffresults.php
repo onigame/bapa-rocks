@@ -76,6 +76,10 @@ class Playoffresults extends \yii\db\ActiveRecord
       return $this->match->goButton;
     }
 
+    public function getSessionUserInfoButton() {
+      return $this->sessionUser->infoButton;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -90,6 +94,14 @@ class Playoffresults extends \yii\db\ActiveRecord
     public function getSession()
     {
         return $this->hasOne(Session::className(), ['id' => 'session_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSessionUser()
+    {
+        return $this->hasOne(SessionUser::className(), ['session_id' => 'session_id', 'user_id' => 'user_id']);
     }
 
     /**

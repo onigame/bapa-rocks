@@ -3,18 +3,17 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\Score;
-use app\models\ScoreSearch;
+use app\models\SessionUser;
+use app\models\SessionUserSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
-
 /**
- * AdminScoreController implements the CRUD actions for Score model.
+ * SessionuserController implements the CRUD actions for SessionUser model.
  */
-class ScoreController extends Controller
+class SessionuserController extends Controller
 {
     /**
      * @inheritdoc
@@ -24,22 +23,16 @@ class ScoreController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete', 'verify'],
+                'only' => ['update', 'create', 'delete'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => [],
-                        'roles' => ['GenericManagerPermission'],
-                    ],
-                ],
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'actions' => ['verify'],
-                        'roles' => ['@'],
+                        'actions' => ['update', 'create', 'delete'],
+                        'roles' => ['Manager'],
                     ],
                 ],
             ],
+
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -50,12 +43,12 @@ class ScoreController extends Controller
     }
 
     /**
-     * Lists all Score models.
+     * Lists all SessionUser models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new ScoreSearch();
+        $searchModel = new SessionUserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -65,7 +58,7 @@ class ScoreController extends Controller
     }
 
     /**
-     * Displays a single Score model.
+     * Displays a single SessionUser model.
      * @param integer $id
      * @return mixed
      */
@@ -77,13 +70,13 @@ class ScoreController extends Controller
     }
 
     /**
-     * Creates a new Score model.
+     * Creates a new SessionUser model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Score();
+        $model = new SessionUser();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -95,7 +88,7 @@ class ScoreController extends Controller
     }
 
     /**
-     * Updates an existing Score model.
+     * Updates an existing SessionUser model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -103,11 +96,6 @@ class ScoreController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        if ($game->status != 3) {
-            Yii::$app->session->setFlash('error', "Only scores on games in progress can be modified!");
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -119,7 +107,7 @@ class ScoreController extends Controller
     }
 
     /**
-     * Deletes an existing Score model.
+     * Deletes an existing SessionUser model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -131,35 +119,16 @@ class ScoreController extends Controller
         return $this->redirect(['index']);
     }
 
-    public function actionVerify($id) {
-      $score = $this->findModel($id);
-      if ($score->value == NULL && $score->forfeit == 0) {
-        Yii::$app->session->setFlash('warning', "Cannot verify empty score!");
-        throw new \yii\base\UserException("Cannot verify empty score!");
-      }
-      if ($score->verifier_id != null && $score->verifier_id != $score->recorder_id) {
-        $message = "Score is already verified!";
-        Yii::$app->session->setFlash('warning', $message);
-        throw new \yii\base\UserException($message);
-      }
-      $current = Yii::$app->user->id;
-      $score->verifier_id = $current;
-      $score->verified = 1;
-      $score->save();
-      $score->game->maybeCompleted();
-      return $this->redirect(Yii::$app->request->referrer);
-    }
-
     /**
-     * Finds the Score model based on its primary key value.
+     * Finds the SessionUser model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Score the loaded model
+     * @return SessionUser the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Score::findOne($id)) !== null) {
+        if (($model = SessionUser::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

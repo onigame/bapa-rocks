@@ -53,7 +53,7 @@ use yii\widgets\Pjax;
     $sessionuser = SessionUser::findOne(['user_id' => $player->id, 'session_id' => $model->session->id]);
     $form = ActiveForm::begin([
       'method' => 'get',
-      'action' => 'selectmachine',
+      'action' => '/game/selectmachine',
       'options' => ['class' => 'form-inline'],
     ]);
     echo Html::activeHiddenInput($model, 'id', ['name'=>'id']);

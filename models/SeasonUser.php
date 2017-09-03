@@ -17,12 +17,14 @@ use yii\db\ActiveRecord;
  * @property integer $dues
  * @property integer $user_id
  * @property integer $season_id
+ * @property double $previous_season_rank
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $playoff_division
  * @property integer $playoff_rank
  *
  * @property double $mpg
+ * @property double $mpo
  *
  * @property User $user
  * @property Season $season
@@ -48,7 +50,7 @@ class SeasonUser extends \yii\db\ActiveRecord
               'user_id', 'season_id'], 'required'],
             [['matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id',
               'season_id', 'created_at', 'updated_at'], 'integer'],
-            [['mpg'], 'double'],
+            [['mpg', 'mpo', 'previous_season_rank'], 'double'],
             [['notes'], 'string', 'max' => 255],
             [['playoff_division'], 'string', 'max' => 20],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
@@ -72,6 +74,8 @@ class SeasonUser extends \yii\db\ActiveRecord
             'playoff_division' => 'Playoff Division',
             'playoff_rank' => 'Playoff Rank',
             'mpg' => 'MPs per Game',
+            'mpo' => 'MPs per Opp.',
+            'previous_season_rank' => 'Prev. Season Rank',
             'user_id' => 'User ID',
             'season_id' => 'Season ID',
             'created_at' => 'Created At',
@@ -122,6 +126,14 @@ class SeasonUser extends \yii\db\ActiveRecord
         return "No";
       }
     }
+
+    // for sorting
+    public static function byPreviousSeasonRank($a, $b) {
+      if ($a->previous_season_rank < $b->previous_season_rank) return -1;
+      if ($a->previous_season_rank == $b->previous_season_rank) return 0;
+      return 1;
+    }
+
 
     /**
      * @inheritdoc

@@ -39,7 +39,18 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
     <h2>Machines</h2>
+    <p>
+      <?= Html::a( "Add Machine",
+                      ["add-machine", "location_id" => $model->id],
+                      [
+                        'title' => 'Add Machine',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
+      ?>
 <?php
+
     $machineData = new yii\data\ActiveDataProvider([
           'query' => app\models\Machinerecentstatus::find()->where(['location_id' => $model->id]),
           'sort' => [

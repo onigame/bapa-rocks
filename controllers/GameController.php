@@ -173,7 +173,9 @@ class GameController extends Controller
      */
     public function actionGo($id) {
       $game = $this->findModel($id);
-      if ($game->master_selector == null) {
+      if ($game->master_selector == null && $game->status == 0) {
+        $game->appointMasterSelect();
+      } else if ($game->status == 6) {
         $game->appointMasterSelect();
       }
       return $this->redirect(['view', 'id' => $game->id]);

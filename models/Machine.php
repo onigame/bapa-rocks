@@ -121,6 +121,26 @@ class Machine extends \yii\db\ActiveRecord
       $game->startOrEnqueueGame();
     }
 
+    public function maybeStartRegularSeasonGame() {
+      // don't bother unless this machine is available.
+      if ($this->machinerecentstatus->status != 1) return; 
+
+      $games = Game::find()->where(['status' => 6])->orderBy(['created_at' => SORT_ASC])->all();
+      foreach ($games as $game) {
+        // don't start a game that's at a different location.
+        if ($game->session->location_id != $this->location_id) continue;
+
+        // don't start a game if the group has already played this machine.
+        if ($game->match->alreadyPlayed($this)) continue;
+
+        // okay, we'll start this game
+        $game->startOnMachine($this);
+
+        // don't bother with any other games.
+        return;
+      }
+    }
+
     public function buttonHtml($text, $newstatus, $color) {
       return Html::a( $text,
                       ["/machine/statuschange", 

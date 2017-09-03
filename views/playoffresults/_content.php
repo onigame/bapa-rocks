@@ -15,6 +15,7 @@ use kartik\grid\GridView;
         'responsiveWrap' => false,
         'columns' => [
             'user.name',
+            ['attribute' => 'sessionUserInfoButton', 'label' => 'Info', 'format' => 'html'],
             ['attribute' => 'match.bracket', 'label' => 'Bracket'],
             ['attribute' => 'match.statusString', 'format' => 'html'],
             ['attribute' => 'match.code', 'header' => 'Match<br>Code'],

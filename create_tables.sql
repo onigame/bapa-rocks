@@ -43,6 +43,8 @@ CREATE TABLE season (
              -- 1 = STARTED, 2 = REGULAR WEEKS COMPLETED
              -- 3 = PLAYOFFS COMPLETED
     name VARCHAR(255) NOT NULL,
+    previous_season_id INT,
+    FOREIGN KEY previous_season_key (previous_season_id) REFERENCES season(id),
     created_at int(11),
     updated_at int(11)
 );
@@ -81,8 +83,9 @@ CREATE TABLE game (
     FOREIGN KEY machine_key (machine_id) REFERENCES machine(id),
     number INT NOT NULL, -- 1-4 for regular season, 1-3 for best of 3, 1-5 for best of 5, etc.
     status INT NOT NULL, -- 0 = AWAITING MASTER SELECTION, 1 = AWAITING MACHINE OR PLAYER ORDER SELECTION,
-                         -- 2 = AWAITING MACHINE, 3 = IN PROGRESS, 4 = COMPLETED
+                         -- 2 = AWAITING KNOWN MACHINE (playoffs) , 3 = IN PROGRESS, 4 = COMPLETED
                          -- 5 = DISQUALIFIED (e.g., broken machine)
+                         -- 6 = AWAITING UNKNOWN MACHINE (regular season)
     player_order_selector INT,
     FOREIGN KEY (player_order_selector) REFERENCES user(id),
     machine_selector INT,
@@ -123,7 +126,7 @@ CREATE TABLE queuegame (
 CREATE TABLE score (
     id INT AUTO_INCREMENT PRIMARY KEY,
     playernumber INT NOT NULL, -- 1-4
-    value INT, -- NULL = unscored
+    value BIGINT, -- NULL = unscored
     matchpoints INT, -- NULL = unscored
     forfeit INT NOT NULL, -- 0 = not forfeit, 1 = forfeit
     verified INT NOT NULL, -- 0 = unverified, 1 = verified
@@ -142,7 +145,8 @@ CREATE TABLE score (
 CREATE TABLE matchuser (
     id INT AUTO_INCREMENT PRIMARY KEY,
     starting_playernum INT NOT NULL, -- useful for playoff sources
-    matchpoints INT NOT NULL, -- add all games in match (with possible bonus)
+ --   matchpoints INT NOT NULL, -- add all games in match (with possible bonus)
+    bonuspoints INT NOT NULL DEFAULT 0, -- bonus matchpoints (or malus)
     matchrank INT, -- rank within match (1st place, 2nd, etc.) Ties are indeterminate.
     game_count INT NOT NULL,
     opponent_count INT NOT NULL,
@@ -164,6 +168,7 @@ CREATE TABLE sessionuser (
     FOREIGN KEY session_key (session_id) REFERENCES session(id),
     recorder_id INT NOT NULL,
     FOREIGN KEY (recorder_id) REFERENCES user(id),
+    previous_performance INT, -- in matchpoints.
     created_at int(11),
     updated_at int(11)
 );
@@ -172,17 +177,19 @@ CREATE TABLE seasonuser (
     id INT AUTO_INCREMENT PRIMARY KEY,
     notes VARCHAR(255),
     matchpoints INT NOT NULL, -- add all games in match (possible bonus)
-    game_count INT NOT NULL,
-    opponent_count INT NOT NULL,
-    match_count INT NOT NULL,
+    game_count INT NOT NULL, -- only effective games in season
+    opponent_count INT NOT NULL, -- only effective opponents in season
+    match_count INT NOT NULL, -- only effective matches in season
     dues INT NOT NULL, -- 0 = not paid, 1 = paid
     playoff_division VARCHAR(20), -- NULL = unassgned; 'A', 'B', 'DQ'
     playoff_rank INT, -- NULL = unassigned, otherwise within playoff
     mpg DOUBLE AS (IF(game_count=0,NULL,matchpoints / game_count)) STORED,
+    mpo DOUBLE AS (IF(game_count=0,NULL,matchpoints / opponent_count)) STORED,
     user_id INT NOT NULL,
     FOREIGN KEY user_key (user_id) REFERENCES user(id),
     season_id INT NOT NULL,
     FOREIGN KEY season_key (season_id) REFERENCES season(id),
+    previous_season_rank DOUBLE, -- 1 = 1st place, 2 = 2nd place, etc.
     created_at int(11),
     updated_at int(11)
 );
@@ -221,6 +228,129 @@ WHERE
 GROUP BY
   machine_id, machine_selector, session_id
 );
+
+CREATE OR REPLACE VIEW playoffresults AS (
+SELECT
+  su.session_id,
+  su.user_id,
+  su.id as sessionuser_id,
+--  su.status as sessionuser_status,
+  mu1.id as matchuser_id,
+--  mu1.starting_playernum,
+  mu1.match_id,
+--  mu1.matchrank,
+  m.code as code,
+--  m.format as format,
+  m.status as match_status,
+--  eg.seed_p1,
+--  eg.seed_p2,
+  if (m.status = 3,
+      if (mu1.matchrank = 1, eg.seed_p1 + 1, eg.seed_p2 + 1),
+      eg.seed_min) as seed_min,
+  if (m.status = 3,
+      if (mu1.matchrank = 1, eg.seed_p1 + 1, eg.seed_p2 + 1),
+      eg.seed_max) as seed_max,
+  if (m.status = 3, 
+      if (mu1.matchrank = 1, eg.seed_p1 + 1, eg.seed_p2 + 1),
+      if (mu1.starting_playernum = 1, eg.seed_p1 + 1, eg.seed_p2 + 1) )
+     as seed
+FROM sessionuser su
+JOIN matchuser mu1
+  ON (su.user_id = mu1.user_id)
+LEFT OUTER JOIN matchuser mu2 
+  ON (su.user_id = mu2.user_id
+      AND mu1.created_at < mu2.created_at)
+JOIN `match` m
+  ON (m.id = mu1.match_id
+      AND m.session_id = su.session_id)
+JOIN eliminationgraph eg
+  ON (m.code = eg.code)
+WHERE mu2.id IS NULL
+);
+
+CREATE OR REPLACE VIEW machinescore AS (
+SELECT
+ m.id,
+ s.value
+FROM machine m
+INNER JOIN game g
+ ON (m.id = g.machine_id)
+INNER JOIN score s
+ ON (g.id = s.game_id)
+WHERE
+ s.value IS NOT NULL
+ORDER BY
+ m.id, s.value
+);
+
+CREATE OR REPLACE VIEW machinescoreminmax AS (
+SELECT
+ id,
+ MIN(value) as min,
+ MAX(value) as max
+FROM
+ machinescore
+GROUP BY
+ id
+);
+
+CREATE OR REPLACE VIEW machinescoremedian AS (
+SELECT
+ medians.id,
+ (MAX(medians.value)+MIN(medians.value))/2 as median
+FROM
+(
+SELECT cs.id, value FROM
+ (SELECT id, value,
+  (SELECT COUNT(1) FROM machinescore ms2
+   WHERE ms2.value < ms.value
+      AND ms2.id = ms.id) as ls,
+  (SELECT COUNT(1) FROM machinescore ms2
+   WHERE ms2.value <= ms.value
+      AND ms2.id = ms.id) as lse
+  FROM machinescore ms) cs
+JOIN
+ (SELECT id, COUNT(1)*.5 as cn
+  FROM machinescore GROUP BY id) cc
+ON
+ cs.id = cc.id
+WHERE
+ cn BETWEEN ls AND lse
+) as medians
+GROUP BY id
+);
+
+CREATE OR REPLACE VIEW machinerecentstatus AS (
+SELECT
+  m.id,
+  m.name,
+  m.abbreviation,
+  m.ipdb_id,
+  m.location_id,
+  ms1.id as machinestatus_id,
+  ms1.status,
+  ms1.game_id,
+  ms1.recorder_id,
+  ms1.updated_at,
+  mmx.min,
+  mmx.max,
+  mmn.median
+FROM machine m
+LEFT OUTER JOIN machinestatus ms1
+  ON (m.id = ms1.machine_id)
+LEFT OUTER JOIN machinestatus ms2
+  ON (m.id = ms2.machine_id
+      AND (ms1.updated_at < ms2.updated_at
+           OR ms1.id IS NULL AND ms2.id IS NULL))
+LEFT OUTER JOIN machinescoreminmax mmx
+  ON (m.id = mmx.id)
+LEFT OUTER JOIN machinescoremedian mmn
+  ON (m.id = mmn.id)
+WHERE ms2.id IS NULL
+);
+
+
+
 /*
 CREATE OR REPLACE VIEW `gamePublicVoter` AS (
 SELECT
@@ -292,10 +422,47 @@ INSERT INTO poll (id, title, state, votelimit, created_at, updated_at)
 */
 
 LOCK TABLES `location` WRITE;
-INSERT INTO `location` VALUES (1,'The Office','1536 Moffett St., Salinas, CA 93905','<no contact supplied>','No notes.',1500549133,1500549133);
+INSERT INTO `location` VALUES (1,'MFP','1536 Moffett St., Salinas, CA 93905','Cary Carmichael','No notes.',1500549133,1500549133);
 UNLOCK TABLES;
 
 LOCK TABLES `machine` WRITE;
-INSERT INTO `machine` VALUES (1,'2001','2001',2697,1,1500550472,1500550472),(2,'Attack From Mars','AFM',3781,1,1500550485,1500550485),(3,'Batman (Stern, Pro)','BDK',5583,1,1500550485,1500550485),(4,'Big Buck Hunter Pro','BBH',5513,1,1500550485,1500550485),(5,'Congo','CONGO',3780,1,1500550485,1500550485),(6,'Creature from the Black Lagoon','CFTBL',588,1,1500550485,1500550485),(7,'Cue Ball Wizard','CBW',610,1,1500550485,1500550485),(8,'Dirty Harry','DH',684,1,1500550485,1500550485),(9,'Eight Ball Deluxe','EBD',762,1,1500550485,1500550485),(10,'Fireball II','FB2',854,1,1500550485,1500550485),(11,'Harley-Davidson, (2nd Edition)','HD',4455,1,1500550485,1500550485),(12,'Indiana Jones','IJ08',5306,1,1500550485,1500550485),(13,'NBA Fastbreak','NBAF',4023,1,1500550485,1500550485),(14,'Pirates of the Caribbean','POTC',5163,1,1500550485,1500550485),(15,'Playboy','PB',1823,1,1500550485,1500550485),(16,'Road Kings','RK',1970,1,1500550485,1500550485),(17,'Spider-Man.','SM',5237,1,1500550485,1500550485),(18,'Star Trek (Starfleet Pro)','ST13',6044,1,1500550485,1500550485),(19,'The Amazing Spider-Man','AS',2285,1,1500550485,1500550485),(20,'The Getaway: High Speed II','HS2',1000,1,1500550485,1500550485);
+INSERT INTO `machine` VALUES (1,'2001','2001',2697,1,1500550472,1500550472),(2,'Attack From Mars','AFM',3781,1,1500550485,1500550485),(3,'Batman (Stern, Pro)','BDK',5583,1,1500550485,1500550485),(4,'Big Buck Hunter Pro','BBH',5513,1,1500550485,1500550485),(5,'Congo','CONGO',3780,1,1500550485,1500550485),(6,'Creature from the Black Lagoon','CFTBL',588,1,1500550485,1500550485),(7,'Cherry Bell','CB',3070,1,1500550485,1503223533),(8,'Dirty Harry','DH',684,1,1500550485,1500550485),(9,'Eight Ball Deluxe','EBD',762,1,1500550485,1500550485),(10,'Fireball II','FB2',854,1,1500550485,1500550485),(11,'Harley-Davidson, (2nd Edition)','HD',4455,1,1500550485,1500550485),(12,'Indiana Jones','IJ08',5306,1,1500550485,1500550485),(13,'NBA Fastbreak','NBAF',4023,1,1500550485,1500550485),(14,'Pirates of the Caribbean','POTC',5163,1,1500550485,1500550485),(15,'Playboy','PB',1823,1,1500550485,1500550485),(16,'Road Kings','RK',1970,1,1500550485,1500550485),(17,'Spider-Man','SM',5237,1,1500550485,1503115095),(18,'Star Trek (Starfleet Pro)','ST13',6044,1,1500550485,1500550485),(19,'Disney TRON Legacy','DTL',5682,1,1500550485,1503223888),(20,'The Getaway: High Speed II','HS2',1000,1,1500550485,1500550485),(21,'Godzilla','GZ',4443,1,1503115181,1503115181),(22,'Game of Thrones (Pro)','GoT',6307,1,1503115219,1503115219),(23,'Aerosmith (Pro)','AERO',6370,1,1503115260,1503115260),(24,'Aquarius','AQ',79,1,1503223350,1503223350),(25,'Dealer\'s Choice','DC',649,1,1503223589,1503223589),(26,'Ghostbusters (Premium)','GB',6333,1,1503223658,1503223688),(27,'Old Chicago','OC',1704,1,1503223744,1503223744),(28,'WHO dunnit','WD?',3685,1,1503224099,1503224099);
 UNLOCK TABLES;
+
+INSERT INTO `season` VALUES (1,2,'BAPA 2017 Spring Season',1503120302,1503120302);
+
+INSERT INTO seasonuser (id, notes, matchpoints, game_count, opponent_count, match_count, dues, user_id, season_id)
+  VALUES
+(1, "", 258, 44, 33, 11, 1, 44, 1),
+(2, "", 240, 44, 33, 11, 1, 37, 1),
+(3, "", 238, 48, 36, 12, 1, 32, 1),
+(4, "", 218, 48, 36, 12, 1, 31, 1),
+(5, "", 207, 48, 36, 12, 1, 46, 1),
+(6, "", 186, 40, 30, 10, 1, 54, 1),
+(7, "", 167, 36, 27, 9, 1, 34, 1),
+(8, "", 163, 40, 30, 10, 1, 55, 1),
+(9, "", 162, 36, 27, 9, 1, 33, 1),
+(10, "", 162, 40, 30, 10, 1, 40, 1),
+(11, "", 156, 40, 30, 10, 1, 35, 1),
+(12, "", 147, 40, 30, 10, 1, 52, 1),
+(13, "", 139, 40, 30, 10, 1, 49, 1),
+(14, "", 137, 32, 24, 8, 1, 1, 1),
+(15, "", 136, 36, 27, 9, 1, 41, 1),
+(16, "", 134, 36, 27, 9, 1, 57, 1),
+(17, "", 132, 40, 30, 10, 1, 43, 1),
+(18, "", 129, 28, 21, 7, 1, 45, 1),
+(19, "", 128, 40, 30, 10, 1, 53, 1),
+(20, "", 119, 32, 24, 8, 1, 51, 1),
+(21, "", 119, 40, 30, 10, 1, 47, 1),
+(22, "", 113, 32, 24, 8, 1, 59, 1),
+(23, "", 110, 24, 18, 6, 1, 48, 1),
+(24, "", 101, 28, 21, 7, 1, 39, 1),
+(25, "", 101, 32, 24, 8, 1, 42, 1),
+(26, "", 98, 24, 18, 6, 1, 56, 1),
+(27, "", 96, 24, 18, 6, 1, 38, 1),
+(28, "", 96, 20, 15, 5, 1, 28, 1),
+(29, "", 91, 24, 18, 6, 1, 50, 1),
+(30, "", 79, 20, 15, 5, 1, 58, 1),
+(31, "", 72, 20, 15, 5, 1, 30, 1);
+
 

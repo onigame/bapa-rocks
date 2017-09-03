@@ -93,7 +93,7 @@ class Match extends \yii\db\ActiveRecord
       }
     }
 
-    public function getPlayerCount() {
+    public function getStartingPlayerCount() {
       if ($this->format == 1) return 2;
       if ($this->format == 3) return 3;
       if ($this->format == 4) return 4;
@@ -134,6 +134,10 @@ class Match extends \yii\db\ActiveRecord
         return $this->hasMany(Game::className(), ['match_id' => 'id']);
     }
 
+    public function getMachinesPlayed() {
+        return $this->hasMany(Machine::className(), ['id' => 'machine_id'])->via('games');
+    }
+
     public function getCurrentGame() {
         $games = $this->games;
         foreach ($games as $game) {
@@ -156,12 +160,22 @@ class Match extends \yii\db\ActiveRecord
         return $answer;
     }
 
+    public function getMaximumGameCount() {
+      if ($this->format == 4) return 4;
+      if ($this->format == 3) return 5;
+      if ($this->format == 7) return 7;
+      if ($this->format == 5) return 5;
+      if ($this->format == 1) return 3;
+      throw new \yii\base\UserException("Unrecognized Match Format");
+    }
+
     public function getGamesAllCompleted() {
         // if there's a game in progress, we're not all completed.
         if ($this->currentGame != null) return false;
   
-        // regular weeks have 4 games.
-        if ($this->format == 3 or $this->format == 4) return ($this->gameCount == 4);
+        // regular weeks have 4 games for 4 players, 5 games for 3 players.
+        if ($this->format == 4) return ($this->gameCount == $this->maximumGameCount);
+        if ($this->format == 3) return ($this->gameCount == $this->maximumGameCount);
 
         // otherwise, we need to count wins.
         $winsneeded = 2;
@@ -175,6 +189,7 @@ class Match extends \yii\db\ActiveRecord
         }
         $games = $this->games;
         foreach ($games as $game) {
+          if ($game->status == 5) continue; // skip dq'd games
           $wincount[$game->winnerId]++;
           if ($wincount[$game->winnerId] == $winsneeded) return true;
         }
@@ -191,7 +206,7 @@ class Match extends \yii\db\ActiveRecord
 
     public function getSeason()
     {
-        return $this->session->season;
+        return $this->hasOne(Season::className(), ['id' => 'season_id'])->via('session');
     }
 
     public function getBracket() {
@@ -209,33 +224,36 @@ class Match extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getMatchusers()
-    {
-        return $this->hasMany(MatchUser::className(), ['match_id' => 'id']);
+    public function getMatchusers() {
+      return $this->hasMany(MatchUser::className(), ['match_id' => 'id']);
     }
 
-    public function getUsers() {
+    public function getSessionusers() {
       $result = [];
-      foreach ($this->matchusers as $matchuser) {
-        $result[] = $matchuser->user;
+      foreach ($this->users as $user) {
+        $result[] = SessionUser::find()->where(['session_id' => $this->session->id, 'user_id' => $user->id])->one();
       }
       return $result;
     }
 
+    public function getUsers() {
+      return $this->hasMany(Player::className(), ['id' => 'user_id'])->via('matchusers');
+    }
+
     public function getOpponentNames() {
       $names = [];
-      foreach ($this->matchusers as $matchuser) {
-        if ($matchuser->user_id != Yii::$app->user->id) $names[] = $matchuser->user->name;
+      foreach ($this->users as $player) {
+        if ($player->user_id != Yii::$app->user->id) $names[] = $player->name;
       }
       return join(", ", $names);
     }
 
-    public function getNamedPlayerCount() {
+    public function getCurrentPlayerCount() {
         return count($this->matchusers);
     }
 
     public function getPlayersFilled() {
-      return ($this->playerCount == $this->namedPlayerCount);
+      return ($this->startingPlayerCount <= $this->currentPlayerCount);
     }
 
     public function getIsPlayoffs() {
@@ -284,14 +302,14 @@ class Match extends \yii\db\ActiveRecord
         $actualcount = count($names);
 
         $namelist = join(", ", $names);
-        if ($actualcount == $this->playerCount) {
+        if ($actualcount >= $this->startingPlayerCount) {
           return $namelist;
         }
         if ($actualcount == 0) {
           return "(empty)";
         }
-        if ($actualcount < $this->playerCount) {
-          $namelist .= " (+". ($this->playerCount - $actualCount) . ")";
+        if ($actualcount < $this->startingPlayerCount) {
+          $namelist .= " (+". ($this->startingPlayerCount - $actualCount) . ")";
         }
         return $namelist;
     }
@@ -319,6 +337,14 @@ class Match extends \yii\db\ActiveRecord
                 ],
             ],
         ];
+    }
+
+    // have we already played the machine in question?
+    public function alreadyPlayed($machine_in_q) {
+      foreach ($this->machinesPlayed as $machine) {
+        if ($machine->id == $machine_in_q->id) return true;
+      }
+      return false;
     }
 
     // starts the match.  Should be called when the player roster fills up,
@@ -365,6 +391,20 @@ class Match extends \yii\db\ActiveRecord
       return true;
     }
 
+    public function eligibleFor3Bonus() {
+      if (!$this->gamesallCompleted) {
+        throw new \yii\base\UserException("eligibleFor3Bonus called when match not completed");
+      }
+      $gamecount = 0;
+      foreach ($this->games as $game) {
+        if ($game->status == 5) continue; // skip disqualified games
+        if ($game->playerCount != 3) return false;
+        $gamecount++;
+      }
+      if ($gamecount != 5) return false;
+      return true;
+    }
+
     // completes the Match when all games are done.
     public function completeMatch() {
       Yii::trace("completeMatch ".$this->code);
@@ -375,27 +415,51 @@ class Match extends \yii\db\ActiveRecord
       $match = $this;
       $match::getDb()->transaction(function($db) use ($match) {
         $matchusers = $match->matchusers;
-        $mps = [];
+
+        // Figure out if any $matchusers should get bonus points.
+        if ($this->eligibleFor3Bonus) { 
+          foreach ($matchusers as $matchuser) {
+            $pts = $matchuser->matchpoints;
+            if ($pts == 15) {
+              $matchuser->bonuspoints = 1;
+              if (!$matchuser->save()) {
+                Yii::error($matchuser->errors);
+                throw new \yii\base\UserException("Error saving matchuser at maybeStartGame");
+              }
+            }
+            if ($pts == 1) {
+              $matchuser->bonuspoints = -1;
+              if (!$matchuser->save()) {
+                Yii::error($matchuser->errors);
+                throw new \yii\base\UserException("Error saving matchuser at maybeStartGame");
+              }
+            }
+          }
+        }
+        
+        // Now to give matchranks.
         foreach ($matchusers as $matchuser) {
-          $sum = Score::find()->joinWith(['game'])
-                              ->where(['game.match_id' => $match->id,
-                                       'user_id' => $matchuser->user_id,
-                                     ])
-                              ->sum('matchpoints');
-          $mps[$matchuser->id] = $sum;
+          $mps[$matchuser->id] = $matchuser->matchpoints;
         }
         usort($matchusers, function ($a, $b) use ($mps) {
           return $mps[$b->id] - $mps[$a->id]; // safe because matchpoints are integers
         });
 
+        $last_mp = -20; // impossible mp
+        $matchrank_for_tie = -1;
         $matchrank = 0;
         foreach ($matchusers as $matchuser) {
           $matchrank++;
-          $matchuser->matchpoints = $mps[$matchuser->id];
-          $matchuser->matchrank = $matchrank;
-          // bonus-demerit for 3-player groups
-          if ($match->format == 3 && $mps[$matchuser->id] == 15) $matchuser->matchpoints = 16;
-          if ($match->format == 3 && $mps[$matchuser->id] == 1) $matchuser->matchpoints = 0;
+
+          if ($mps[$matchuser] != $last_mp) {
+            // not a tie, get normal rank
+            $matchuser->matchrank = $matchrank;
+            $matchrank_for_tie = $matchrank;
+            $last_mp = $mps[$matchuser];
+          } else {
+            $matchuser->matchrank = $matchrank_for_tie;
+          }
+
           if (!$matchuser->save()) {
             Yii::error($matchuser->errors);
             throw new \yii\base\UserException("Error saving matchuser at maybeStartGame");
@@ -413,7 +477,8 @@ class Match extends \yii\db\ActiveRecord
     }
 
     public function getResults() {
-      $matchusers = MatchUser::find()->where(['match_id' => $this->id])->orderBy(['matchpoints' => SORT_DESC])->all();
+      $matchusers = MatchUser::find()->where(['match_id' => $this->id])->all();
+      usort($matchusers, ['app\models\MatchUser', 'compareMatchpoints']);
       $strings = [];
       foreach ($matchusers as $matchuser) {
         $strings[] = $matchuser->user->name . " = (" . $matchuser->matchpoints . " pts)";
@@ -428,7 +493,8 @@ class Match extends \yii\db\ActiveRecord
         throw new \yii\base\UserException("playoffAdvance called illegally");
       }
 
-      $matchusers = MatchUser::find()->where(['match_id' => $this->id])->orderBy(['matchpoints' => SORT_DESC])->all();
+      $matchusers = MatchUser::find()->where(['match_id' => $this->id])->all();
+      usort($matchusers, ['app\models\MatchUser', 'compareMatchpoints']);
       $winner_id = $matchusers[0]->user_id;
       $loser_id = $matchusers[1]->user_id;
 
@@ -451,7 +517,7 @@ class Match extends \yii\db\ActiveRecord
         $seasonuser->playoff_rank = $matches[1];
         $seasonuser->save();
       } else {
-        if ($winnermatch->namedPlayerCount >= 2) {
+        if ($winnermatch->currentPlayerCount >= 2) {
           Yii::warning(join(", ", [$winnermatch->id, $winner_id, $winnercode, $winnerseed]));
           throw new \yii\base\UserException("trying to add player to full match");
         }
@@ -465,7 +531,7 @@ class Match extends \yii\db\ActiveRecord
         $seasonuser->playoff_rank = $matches[1];
         $seasonuser->save();
       } else {
-        if ($losermatch->namedPlayerCount >= 2) {
+        if ($losermatch->currentPlayerCount >= 2) {
           Yii::warning(join(", ", $winnermatch->id, $winner_id, $winnercode, $winnerseed));
           throw new \yii\base\UserException("trying to add player to full match");
         }
@@ -485,7 +551,7 @@ class Match extends \yii\db\ActiveRecord
         $matchuser->starting_playernum = -1;
         throw new \yii\base\UserException("Bad playernum -- " . $seed . " is not in " . $code);
       }
-      $matchuser->matchpoints = 0;
+      $matchuser->bonuspoints = 0;
       $matchuser->game_count = 0;
       $matchuser->user_id = $user_id;
       $matchuser->match_id = $this->id;

@@ -18,7 +18,7 @@ class MatchUserSearch extends MatchUser
     public function rules()
     {
         return [
-            [['id', 'starting_playernum', 'matchpoints', 'game_count', 'opponent_count', 'match_id', 'user_id', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'starting_playernum', 'bonuspoints', 'game_count', 'opponent_count', 'match_id', 'user_id', 'created_at', 'updated_at'], 'integer'],
         ];
     }
 

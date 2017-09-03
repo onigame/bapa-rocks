@@ -147,6 +147,14 @@ class Game extends \yii\db\ActiveRecord
                     ->orderBy(['playernumber' => SORT_ASC]);
     }
 
+    public function getPlayers() {
+      return $this->hasMany(Player::className(), ['id' => 'user_id'])->via('scores');
+    }
+
+    public function getPlayerCount() {
+       return count($this->scores);
+    }
+
     public function getStatusString() {
       if ($this->status == 0) return ("Awaiting<br>Master Selection");
       if ($this->status == 1) return ("Awaiting<br>Machine/Player-Order Selection");
@@ -154,6 +162,7 @@ class Game extends \yii\db\ActiveRecord
       if ($this->status == 3) return ("In Progress:<br>".$this->machine->name);
       if ($this->status == 4) return ("Completed");
       if ($this->status == 5) return ("Disqualified");
+      if ($this->status == 6) return ("Awaiting Available Machine");
       return "Unknown Status";
     }
 
@@ -265,22 +274,84 @@ class Game extends \yii\db\ActiveRecord
       }
     }
 
+    public function startOnMachine($machine) {
+      $this->machine_id = $machine->id;
+      $this->status = 3;
+
+      $mrs = $this->machine->machinerecentstatus;
+      if ($mrs->status != 1) {
+        throw new \yii\base\UserException("startOnMachine called when Machine is not available.");
+      }
+
+      $machinestatus = new MachineStatus;
+      $machinestatus->status = 2; // in play
+      $machinestatus->game_id = $game->id;
+      $machinestatus->machine_id = $mrs->id;
+      $machinestatus->recorder_id = Yii::$app->user->id;
+
+      $game = $this;
+      $game::getDb()->transaction(function($db) use ($game, $machinestatus) {
+        if (!$game->isPlayoffs) {
+          $game->createScores($machinestatus->machine_id);
+        }
+        if (!$game->save() || !$machinestatus->save()) {
+          Yii::error($game->errors);
+          Yii::error($machinestatus->errors);
+          throw new \yii\base\UserException("Error saving machinestatus or game in startOnMachine");
+        }
+      });
+    }
+
+    public function createScores($machine_id) {
+      if ($this->session->type == 2) {
+        throw new \yii\base\UserException("createScores cannot be called for Playoffs");
+      }
+      $players = $this->match->sessionUsers;
+      // remove latecomers if we're in game 1 or 2
+      if ($this->number <= 2) {
+        foreach ($players as $key => $player) {
+          if ($player->status == 2) unset($players[$player]);
+        }
+      }
+      usort($players, ['app\models\SessionUser', 'byPreviousPerformance']);
+      // now to assign player numbers.
+      $count = count($players);
+      if ($count == 3 && $this->number == 1) {      $playernumbers = [2,1,3]; }
+      else if ($count == 3 && $this->number == 2) { $playernumbers = [2,3,1]; }
+      else if ($count == 3 && $this->number == 3) { $playernumbers = [1,3,2]; }
+      else if ($count == 3 && $this->number == 4) { $playernumbers = [3,1,2]; }
+      else if ($count == 3 && $this->number == 5) { $playernumbers = [1,2,3]; }
+      else if ($count == 4 && $this->number == $this->match->maximumGameCount) {   $playernumbers = [1,2,3,4]; }
+      else if ($count == 4 && $this->number == $this->match->maximumGameCount-1) { $playernumbers = [2,4,1,3]; }
+      else if ($count == 4 && $this->number == $this->match->maximumGameCount-2) { $playernumbers = [3,1,2,4]; }
+      else if ($count == 4 && $this->number == 1) { $playernumbers = [4,3,2,1]; } 
+      else {  throw new \yii\base\UserException("Impossible playercount/gamenumber combo at createScores"); }
+
+      $game = $this;
+      $game::getDb()->transaction(function($db) use ($game, $players, $playernumbers) {
+        $index = 0;
+        foreach ($players as $sessionuser) {
+          $s = new Score();
+          $s->playernumber = $playernumbers[$index];
+          $s->forfeit = 0;
+          $s->verified = 0;
+          $s->game_id = $game->id;
+          $s->user_id = $sessionuser->user_id;
+          if (!$s->save()) {
+            Yii::error($s1->errors);
+            throw new \yii\base\UserException("Error saving in createScores");
+          }
+          $index++;
+        }
+      });
+    }
+
     public function startOrEnqueueGame() {
       $game = $this;
       $game::getDb()->transaction(function($db) use ($game) {
         $mrs = $game->machine->machinerecentstatus;
         if ($mrs->status == 1) {
-          $machinestatus = new MachineStatus;
-          $machinestatus->status = 2; // in play
-          $machinestatus->game_id = $game->id;
-          $machinestatus->machine_id = $mrs->id;
-          $machinestatus->recorder_id = Yii::$app->user->id;
-          $game->status = 3; // in progress
-          if (!$game->save() || !$machinestatus->save()) {
-            Yii::error($game->errors);
-            Yii::error($machinestatus->errors);
-            throw new \yii\base\UserException("Error saving machinestatus or game in startOrEnqueueGame");
-          }
+          $game->startOnMachine($game->machine);
         } else if ($mrs->status == 2) {
           // need to add to queue
           $qg = new QueueGame();
@@ -298,21 +369,40 @@ class Game extends \yii\db\ActiveRecord
 
     public function finishGame() {
       // we assume that all checks are done and there won't be errors.
-      // we ALSO assume that there aren't any tie games.  If there are,
-      // results among tied players will be indeterminate.
       $game = $this;
       $game::getDb()->transaction(function($db) use ($game) {
+        $lastvalue = -20; // no one will get this score, right?
         $scores = Score::find()->where(['game_id' => $game->id])->orderBy(['value' => SORT_DESC])->all();
-        $pcount = $game->match->playerCount;
-        $cur_mp = $pcount;
-        if ($pcount == 2) $cur_mp = 1;
+        $pcount = $game->playerCount;
+
+        $cur_mp_if_not_tied = $pcount;
+        $cur_mp_if_tied = $pcount + 1;
+
+        if ($pcount == 2) {
+          $cur_mp_if_not_tied = 1;
+        } else {
+          $cur_mp_if_not_tied = $pcount;
+          $cur_mp_if_tied = $pcount + 1;
+        }
+
         foreach ($scores as $score) {
-          $score->matchpoints = $cur_mp;
+          if ($score->value == $lastvalue) {
+            if ($pcount == 2) {
+              Yii::error($score);
+              throw new \yii\base\UserException("Tied games are not allowed in 2-player".$score->value);
+            } else {
+              $score->matchpoints = $cur_mp_if_tied;
+            }
+          } else {
+            $lastvalue = $score->value;
+            $score->matchpoints = $cur_mp_if_not_tied;
+            $cur_mp_if_tied = $cur_mp_if_not_tied;
+          }
+          $cur_mp_if_not_tied--;
           if (!$score->save()) {
             Yii::error($score->errors);
             throw new \yii\base\UserException("Error saving score at finishGame");
           }
-          $cur_mp--;
         }
         $game->status = 4;
         if (!$game->save()) {
@@ -330,28 +420,30 @@ class Game extends \yii\db\ActiveRecord
 
         // now we should see if anyone is waiting in the queue for the machine.
         $game->machine->maybeStartQueuedGame();
+        // then, if the machine is still available, then see if there's a regular season game waiting for it.
+        $game->machine->maybeStartRegularSeasonGame();
         // and let's start a new game (or end the match).
         $game->match->maybeStartGame();
       });
     }
 
     public function getSession() {
-      return $this->match->session;
+      return $this->hasOne(Session::className(), ['id' => 'session_id'])->via('match');
     }
 
     public function getSeason() {
-      return $this->session->season;
+      return $this->hasOne(Season::className(), ['id' => 'season_id'])->via('session');
     }
 
     public function getMatchUsers() {
-      return MatchUser::find()->where(['match_id' => $this->match_id])->all();
+      return $this->hasMany(MatchUser::className(), ['match_id' => 'id'])->via('match');
     }
 
     public function getSeasonUsers() {
-      $matchusers = $this->matchUsers;
+      $users = $this->users;
       $result = [];
-      foreach ($matchusers as $matchuser) {
-        $result[] = SeasonUser::find()->where(['user_id' => $matchuser->user_id, 
+      foreach ($users as $user) {
+        $result[] = SeasonUser::find()->where(['user_id' => $user->id, 
                                                'season_id' => $this->season])->one();
       }
       return $result;
@@ -382,8 +474,8 @@ class Game extends \yii\db\ActiveRecord
 
       // In case of tie, player with better current seed is higher.
       $matchusers = $this->matchUsers;
-      $seed0 = EliminationGraph::getPlayerSeedFor($this->match->code, $matchusers[0]->starting_playernum);
-      $seed1 = EliminationGraph::getPlayerSeedFor($this->match->code, $matchusers[1]->starting_playernum);
+      $seed0 = Eliminationgraph::getPlayerSeedFor($this->match->code, $matchusers[0]->starting_playernum);
+      $seed1 = Eliminationgraph::getPlayerSeedFor($this->match->code, $matchusers[1]->starting_playernum);
       if ($seed0 < $seed1) return $matchusers[0]->user_id;
       if ($seed0 > $seed1) return $matchusers[1]->user_id;
       throw new \yii\base\UserException("2 players have same seed");
@@ -400,8 +492,8 @@ class Game extends \yii\db\ActiveRecord
 
       // In case of tie, player with better current seed is higher.
       $matchusers = $this->matchUsers;
-      $seed0 = EliminationGraph::getPlayerSeedFor($this->match->code, $matchusers[0]->starting_playernum);
-      $seed1 = EliminationGraph::getPlayerSeedFor($this->match->code, $matchusers[1]->starting_playernum);
+      $seed0 = Eliminationgraph::getPlayerSeedFor($this->match->code, $matchusers[0]->starting_playernum);
+      $seed1 = Eliminationgraph::getPlayerSeedFor($this->match->code, $matchusers[1]->starting_playernum);
       if ($seed0 > $seed1) return $matchusers[0]->user_id;
       if ($seed0 < $seed1) return $matchusers[1]->user_id;
       throw new \yii\base\UserException("2 players have same seed");
@@ -424,8 +516,16 @@ class Game extends \yii\db\ActiveRecord
         }
         return;
       }
-      Yii::error("Machine autoselection isn't implemented yet.");
-      throw new \yii\base\UserException("Machine autoselection not implemented yet");
+
+      foreach ($this->location->availableMachines as $machine) {
+        if ($this->alreadyPlayed($machine)) continue;
+        $this->startOnMachine($machine);
+        return;  // stop at the first machine found.
+      }
+
+      // if we haven't found a machine, set our status to "waiting".
+      $this->status = 6;
+      $this->save();
     }
 
     public function getIsPlayoffs() {

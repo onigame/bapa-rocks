@@ -14,8 +14,18 @@ use kartik\grid\GridView;
         'dataProvider' => $machineData,
         'responsiveWrap' => false,
         'columns' => [
-            'name',
+            ['attribute' => 'name', 'format' => 'raw', 'value' => function ($model, $key, $index, $column) { 
+               return Html::a($model->name,
+                 "http://www.ipdb.org/machine.cgi?id=" . $model->ipdb_id,
+                 [
+                   "target" => "_blank",
+                 ]
+               );
+            } ],
 //            ['attribute' => 'ipdb_link', 'label' => 'IPDB'],
+            ['attribute' => 'min', 'label' => 'Lowest', 'format' => 'decimal'],
+            ['attribute' => 'median', 'label' => 'Median', 'format' => 'decimal'],
+            ['attribute' => 'max', 'label' => 'Highest', 'format' => 'decimal'],
             ['attribute' => 'string', 'label' => 'Status'],
             ['attribute' => 'machine.queueLength', 'header' => '# Groups<br>Waiting', 'format' => 'html'],
             ['attribute' => 'currentMatchInfo', 'label' => 'Current Match', 'format' => 'html'],

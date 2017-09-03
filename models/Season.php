@@ -76,6 +76,12 @@ class Season extends \yii\db\ActiveRecord
         return $this->hasMany(Session::className(), ['season_id' => 'id']);
     }
 
+    public function getViewButton() {
+    }
+
+    public function getCreatePlayoffsButton() {
+    }
+
     /**
      * @inheritdoc
      * @return SeasonQuery the active query used by this AR class.

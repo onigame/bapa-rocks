@@ -13,30 +13,55 @@ class Player extends User {
     return $this->profile->name;
   }
 
+  public function getMatches() {
+    return $this->hasMany(\app\models\Match::className(), ['id' => 'match_id'])
+                ->viaTable('matchuser', ['user_id' => 'id']);
+  }
+
+  public function getSessions() {
+    return $this->hasMany(\app\models\Session::className(), ['id' => 'session_id'])
+                ->viaTable('sessionuser', ['user_id' => 'id']);
+  }
+
+  public function getSeasons() {
+    return $this->hasMany(\app\models\Season::className(), ['id' => 'season_id'])
+                ->viaTable('seasonuser', ['user_id' => 'id']);
+  }
+
   public function getStatusHtml() {
     // is the player currently in a game?
     $results = Playoffresults::find()
                  ->where(["user_id" => $this->id])->one();
     if ($results != NULL) {
-      $answer = "<p>You are playing in " . $results->session->season->name . " " 
+      if ($results->session->status == 2) {
+        $answer = "<p>You last played in " . $results->session->season->name . " " 
                     . $results->session->name 
                     . " at " . $results->session->location->name
                     . ".</p>";
+      } else {
+        $answer = "<p>You are playing in " . $results->session->season->name . " " 
+                    . $results->session->name 
+                    . " at " . $results->session->location->name
+                    . ".</p>";
+      }
       if ($results->match_status == 3) {
         $answer .= "<p>";
         $answer .= "You are done with playoffs.  Your final ranking was ";
         $nf = new \NumberFormatter('en_US', \NumberFormatter::ORDINAL);
         $answer .= $nf->format($results->seed);
-        $answer .= " in Division";
+        $answer .= " in Division ";
         $answer .= $results->session->playoff_division;
-        $answer .= "</p>";
+        $answer .= ".</p>";
       } else if ($results->match_status == 2) {
         $answer .= "<p>";
         $answer .= "You are currently in match ".$results->match->code." vs. ".$results->match->opponentNames;
         $answer .= ", on Game ".$results->match->gameCount.".";
         $answer .= "</p>";
         $game = $results->match->currentGame;
-        if ($game->status == 0) {
+        if ($game == null) {
+          $answer .= "Your match has no games in it! Try refreshing the page.";
+          $results->match->maybeStartGame();
+        } else if ($game->status == 0) {
           $answer .= Yii::$app->view->render("@app/views/game/_master_selection", ['model' => $game]);
         } else if ($game->status == 1) {
           $answer .= Yii::$app->view->render("@app/views/game/_other_selection", ['model' => $game]);

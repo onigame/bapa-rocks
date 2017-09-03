@@ -14,6 +14,7 @@ use kartik\grid\GridView;
         'dataProvider' => $machineData,
         'pjax' => true,
         'columns' => [
+            'id',
             'name',
 //            ['attribute' => 'ipdb_link', 'label' => 'IPDB'],
             ['attribute' => 'string', 'label' => 'Status'],

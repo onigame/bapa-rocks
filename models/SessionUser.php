@@ -9,6 +9,7 @@ use app\models\PublicSeasonUser;
 use app\models\MachinePool;
 use app\models\MatchUser;
 use app\models\Eliminationgraph;
+use yii\base\Security;
 
 /**
  * This is the model class for table "sessionuser".
@@ -20,6 +21,7 @@ use app\models\Eliminationgraph;
  * @property integer $session_id
  * @property integer $recorder_id
  * @property integer $created_at
+ * @property integer $previous_performance
  * @property integer $updated_at
  *
  * @property User $user
@@ -28,7 +30,10 @@ use app\models\Eliminationgraph;
  */
 class SessionUser extends \yii\db\ActiveRecord
 {
-    private $tiebreaker = 0;
+
+    public function getTiebreaker() {
+      return Yii::$app->getSecurity()->generateRandomString();
+    }
 
     /**
      * @inheritdoc
@@ -45,7 +50,7 @@ class SessionUser extends \yii\db\ActiveRecord
     {
         return [
             [['status', 'user_id', 'session_id', 'recorder_id'], 'required'],
-            [['status', 'user_id', 'session_id', 'recorder_id', 'created_at', 'updated_at'], 'integer'],
+            [['status', 'user_id', 'session_id', 'recorder_id', 'created_at', 'updated_at', 'previous_performance'], 'integer'],
             [['notes'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['session_id'], 'exist', 'skipOnError' => true, 'targetClass' => Session::className(), 'targetAttribute' => ['session_id' => 'id']],
@@ -65,6 +70,7 @@ class SessionUser extends \yii\db\ActiveRecord
             'user_id' => 'User ID',
             'session_id' => 'Session ID',
             'recorder_id' => 'Recorder ID',
+            'previous_performance' => 'Prev. Perf.',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'currentMatchString' => 'Current Match',
@@ -116,13 +122,6 @@ class SessionUser extends \yii\db\ActiveRecord
       return $this->publicSeasonUser->mpg;
     }
 
-    public function getTiebreaker() {
-      if ($this->tiebreaker === 0) {
-        $this->tiebreaker = Security::generateRandomString();
-      }
-      return $this->tiebreaker;
-    }
-
     public function getSelectionThreshold() {
       $machinelist = $this->session->selectableMachines;
       $result = 9999;
@@ -151,7 +150,7 @@ class SessionUser extends \yii\db\ActiveRecord
       }
       return $answer;
     }
-  
+
     public function getUnselectableMachineList() {
       $machinelist = $this->session->unselectableMachines;
       $answer = "";
@@ -160,6 +159,25 @@ class SessionUser extends \yii\db\ActiveRecord
         $answer .= " ";
       }
       return $answer;
+    }
+
+    public function getInfoButton() {
+      return Html::a( "Info",
+                      ["/sessionuser/view", 'id' => $this->id],
+                      [
+                        'title' => 'Info',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm btn-info',
+                      ]
+                    );
+    }
+
+    // for sorting
+    public static function byPreviousPerformance($a, $b) {
+      if ($a->previous_performance == $b->previous_performance)
+        return SeasonUser::byPreviousSeasonRank($a, $b);
+      if ($a->previous_performance < $b->previous_performance) return 1;
+      return -1;
     }
 
     /**

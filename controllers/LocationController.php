@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Location;
+use app\models\Machine;
 use app\models\LocationSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -23,11 +24,16 @@ class LocationController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete'],
+                'only' => ['update', 'create', 'delete', 'add-machine'],
                 'rules' => [
                     [
+                        'allow' => true,
+                        'actions' => ['update', 'create', 'add-machine'],
+                        'roles' => ['Manager'],
+                    ],
+                    [
                         'allow' => false,
-                        'actions' => ['update', 'create', 'delete'],
+                        'actions' => ['update', 'create', 'delete', 'add-machine'],
                         'roles' => ['@'],
                     ],
                 ],
@@ -84,6 +90,19 @@ class LocationController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+
+    public function actionAddMachine($location_id) {
+      $model = new Machine();
+      if ($location_id != null) $model->location_id = $location_id;
+
+      if ($model->load(Yii::$app->request->post()) && $model->save()) {
+          return $this->redirect(['view', 'id' => $location_id]);
+      } else {
+          return $this->render('add-machine', [
+              'model' => $model,
+          ]);
+      }
     }
 
     /**

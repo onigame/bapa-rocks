@@ -17,6 +17,9 @@ use Yii;
  * @property integer $game_id
  * @property integer $recorder_id
  * @property string $updated_at
+ * @property integer $min
+ * @property integer $max
+ * @property double $median
  */
 class Machinerecentstatus extends \yii\db\ActiveRecord
 {
@@ -34,7 +37,9 @@ class Machinerecentstatus extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'ipdb_id', 'location_id', 'machinestatus_id', 'status', 'game_id', 'recorder_id'], 'integer'],
+            [['id', 'ipdb_id', 'location_id', 'machinestatus_id', 
+              'status', 'game_id', 'recorder_id', 'min', 'max'], 'integer'],
+            [['median'], 'double'],
             [['name', 'abbreviation', 'location_id'], 'required'],
             [['updated_at'], 'safe'],
             [['name'], 'string', 'max' => 255],

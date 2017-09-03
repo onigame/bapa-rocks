@@ -75,7 +75,7 @@ class Location extends \yii\db\ActiveRecord
      */
     public function getMachinerecentstatuses()
     {
-        return $this->hasMany(Machinerecentstatus::className(), ['location_id' => 'id']);
+        return $this->hasMany(Machinerecentstatus::className(), ['location_id' => 'id'])->orderBy(['updated_at' => SORT_ASC]);
     }
 
     public function getSelectableMachines() {
@@ -109,6 +109,17 @@ class Location extends \yii\db\ActiveRecord
         }
       }
       return $result;
+    }
+
+    public function touchAvailableMachines() {
+      $machines = shuffle($this->availableMachines);
+      foreach ($machines as $machine) {
+        $ms = new MachineStatus();
+        $ms->status = 1;
+        $ms->machine_id = $machine->machine_id;
+        $ms->recorder_id = Yii::$app->user->id;
+        $ms->save();
+      }
     }
 
     /**
