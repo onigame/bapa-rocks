@@ -84,6 +84,7 @@ class Season extends \yii\db\ActiveRecord
                       ],
                       [
                         'title' => 'View',
+                        'data' => ['pjax' => 0],
                         'class' => 'btn-sm btn-success',
                       ]
                     );
@@ -96,6 +97,7 @@ class Season extends \yii\db\ActiveRecord
                       ],
                       [
                         'title' => 'Create Playoffs',
+                        'data' => ['pjax' => 0],
                         'class' => 'btn-sm btn-success',
                       ]
                     );
