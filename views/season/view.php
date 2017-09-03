@@ -18,9 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?php
-          if (Yii::$app->user->can('GenericManagerPermission')) 
-            echo Html::a('Create Playoffs', ['create-playoffs', 'season_id' => $model->id], ['class' => 'btn btn-success']);
-          echo " ";
+/*
           if (Yii::$app->user->can('GenericManagerPermission')) 
             echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
           echo " ";
@@ -32,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
           ]);
+*/
         ?>
     </p>
 
@@ -39,7 +38,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
-            'status',
+//            'status',
+            'statustext',
             'name',
             'created_at',
             'updated_at',
@@ -48,6 +48,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h3>Sessions</h3>
 
+        <?php
+          if (Yii::$app->user->can('GenericManagerPermission')) {
+            echo "<p>";
+            echo Html::a('Create Regular Session', ['create-session', 'season_id' => $model->id], ['class' => 'btn btn-success']);
+            echo " ";
+            echo Html::a('Create Playoffs', ['create-playoffs', 'season_id' => $model->id], ['class' => 'btn btn-success']);
+            echo "</p>";
+          }
+        ?>
 <?php 
       $sessionData = new yii\data\ActiveDataProvider([
           'query' => app\models\Session::find()->where(['season_id' => $model->id])->orderBy(['date' => SORT_ASC]),

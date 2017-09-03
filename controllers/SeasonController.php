@@ -27,11 +27,11 @@ class SeasonController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['view', 'update', 'create', 'delete', 'create-playoffs'],
+                'only' => ['view', 'update', 'create', 'delete', 'create-playoffs', 'create-session'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['update', 'create', 'create-playoffs'],
+                        'actions' => ['update', 'create', 'create-playoffs', 'create-session'],
                         'roles' => ['Manager'],
                     ],
                     [
@@ -63,6 +63,15 @@ class SeasonController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    /**
+     * Creates a regular session
+     * @param integer $season_id
+     * @return mixed
+     */
+    public function actionCreateSession($season_id) {
+      throw new \yii\base\UserException("Not implemented yet.");
     }
 
     /**
