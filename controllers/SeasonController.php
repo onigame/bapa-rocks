@@ -71,7 +71,25 @@ class SeasonController extends Controller
      * @return mixed
      */
     public function actionCreateSession($season_id) {
-      throw new \yii\base\UserException("Not implemented yet.");
+      $season = Season::findOne($season_id);
+
+      $proposednum = count($season->sessions) + 1;
+
+      $session = new Session();
+      $session->season_id = $season_id;
+      $session->name = "Week ".$proposednum;
+      $session->type = 1;
+      $session->status = 0;
+      $session->location_id = $season->lastLocationId;
+
+      if ($session->load(Yii::$app->request->post()) && $session->save()) {
+        return $this->redirect(['/session/view', 'id' => $session->id]);
+      } else {
+        return $this->render('create_session', [
+          'model' => $session,
+        ]);
+      }
+
     }
 
     /**

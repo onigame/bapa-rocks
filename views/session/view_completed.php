@@ -8,6 +8,7 @@ use yii\grid\GridView;
 /* @var $model app\models\Session */
 
 $this->title = $model->season->name . " : " . $model->name;
+$this->params['breadcrumbs'][] = [ 'label' => 'Seasons', 'url' => '/season' ];
 $this->params['breadcrumbs'][] = [
    'label' => $model->season->name, 'url' => ['/season/view', 'id' => $model->season->id]
 ];

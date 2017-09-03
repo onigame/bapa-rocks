@@ -88,6 +88,12 @@ class Season extends \yii\db\ActiveRecord
         return $this->hasOne(Season::className(), ['id' => 'previous_season_id']);
     }
 
+    public function getLastLocationId() {
+      $sessions = $this->sessions;
+      if ($sessions == null) return null;
+      return $sessions->orderBy(['date' => ORDER_DESC])->one()->id;
+    }
+
     public function getViewButton() {
       return Html::a( 'View',
                       ["/season/view",
