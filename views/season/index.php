@@ -27,7 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'statustext',
             'name',
+            [ 'label' => 'View', 'attribute' => 'ViewButton', 'format' => 'html'],
+            [ 'label' => 'Playoffs', 'attribute' => 'CreatePlayoffsButton', 'format' => 'html'],
 
+/*
             ['class' => 'yii\grid\ActionColumn',
                'template' => '{view} {playoff}',
                'buttons' => [
@@ -43,6 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
                   },
                ],
             ],
+*/
         ],
     ]); ?>
 <?php Pjax::end(); ?></div>

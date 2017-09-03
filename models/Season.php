@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "season".
@@ -77,9 +78,27 @@ class Season extends \yii\db\ActiveRecord
     }
 
     public function getViewButton() {
+      return Html::a( 'View',
+                      ["/season/view",
+                       'id' => $this->id,
+                      ],
+                      [
+                        'title' => 'View',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
     }
 
     public function getCreatePlayoffsButton() {
+      return Html::a( 'Create Playoffs',
+                      ["/season/create-playoffs",
+                       'season_id' => $this->id,
+                      ],
+                      [
+                        'title' => 'Create Playoffs',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
     }
 
     /**
