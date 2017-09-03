@@ -41,6 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //            'status',
             'statustext',
             'name',
+            'previousSeason.name',
             'created_at',
             'updated_at',
         ],

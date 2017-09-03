@@ -51,6 +51,7 @@ class Season extends \yii\db\ActiveRecord
             'status' => 'Status',
             'name' => 'Name',
             'previous_season_id' => 'Previous Season (used for PP calculations)',
+            'previousSeason.name' => 'Previous Season (used for PP calculations)',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
@@ -77,6 +78,14 @@ class Season extends \yii\db\ActiveRecord
     public function getSessions()
     {
         return $this->hasMany(Session::className(), ['season_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPreviousSeason()
+    {
+        return $this->hasOne(Season::className(), ['id' => 'previous_season_id']);
     }
 
     public function getViewButton() {
