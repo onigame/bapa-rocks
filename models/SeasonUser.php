@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "seasonuser".
@@ -139,13 +140,31 @@ class SeasonUser extends \yii\db\ActiveRecord
     }
 
     public function getDues_String() {
+      $result = "";
       if ($this->dues == 0) {
-        return "NOT Paid";
+        $result .= "NOT Paid";
       } else if ($this->dues == 1) {
-        return "Paid";
+        $result .= "Paid";
       } else {
-        return "<ERROR>";
+        $result .= "<ERROR>";
       }
+      if (Yii::$app->user->can('GenericManagerPermission')) {
+        if ($this->dues == 0) {
+          $color = 'btn-success';
+        } else {
+          $color = 'btn-warning';
+        }
+        $result .= " ";
+        $result .= Html::a( "Toggle",
+                      ["/season-user/toggledues", 'id' => $this->id],
+                      [
+                        'title' => 'Go',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm '.$color,
+                      ]
+                    );
+      }
+      return $result;
     }
 
     public function getFive_Weeks_String() {

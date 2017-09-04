@@ -13,12 +13,14 @@ use kartik\grid\GridView;
     <?= GridView::widget([
         'dataProvider' => $regularresultsData,
         'responsiveWrap' => false,
+        'pjax' => true,
         'columns' => [
             'user.name',
 //            ['attribute' => 'sessionUserInfoButton', 'label' => 'Info', 'format' => 'html'],
             ['attribute' => 'match.statusString', 'format' => 'html'],
             ['attribute' => 'match.code', 'header' => 'Match<br>Code'],
             ['attribute' => 'matchGoButton', 'format' => 'html'],
+            ['attribute' => 'seasonUser.dues_string', 'format' => 'html', 'label' => 'Dues'],
         ],
     ]); ?>
 

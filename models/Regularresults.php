@@ -96,6 +96,15 @@ class Regularresults extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getSeasonUser()
+    {
+      if ($this->sessionUser == null) return null;
+      return $this->sessionUser->seasonUser;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getMatch()
     {
         return $this->hasOne(Match::className(), ['id' => 'match_id']);

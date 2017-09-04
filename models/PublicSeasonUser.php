@@ -72,62 +72,6 @@ class PublicSeasonUser extends SeasonUser
         return $labels;
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getSeason()
-    {
-        return $this->hasOne(Season::className(), ['id' => 'season_id']);
-    }
-
-    public function getUser_Name() {
-      return $this->user->profile->name;
-    }
-
-    public function getDues_String() {
-      $result = "";
-      if ($this->dues == 0) {
-        $result .= "NOT Paid";
-      } else if ($this->dues == 1) {
-        $result .= "Paid";
-      } else {
-        return "<ERROR>";
-      }
-      if (Yii::$app->user->can('GenericManagerPermission')) {
-        if ($this->dues == 0) {
-          $color = 'btn-success';
-        } else {
-          $color = 'btn-warning';
-        }
-        $result .= " ";
-        $result .= Html::a( "Toggle",
-                      ["/season-user/toggledues", 'id' => $this->id],
-                      [
-                        'title' => 'Go',
-                        'data-pjax' => '0',
-                        'class' => 'btn-sm '.$color,
-                      ]
-                    );
-      }
-      return $result;
-    }
-
-    public function getFive_Weeks_String() {
-      if ($this->match_count >= 5) {
-        return "Yes";
-      } else {
-        return "No";
-      }
-    }
-
     public function getRecommended_Division() {
       if ($this->dues != 1 or $this->match_count < 5) {
         return "No";
