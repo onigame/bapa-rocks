@@ -115,11 +115,21 @@ class SessionUser extends \yii\db\ActiveRecord
     }
 
     public function getMatchUsers() {
-      return $this->hasMany(MatchUser::className(), ['user_id' => $this->user_id, 'match_id' => 'id'])->via('allSessionMatches');     
+      $results = [];
+      foreach ($this->allSessionMatches as $match) {
+        foreach (Matchuser::find()->where(['match_id' => $match->id, 'user_id' => $this->user_id])->all() as $mu) {
+          $results[] = $mu;
+        }
+      }
+      return $results;
     }
 
     public function getPublicSeasonUser() {
       return PublicSeasonUser::findOne(['user_id' => $this->user_id, 'season_id' => $this->season->id]);     
+    }
+
+    public function getSeasonUser() {
+      return SeasonUser::findOne(['user_id' => $this->user_id, 'season_id' => $this->season->id]);     
     }
 
     public function getSeasonMatchpoints() {

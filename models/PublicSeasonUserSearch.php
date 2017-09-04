@@ -71,7 +71,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
         Yii::trace($this->season_id);
 
         $query->select([
-          'id', 'notes', 'matchpoints', 'game_count', 'opponent_count',
+          'id', 'notes', 'matchpoints', 'game_count', 'opponent_count', 'previous_season_rank', 'previous_season_rank', 'previous_season_rank',
           'match_count', 'dues', 'mpg', 'user_id', 'season_id',
           new Expression('@ID := @ID + 1 AS row_number'),
         ]);

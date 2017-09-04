@@ -73,14 +73,16 @@ $this->params['breadcrumbs'][] = $model->name;
                 }
               ],
             ],
-            'notes',
+            //'notes',
             'matchpoints',
             'game_count',
             'opponent_count',
             'match_count',
-            'mpg',
+            //'mpg',
+            'previousperformance',
+            'previous_season_rank',
             'five_weeks_string',
-            'dues_string',
+            ['attribute' => 'dues_string', 'format' => 'html'],
         ],
     ]); ?>
 
@@ -115,7 +117,7 @@ $this->params['breadcrumbs'][] = $model->name;
             'match_count',
             'mpg',
             'five_weeks_string',
-            'dues_string',
+            ['attribute' => 'dues_string', 'format' => 'html'],
         ],
     ]); ?>
 

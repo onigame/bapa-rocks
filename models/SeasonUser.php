@@ -65,24 +65,25 @@ class SeasonUser extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'notes' => 'Notes',
-            'matchpoints' => 'Matchpoints',
-            'game_count' => 'Game Count',
-            'opponent_count' => 'Opponent Count',
-            'match_count' => 'Match Count',
+            'matchpoints' => 'MP',
+            'game_count' => 'Games',
+            'opponent_count' => 'Opponents',
+            'match_count' => 'Matches',
             'dues' => 'Dues',
             'playoff_division' => 'Playoff Division',
             'playoff_rank' => 'Playoff Rank',
-            'mpg' => 'MPs per Game',
-            'mpo' => 'MPs per Opp.',
-            'previous_season_rank' => 'Prev. Season Rank',
+            'mpg' => 'MP/Game',
+            'mpo' => 'MP/Opp.',
+            'previousperformance' => 'Prev. Perf.',
+//            'previous_season_rank' => 'Prev. Rank',
             'user_id' => 'User ID',
             'season_id' => 'Season ID',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
 
             'user_name' => 'Full Name',
-            'dues_string' => 'Dues Paid?',
-            'five_weeks_string' => 'Played 5 Weeks?',
+            'dues_string' => 'Paid?',
+            'five_weeks_string' => '5 Weeks?',
             'row_number' => 'Row#',
             'recommended_division' => 'Rc.Dv',
         ];
@@ -105,6 +106,16 @@ class SeasonUser extends \yii\db\ActiveRecord
           }
         }
         return $results;
+    }
+
+    public function getCompletedSessionUsers() {
+      $result = $this->sessionUsers;
+      foreach ($result as $key=>$su) {
+        if ($su->session->status != 2) {
+          unset($result[$key]);
+        }
+      }
+      return $result;
     }
 
     /**
@@ -146,7 +157,7 @@ class SeasonUser extends \yii\db\ActiveRecord
     }
 
     public function getPreviousPerformance() {
-      $sus = $this->sessionUsers;
+      $sus = $this->completedSessionUsers;
       if ($sus == null) {
         // they haven't played this season yet, so how'd they do in the playoffs?
         $ps = $this->season->previousSeason;
@@ -157,7 +168,8 @@ class SeasonUser extends \yii\db\ActiveRecord
         return mt_rand(7, 10);
       } else {
         // what was their last score?
-        $mu = $sus->one()->matchUsers->one();
+        $last_su = $sus[0];
+        $mu = $last_su->matchUsers->one();
         return $my->matchpoints();
       }
     }

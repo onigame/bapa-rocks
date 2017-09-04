@@ -6,6 +6,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\base\Security;
 use app\models\SeasonUser;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "seasonuser", with public enhancements.
@@ -67,28 +68,8 @@ class PublicSeasonUser extends SeasonUser
      */
     public function attributeLabels()
     {
-        return [
-            'id' => 'ID',
-            'notes' => 'Notes',
-            'matchpoints' => 'MP',
-            'game_count' => 'Games',
-            'opponent_count' => 'Opponents',
-            'match_count' => 'Matches',
-            'dues' => 'Dues',
-            'playoff_division' => 'Playoff Division',
-            'playoff_rank' => 'Playoff Rank',
-            'mpg' => 'MP/Game',
-            'user_id' => 'User ID',
-            'season_id' => 'Season ID',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
-
-            'user_name' => 'Full Name',
-            'dues_string' => 'Paid?',
-            'five_weeks_string' => '5 Wks?',
-            'row_number' => 'Row#',
-            'recommended_division' => 'Rc.Dv',
-        ];
+        $labels = parent::attributeLabels();
+        return $labels;
     }
 
     /**
@@ -112,13 +93,31 @@ class PublicSeasonUser extends SeasonUser
     }
 
     public function getDues_String() {
+      $result = "";
       if ($this->dues == 0) {
-        return "NOT Paid";
+        $result .= "NOT Paid";
       } else if ($this->dues == 1) {
-        return "Paid";
+        $result .= "Paid";
       } else {
         return "<ERROR>";
       }
+      if (Yii::$app->user->can('GenericManagerPermission')) {
+        if ($this->dues == 0) {
+          $color = 'btn-success';
+        } else {
+          $color = 'btn-warning';
+        }
+        $result .= " ";
+        $result .= Html::a( "Toggle",
+                      ["/season-user/toggledues", 'id' => $this->id],
+                      [
+                        'title' => 'Go',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm '.$color,
+                      ]
+                    );
+      }
+      return $result;
     }
 
     public function getFive_Weeks_String() {
