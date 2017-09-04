@@ -48,8 +48,6 @@ $this->params['breadcrumbs'][] = $model->name;
       );
     ?>
 
-<?php //Pjax::begin(['enablePushState' => false]); ?>
-
     <h2>Included Players</h2>
 
 <?= GridView::widget([
@@ -122,8 +120,51 @@ $this->params['breadcrumbs'][] = $model->name;
     ]); ?>
 
 <?php
+  if (Yii::$app->user->can('GenericManagerPermission')) {
+?>
+    <h2>Other Players not in Season (Managers only)</h2>
+
+<?= GridView::widget([
+        'dataProvider' => $otherdataProvider,
+        'id' => 'playergrid',
+        'columns' => [
+            'id',
+            'name',
+            'profile.ifpa',
+            ['class' => 'yii\grid\ActionColumn',
+              'template' => '{addplayer}',
+              'buttons' => [
+                'addplayer' => function ($url, $mdl, $key) use ($model) {
+                  return Html::a(
+                    'Add Player',
+                    [ 'addotherplayer',
+                      'session_id' => $model->id,
+                      'user_id' => $key,
+                    ],
+                    [
+                      'title' => 'View',
+                      'class' => 'btn-sm btn-success',
+                    ]
+                  );
+                }
+              ],
+            ],
+/*
+            'notes',
+            'matchpoints',
+            'game_count',
+            'opponent_count',
+            'match_count',
+            'mpg',
+            'five_weeks_string',
+            'dues_string',
+*/
+        ],
+    ]); ?>
+
+<?php
+  }
 ?>
 
-<?php //Pjax::end(); ?>
 
 </div>

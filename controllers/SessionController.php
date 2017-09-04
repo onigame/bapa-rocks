@@ -13,10 +13,12 @@ use app\models\PublicSeasonUser;
 use app\models\Eliminationgraph;
 use app\models\Match;
 use app\models\MatchUser;
+use app\models\Player;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\data\ActiveDataProvider;
 
 /**
  * SessionController implements the CRUD actions for Session model.
@@ -70,6 +72,23 @@ class SessionController extends Controller
         ]);
     }
 
+    private function otherdataProvider($id) {
+      $query = Player::find();
+      $dataProvider = new ActiveDataProvider([
+        'query' => $query,
+        'sort' => [
+//          'defaultOrder' => ['name' => SORT_ASC],
+        ]
+      ]);
+
+      $query->select(['id', 'name']);
+
+      $query->from(['user', 'profile']);
+      $query->where(['and', 'profile.user_id=user.id']);
+
+      return $dataProvider;
+    }
+
     /**
      * Displays a single Session model.
      * @param integer $id
@@ -88,10 +107,12 @@ class SessionController extends Controller
                                                 'session_id' => $id,
                                                 'include' => 'not in',
                                                ]);
+          $otherdataProvider = $this->otherdataProvider($id);
           return $this->render('view_notstarted', [
             'model' => $model,
             'indataProvider' => $indataProvider,
             'outdataProvider' => $outdataProvider,
+            'otherdataProvider' => $otherdataProvider,
           ]);
         }
         if ($model->status == 1) {
@@ -120,6 +141,33 @@ class SessionController extends Controller
       $session->status = 2;
       $session->save();
       return $this->redirect(['view', 'id' => $id]);
+    }
+
+    public function actionAddotherplayer($session_id, $user_id) {
+      $sessionUser = SessionUser::find()->where(['session_id' => $session_id,
+                                                 'user_id' => $user_id])
+                                        ->one();
+      if ($sessionUser != null) {
+        throw new \yii\base\UserException("That player is already playing!");
+      }
+
+      $session = Session::findOne($session_id);
+
+      $seasonUser = SeasonUser::find()->where(['season_id' => $session->season->id,
+                                                'user_id' => $user_id])
+                                       ->one();
+      if ($seasonUser == null) {
+        $session->season->addplayer($user_id);
+        $seasonUser = SeasonUser::find()->where(['season_id' => $session->season->id,
+                                                  'user_id' => $user_id])
+                                         ->one();
+        if ($seasonUser == null) {
+          throw new \yii\base\UserException("Creation of SeasonUser failed somehow");
+        }
+      }
+
+      $session->addPlayer($seasonUser);
+      return $this->redirect(Yii::$app->request->referrer);
     }
 
     public function actionJoin($id) {
