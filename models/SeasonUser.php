@@ -157,8 +157,8 @@ class SeasonUser extends \yii\db\ActiveRecord
     }
 
     public function getPreviousPerformance() {
-      $sus = $this->completedSessionUsers;
-      if ($sus == null) {
+      $sus = $this->sessionUsers;
+      if ($sus == null || $sus[0]->previous_performance === null) {
         // they haven't played this season yet, so how'd they do in the playoffs?
         $ps = $this->season->previousSeason;
         if ($ps != null) {
@@ -166,6 +166,8 @@ class SeasonUser extends \yii\db\ActiveRecord
           if ($psu != null && $psu->playoff_division === 'A') return 12;
         }
         return mt_rand(7, 10);
+      } else if ($sus[0]->previous_performance !== null) {
+        return $sus[0]->previous_performance;
       } else {
         // what was their last score?
         $last_su = $sus[0];

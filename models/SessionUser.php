@@ -193,7 +193,7 @@ class SessionUser extends \yii\db\ActiveRecord
     // for sorting
     public static function byPreviousPerformance($a, $b) {
       if ($a->previous_performance == $b->previous_performance)
-        return SeasonUser::byPreviousSeasonRank($a, $b);
+        return SeasonUser::byPreviousSeasonRank($a->seasonuser, $b->seasonuser);
       if ($a->previous_performance < $b->previous_performance) return 1;
       return -1;
     }

@@ -76,7 +76,7 @@ class Season extends \yii\db\ActiveRecord
     public function getSeasonusersByPlayoffRank() {
       $sus = $this->seasonusers;
       foreach ($sus as $key=>$su) {
-        if ($su->playoff_rank == null) {
+        if ($su->playoff_rank === null) {
           unset($sus[$key]);
         }
       }

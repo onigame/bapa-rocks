@@ -138,6 +138,9 @@ class SessionController extends Controller
 
     public function actionFinish($id) {
       $session = $this->findModel($id);
+      if ($session->type == 1) {
+        throw new \yii\base\UserException("Sorry, cannot finish a regular week yet.");
+      }
       $session->status = 2;
       $session->save();
       return $this->redirect(['view', 'id' => $id]);
@@ -310,8 +313,12 @@ class SessionController extends Controller
     public function actionStart($id) {
       $session = $this->findModel($id);
       if ($session->type == 1 ) {
-        Yii::error("Starting regular season is Not implemented yet!");
-        Yii::$app->session->setFlash('error', "Starting regular season is Not implemented yet!");
+        $count = SessionUser::find()->where(['session_id' => $id])->count();
+        if ($count < 6) {
+          Yii::$app->session->setFlash('error', "Need at least 6 players to start regular season week!");
+          return $this->redirect(['view', 'id' => $id]);
+        }
+        $this->makeRegularMatches($id);
         return $this->redirect(['view', 'id' => $id]);
       }
       if ($session->type == 2 ) {
@@ -325,6 +332,90 @@ class SessionController extends Controller
       }
       Yii::$app->session->setFlash('error', "Unrecognized Session Type: " . $session->type);
       return $this->redirect(['view', 'id' => $id]);
+    }
+
+    public static function matchCount($numplayers) {
+      if ($numplayers <= 8) return 2;
+      if ($numplayers <= 11) return 3;
+      return floor(($numplayers+5)/4);
+    }
+
+    public static function groupSize($numplayers, $groupnum) {
+      if ($groupnum == 1 && $numplayers == 8) return 4;
+      if ($groupnum == 1) return 3;
+      if ($groupnum == 2 && $numplayers <= 8) return 4;
+      if ($groupnum == 2 && $numplayers == 11) return 4;
+      if ($groupnum == 2) return 3;
+      if ($groupnum == 3 && $numplayers == 10) return 4;
+      if ($groupnum == 3 && $numplayers == 11) return 4;
+      if ($groupnum == 3 && ($numplayers % 4) == 2) return 4;
+      if ($groupnum == 3) return 3;
+      if ($groupnum == 4 && ($numplayers % 4) == 1) return 4;
+      if ($groupnum == 4 && ($numplayers % 4) == 2) return 4;
+      if ($groupnum == 4) return 3;
+      if ($groupnum == 5 && ($numplayers % 4) == 3) return 3;
+      //if ($groupnum == 5) return 4;
+      return 4;
+    }
+
+    public static function matchNumber($numplayers, $playernum) {
+      $groupnum = 0;
+      $headCount = 0;
+      while ($playernum > $headCount) {
+        $groupnum++;
+        $headCount += SessionController::groupSize($numplayers, $groupnum);
+      }
+      return $groupnum;
+    }
+
+    public function makeRegularMatches($id) {
+      $session = $this->findModel($id);
+      $sessionUsers = SessionUser::find()->where(['session_id' => $id])->all();
+
+      // sort all the players by their previous performance.
+      usort ($sessionUsers, ['app\models\SessionUser', 'byPreviousPerformance']);
+
+      $session::getDb()->transaction(function($db) use ($session, $sessionUsers) {
+        $numplayers = count($sessionUsers);
+        $matchcount = SessionController::matchCount($numplayers);
+        $matches = [];
+        for ($m = 1; $m <= $matchcount; ++$m) {
+          $match = new Match();
+          $match->session_id = $session->id;
+          $match->code = "Group " . $m;
+          $gs = SessionController::groupSize($numplayers, $m);
+          if ($gs == 4) {
+            $match->format = 4; 
+          } else if ($gs == 3) {
+            $match->format = 3;
+          } else {
+            throw new \yii\base\UserException("Weird group size");
+          }
+          $match->status = 0;
+          if (!$match->save()) {
+            Yii::error($match->errors);
+            throw new \yii\base\UserException("Error saving match");
+          }
+          $matches[] = $match;
+        }
+
+        // assign players to their initial match
+        $playernum = 1;
+        foreach ($sessionUsers as $sessionuser) {
+Yii::warning($sessionuser->previous_performance);
+Yii::warning($sessionuser->user->profile->name);
+Yii::warning(SessionController::matchNumber($numplayers, $playernum)-1);
+          $matches[SessionController::matchNumber($numplayers, $playernum)-1]
+            ->addRegularPlayer($sessionuser->user_id);
+          $playernum++;
+        }
+
+        $session->status = 1;
+        if (!$session->save()) {
+          Yii::error($session->errors);
+          throw new \yii\base\UserException("Error saving session when seed = " . $seed);
+        }
+      });
     }
 
     public function makePlayoffMatches($id) {

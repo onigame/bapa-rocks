@@ -6,6 +6,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\Html;
 use app\models\QueueGame;
+use app\models\Location;
 use app\models\MachineStatus;
 
 /**
@@ -104,6 +105,14 @@ class Game extends \yii\db\ActiveRecord
     public function getMachine()
     {
         return $this->hasOne(Machine::className(), ['id' => 'machine_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocation()
+    {
+        return $this->match->location;
     }
 
     /**
@@ -285,7 +294,7 @@ class Game extends \yii\db\ActiveRecord
 
       $machinestatus = new MachineStatus;
       $machinestatus->status = 2; // in play
-      $machinestatus->game_id = $game->id;
+      $machinestatus->game_id = $this->id;
       $machinestatus->machine_id = $mrs->id;
       $machinestatus->recorder_id = Yii::$app->user->id;
 
@@ -518,7 +527,7 @@ class Game extends \yii\db\ActiveRecord
       }
 
       foreach ($this->location->availableMachines as $machine) {
-        if ($this->alreadyPlayed($machine)) continue;
+        if ($this->match->alreadyPlayed($machine)) continue;
         $this->startOnMachine($machine);
         return;  // stop at the first machine found.
       }

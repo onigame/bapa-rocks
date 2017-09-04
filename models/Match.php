@@ -7,6 +7,7 @@ use yii\db\ActiveRecord;
 use yii\helpers\Html;
 use app\models\MatchUser;
 use app\models\Eliminationgraph;
+use app\models\Location;
 
 /**
  * This is the model class for table "match".
@@ -64,6 +65,14 @@ class Match extends \yii\db\ActiveRecord
             'statusString' => "Status",
             'matchusersString' => "Players",
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocation()
+    {
+        return $this->hasOne(Location::className(), ['id' => 'location_id'])->via('session');
     }
 
     public function getGoButton() {
@@ -551,6 +560,21 @@ class Match extends \yii\db\ActiveRecord
         $matchuser->starting_playernum = -1;
         throw new \yii\base\UserException("Bad playernum -- " . $seed . " is not in " . $code);
       }
+      $matchuser->bonuspoints = 0;
+      $matchuser->game_count = 0;
+      $matchuser->user_id = $user_id;
+      $matchuser->match_id = $this->id;
+      $matchuser->opponent_count = 0;
+      if (!$matchuser->save()) {
+        Yii::error($matchuser->errors);
+        throw new \yii\base\UserException("Error saving matchuser when seed = " . $seed);
+      }
+    }
+
+    public function addRegularPlayer($user_id) {
+      Yii::trace(join(', ',['Match.addRegularPlayer ',Player::findOne($user_id)->name]));
+      $matchuser = new MatchUser();
+      $matchuser->starting_playernum = -1; // not used for regular
       $matchuser->bonuspoints = 0;
       $matchuser->game_count = 0;
       $matchuser->user_id = $user_id;
