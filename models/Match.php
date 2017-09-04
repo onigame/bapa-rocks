@@ -252,7 +252,7 @@ class Match extends \yii\db\ActiveRecord
     public function getOpponentNames() {
       $names = [];
       foreach ($this->users as $player) {
-        if ($player->user_id != Yii::$app->user->id) $names[] = $player->name;
+        if ($player->id != Yii::$app->user->id) $names[] = $player->name;
       }
       return join(", ", $names);
     }

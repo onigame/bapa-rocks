@@ -115,20 +115,39 @@ class SessionController extends Controller
             'otherdataProvider' => $otherdataProvider,
           ]);
         }
-        if ($model->status == 1) {
+        if ($model->status == 1 && $model->type == 2) {
           $searchModel = new MatchSearch();
           $searchModel->session_id = $id;
           $dataProvider = $searchModel->search([]);
-          return $this->render('view_inprogress', [
+          return $this->render('view_playoffinprogress', [
             'model' => $model,
             'matchSearchModel' => $searchModel,
             'matchDataProvider' => $dataProvider,
           ]);
         }
-        if ($model->status == 2) {
+        if ($model->status == 1 && $model->type == 1) {
+          $searchModel = new MatchSearch();
+          $searchModel->session_id = $id;
+          $dataProvider = $searchModel->search([]);
+          return $this->render('view_regularinprogress', [
+            'model' => $model,
+            'matchSearchModel' => $searchModel,
+            'matchDataProvider' => $dataProvider,
+          ]);
+        }
+        if ($model->status == 2 && $model->type == 2) {
           $searchModel = new MatchSearch();
           $dataProvider = $searchModel->search(['session_id' => $id]);
-          return $this->render('view_completed', [
+          return $this->render('view_playoffcompleted', [
+            'model' => $model,
+            'matchSearchModel' => $searchModel,
+            'matchDataProvider' => $dataProvider,
+          ]);
+        }
+        if ($model->status == 2 && $model->type == 1) {
+          $searchModel = new MatchSearch();
+          $dataProvider = $searchModel->search(['session_id' => $id]);
+          return $this->render('view_regularcompleted', [
             'model' => $model,
             'matchSearchModel' => $searchModel,
             'matchDataProvider' => $dataProvider,
