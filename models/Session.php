@@ -172,7 +172,7 @@ class Session extends \yii\db\ActiveRecord
                       ["/session/leave", 'id' => $this->id],
                       [
                         'title' => 'Leave',
-                        'data-pjax' => '1',
+                        'data-pjax' => '0',
                         'class' => 'btn-sm btn-warning',
                       ]
                     );
@@ -181,7 +181,7 @@ class Session extends \yii\db\ActiveRecord
                       ["/session/join", 'id' => $this->id],
                       [
                         'title' => 'Join',
-                        'data-pjax' => '1',
+                        'data-pjax' => '0',
                         'class' => 'btn-sm btn-success',
                       ]
                     );
@@ -193,7 +193,7 @@ class Session extends \yii\db\ActiveRecord
                       ["/session/view", 'id' => $this->id],
                       [
                         'title' => 'Go',
-                        'data-pjax' => '1',
+                        'data-pjax' => '0',
                         'class' => 'btn-sm btn-success',
                       ]
                     );

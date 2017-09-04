@@ -145,6 +145,27 @@ class SessionController extends Controller
         }
       }
       $session->addPlayer($seasonUser);
+      return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionLeave($id) {
+      $player_id = Yii::$app->user->id;
+      $sessionUser = SessionUser::find()->where(['session_id' => $id,
+                                                 'user_id' => $player_id])
+                                        ->one();
+      if ($sessionUser == null) {
+        throw new \yii\base\UserException("You can't leave; you're not in this session!");
+      }
+      $sessionUser->delete();
+
+      $session = Session::findOne($id);
+      $seasonUser = SeasonUser::find()->where(['season_id' => $session->season->id,
+                                                'user_id' => $player_id])
+                                       ->one();
+      if (count($seasonUser->sessionUsers) == 0) { // this was the user's last session
+        $seasonUser->delete();
+      }
+      return $this->redirect(Yii::$app->request->referrer);
     }
 
     public function actionAddplayer($session_id, $seasonuser_id) {
@@ -159,22 +180,33 @@ class SessionController extends Controller
       $session->addPlayer(SeasonUser::findOne($seasonuser_id));
 
       $this->actionView($session_id);
-      //return $this->redirect(['view', 'id' => $session_id]);
+      return $this->redirect(Yii::$app->request->referrer);
     }
 
     public function actionRemoveplayer($session_id, $seasonuser_id) {
+      $user_id = PublicSeasonUser::findOne($seasonuser_id)->user_id;
       $sessionUser = SessionUser::find()->where(['session_id' => $session_id,
-                                                 'user_id' => PublicSeasonUser::findOne($seasonuser_id)->user_id])
+                                                 'user_id' => $user_id])
                                         ->one();
       if ($sessionUser == null) {
         throw new \yii\base\UserException("That player is already not playing!");
       }
+      $season_id = $sessionUser->session->season_id;
       $dcount = $sessionUser->delete();
       if ($dcount != 1) {
         Yii::error($dcount);
         throw new \yii\base\UserException("Error deleting sessionUser");
       }
+
+      $seasonUser = SeasonUser::find()->where(['season_id' => $season_id,
+                                                'user_id' => $user_id])
+                                       ->one();
+      if (count($seasonUser->sessionUsers) == 0) { // this was the user's last session
+        $seasonUser->delete();
+      }
+
       $this->actionView($session_id);
+      return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $model->name;
       );
     ?>
 
-<?php Pjax::begin(['enablePushState' => false]); ?>
+<?php //Pjax::begin(['enablePushState' => false]); ?>
 
     <h2>Included Players</h2>
 
@@ -121,6 +121,9 @@ $this->params['breadcrumbs'][] = $model->name;
         ],
     ]); ?>
 
-<?php Pjax::end(); ?>
+<?php
+?>
+
+<?php //Pjax::end(); ?>
 
 </div>
