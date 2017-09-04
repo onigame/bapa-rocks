@@ -166,8 +166,8 @@ class Session extends \yii\db\ActiveRecord
     }
 
     public function getJoinButton() {
-      $sus = $this->sessionusers;
-      if ($sus != null && $sus->where(['user_id' => Yii::$app->user->id])->one() != null) {
+      $su = SessionUser::find()->where(['session_id' => $this->id, 'user_id' => Yii::$app->user->id])->one();
+      if ($su != null) {
         return "Yes; " . Html::a( "Leave",
                       ["/session/leave", 'id' => $this->id],
                       [

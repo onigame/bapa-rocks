@@ -45,9 +45,8 @@ class SeasonUser extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'matchpoints', 'game_count', 'opponent_count',
-              'match_count', 'dues', 'mpg',
-              'user_id', 'season_id'], 'required'],
+            [['matchpoints', 'game_count', 'opponent_count',
+              'match_count', 'dues', 'user_id', 'season_id'], 'required'],
             [['matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id',
               'season_id', 'created_at', 'updated_at'], 'integer'],
             [['mpg', 'mpo', 'previous_season_rank'], 'double'],
@@ -97,14 +96,15 @@ class SeasonUser extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getSessionUsers()
     {
-        return $this->hasMany(Sessionuser::className(), ['user_id' => 'user_id', 'session_id' => 'id'])
-          ->via(sessions)
-        ;
+        $results = [];
+        foreach ($this->sessions as $session) {
+          foreach (Sessionuser::find()->where(['session_id' => $session->id, 'user_id' => $this->user_id])->all() as $su) {
+            $results[] = $su;
+          }
+        }
+        return $results;
     }
 
     /**
@@ -112,7 +112,7 @@ class SeasonUser extends \yii\db\ActiveRecord
      */
     public function getSessions()
     {
-        return $this->hasMany(Sessions::className(), ['season_id' => 'season_id'])->orderBy(['date' => SORT_DESC]);
+        return $this->hasMany(Session::className(), ['season_id' => 'season_id'])->orderBy(['date' => SORT_DESC]);
     }
 
     /**
@@ -146,12 +146,12 @@ class SeasonUser extends \yii\db\ActiveRecord
     }
 
     public function getPreviousPerformance() {
-      $sus = $this->sessionusers;
+      $sus = $this->sessionUsers;
       if ($sus == null) {
         // they haven't played this season yet, so how'd they do in the playoffs?
-        $ps = $this->season->previous_season;
+        $ps = $this->season->previousSeason;
         if ($ps != null) {
-          $psu = $ps->seasonusers->where(['user_id' => $this->user_id]);
+          $psu = Seasonuser::find()->where(['season_id' => $ps->id, 'user_id' => $this->user_id])->one();;
           if ($psu != null && $psu->playoff_division === 'A') return 12;
         }
         return mt_rand(7, 10);
@@ -167,6 +167,16 @@ class SeasonUser extends \yii\db\ActiveRecord
       if ($a->previous_season_rank < $b->previous_season_rank) return -1;
       if ($a->previous_season_rank == $b->previous_season_rank) return 0;
       return 1;
+    }
+
+    // for sorting
+    public static function byPlayoffRank($a, $b) {
+      if ($a->playoff_division === 'A' && $b->playoff_division !== 'A') return -1;
+      if ($a->playoff_division !== 'A' && $b->playoff_division === 'A') return 1;
+      if ($a->playoff_division !== $b->playoff_division) {
+        throw new \yii\base\UserException("Cannot handle more than 2 divisions when comparing playoff ranks.");       
+      }
+      return ($a->playoff_rank - $b->playoff_rank);
     }
 
 

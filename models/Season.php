@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\Html;
+use app\models\SeasonUser;
 
 /**
  * This is the model class for table "season".
@@ -72,6 +73,17 @@ class Season extends \yii\db\ActiveRecord
         return $this->hasMany(Seasonuser::className(), ['season_id' => 'id']);
     }
 
+    public function getSeasonusersByPlayoffRank() {
+      $sus = $this->seasonusers;
+      foreach ($sus as $key=>$su) {
+        if ($su->playoff_rank == null) {
+          unset($sus[$key]);
+        }
+      }
+      usort($sus, ['app\models\SeasonUser', 'byPlayoffRank']);
+      return $sus;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -118,6 +130,34 @@ class Season extends \yii\db\ActiveRecord
                         'class' => 'btn-sm btn-success',
                       ]
                     );
+    }
+
+    public function addplayer($player_id) {
+      $su = new SeasonUser();
+      $su->matchpoints = 0;
+      $su->game_count = 0;
+      $su->opponent_count = 0;
+      $su->match_count = 0;
+      $su->dues = 0;
+      $su->user_id = $player_id;
+      $su->season_id = $this->id;
+      // time to calculate the previous_season_rank
+      $prevranked = $this->previousSeason->seasonusersByPlayoffRank;
+      $rank = 1;
+      $last_a_rank = 1;
+      foreach ($prevranked as $seasonuser) {
+        if ($seasonuser->user_id == $player_id) break;
+        if ($seasonuser->playoff_division === "A") $last_a_rank = $rank;
+        $rank++;
+      }
+      if ($rank > count($prevranked)) {
+        $rank = $last_a_rank + 1 + mt_rand() / mt_getrandmax() * (count($prevranked) - $last_a_rank - 1);
+      }
+      $su->previous_season_rank = $rank;
+      if (!$su->save()) {
+        Yii::warning(Html::errorSummary($su));
+        throw new \yii\base\UserException("Error saving in Season::addplayer");
+      }
     }
 
     /**

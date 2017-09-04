@@ -6,6 +6,7 @@ use Yii;
 use app\models\Session;
 use app\models\SessionSearch;
 use app\models\SessionUser;
+use app\models\SeasonUser;
 use app\models\MatchSearch;
 use app\models\PublicSeasonUserSearch;
 use app\models\PublicSeasonUser;
@@ -131,16 +132,16 @@ class SessionController extends Controller
       }
 
       $session = Session::findOne($id);
-      $seasonUser = SessionUser::find()->where(['season_id' => $session->season->id,
+      $seasonUser = SeasonUser::find()->where(['season_id' => $session->season->id,
                                                 'user_id' => $player_id])
                                        ->one();
       if ($seasonUser == null) {
         $session->season->addplayer($player_id);
-        $seasonUser = SessionUser::find()->where(['season_id' => $session->season->id,
+        $seasonUser = SeasonUser::find()->where(['season_id' => $session->season->id,
                                                   'user_id' => $player_id])
                                          ->one();
         if ($seasonUser == null) {
-          throw new \yii\base\UserException("Creation of SessionUser failed somehow");
+          throw new \yii\base\UserException("Creation of SeasonUser failed somehow");
         }
       }
       $session->addPlayer($seasonUser);
