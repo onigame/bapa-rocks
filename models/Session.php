@@ -6,6 +6,7 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\Html;
 use app\models\SessionUser;
+use app\models\MatchUser;
 
 /**
  * This is the model class for table "session".
@@ -120,6 +121,14 @@ class Session extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getMatchUsers()
+    {
+        return $this->hasMany(MatchUser::className(), ['match_id' => 'id'])->via('matches');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getSeason()
     {
         return $this->hasOne(Season::className(), ['id' => 'season_id']);
@@ -127,6 +136,13 @@ class Session extends \yii\db\ActiveRecord
 
     public function getSeasonName() {
         return $this->season->name;
+    }
+
+    public function getCloseable() {
+      foreach ($this->matches as $match) {
+        if ($match->status != 3) return false;
+      }
+      return true;
     }
 
     /**

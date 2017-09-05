@@ -427,6 +427,28 @@ class Game extends \yii\db\ActiveRecord
           throw new \yii\base\UserException("Error saving machinestatus at finishGame");
         }
 
+        // Add stats to the appropriate matchusers.
+        $addl_opponent_count = 0;
+        $addl_forfeit_opponent_count = 0;
+        foreach ($scores as $score) {
+          if ($score->forfeit == 1)
+            $addl_forfeit_opponent_count++;
+          else 
+            $addl_opponent_count++;
+        }
+
+        foreach ($scores as $score) {
+          if ($score->forfeit == 1) continue;
+          $mu = MatchUser::find()->where(['match_id' => $game->match_id, 'user_id' => $score->user_id])->one();
+          $mu->game_count += 1;
+          $mu->opponent_count += $addl_opponent_count;
+          $mu->forfeit_opponent_count += $addl_forfeit_opponent_count;
+          if (!$mu->save()) {
+            Yii::error($mu->errors);
+            throw new \yii\base\UserException("Error saving mu at finishGame");
+          }
+        }  
+
         // now we should see if anyone is waiting in the queue for the machine.
         $game->machine->maybeStartQueuedGame();
         // then, if the machine is still available, then see if there's a regular season game waiting for it.

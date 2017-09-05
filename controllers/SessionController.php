@@ -158,10 +158,33 @@ class SessionController extends Controller
     public function actionFinish($id) {
       $session = $this->findModel($id);
       if ($session->type == 1) {
-        throw new \yii\base\UserException("Sorry, cannot finish a regular week yet.");
+        $session::getDb()->transaction(function($db) use ($session) {
+          foreach ($session->matchUsers as $mu) {
+            $su = SeasonUser::find()->where(['season_id' => $session->season_id, 'user_id' => $mu->user_id])->one();
+            $su->matchpoints += $mu->matchpoints;
+            $su->game_count += $mu->game_count;
+            $su->opponent_count += $mu->opponent_count;
+            $su->forfeit_opponent_count += $mu->forfeit_opponent_count;
+            $su->match_count += 1;
+            if (!$su->save()) {
+              Yii::error($su->errors);
+              throw new \yii\base\UserException("Error saving su in actionFinish");
+            }
+          }
+
+          $session->status = 2;
+          if (!$session->save()) {
+            Yii::error($session->errors);
+            throw new \yii\base\UserException("Error saving session in actionFinish");
+          }
+        });
+
+      } else if ($session->type == 2) {
+        $session->status = 2;
+        $session->save();
+      } else {
+        throw new \yii\base\UserException("Unexpected session type in actionFinish!");
       }
-      $session->status = 2;
-      $session->save();
       return $this->redirect(['view', 'id' => $id]);
     }
 
@@ -421,9 +444,6 @@ class SessionController extends Controller
         // assign players to their initial match
         $playernum = 1;
         foreach ($sessionUsers as $sessionuser) {
-Yii::warning($sessionuser->previous_performance);
-Yii::warning($sessionuser->user->profile->name);
-Yii::warning(SessionController::matchNumber($numplayers, $playernum)-1);
           $matches[SessionController::matchNumber($numplayers, $playernum)-1]
             ->addRegularPlayer($sessionuser->user_id);
           $playernum++;

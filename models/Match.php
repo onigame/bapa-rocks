@@ -433,7 +433,7 @@ class Match extends \yii\db\ActiveRecord
         $matchusers = $match->matchusers;
 
         // Figure out if any $matchusers should get bonus points.
-        if ($this->eligibleFor3Bonus) { 
+        if ($this->eligibleFor3Bonus()) { 
           foreach ($matchusers as $matchuser) {
             $pts = $matchuser->matchpoints;
             if ($pts == 15) {
@@ -443,7 +443,7 @@ class Match extends \yii\db\ActiveRecord
                 throw new \yii\base\UserException("Error saving matchuser at maybeStartGame");
               }
             }
-            if ($pts == 1) {
+            if ($pts == 5) {
               $matchuser->bonuspoints = -1;
               if (!$matchuser->save()) {
                 Yii::error($matchuser->errors);
@@ -467,11 +467,11 @@ class Match extends \yii\db\ActiveRecord
         foreach ($matchusers as $matchuser) {
           $matchrank++;
 
-          if ($mps[$matchuser] != $last_mp) {
+          if ($mps[$matchuser->id] != $last_mp) {
             // not a tie, get normal rank
             $matchuser->matchrank = $matchrank;
             $matchrank_for_tie = $matchrank;
-            $last_mp = $mps[$matchuser];
+            $last_mp = $mps[$matchuser->id];
           } else {
             $matchuser->matchrank = $matchrank_for_tie;
           }

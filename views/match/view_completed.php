@@ -33,6 +33,27 @@ $this->params['breadcrumbs'][] = $model->code;
         ],
     ]) ?>
 
+    <h2>Players</h2>
+<?php
+   $playerData = new yii\data\ActiveDataProvider([
+          'query' => app\models\Matchuser::find()->where(['match_id' => $model->id]),
+       ]);
+?>
+    <?= GridView::widget([
+        'dataProvider' => $playerData,
+//        'options' => ['style' => 'font-size:10px'],
+        'responsiveWrap' => false,
+        'columns' => [
+//            'id',
+            [ 'label' => 'Name', 'attribute' => 'user.name', ],
+            [ 'label' => 'Matchpoints', 'attribute' => 'matchpoints', ],
+            [ 'label' => 'Breakdown', 'attribute' => 'matchpointsbreakdown', ],
+        ],
+    ]); ?>
+
+    <h2>Games</h2>
+
+
 <?php
    $gameData = new yii\data\ActiveDataProvider([
           'query' => app\models\Game::find()->where(['match_id' => $model->id])->orderBy(['number' => SORT_ASC]),
@@ -47,6 +68,7 @@ $this->params['breadcrumbs'][] = $model->code;
 //            'id',
 //            'match_id',
             [ 'label' => 'Machine', 'attribute' => 'MachineCell', ],
+            [ 'label' => 'Abbr.', 'attribute' => 'machine.abbreviation', ],
             [ 'attribute' => 'statusString', 'format' => 'html' ],
 //            'statusDetailCode',
             [ 'label' => 'Winner', 'attribute' => 'WinnerName', 'format' => 'html'],

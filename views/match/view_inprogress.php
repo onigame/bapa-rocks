@@ -67,6 +67,7 @@ $this->params['breadcrumbs'][] = $model->code;
             [ 'attribute' => 'number', 'value' => function($model) { return "Game ".$model->number; } ],
 //            'match_id',
             [ 'label' => 'Machine', 'attribute' => 'MachineCell', ],
+            [ 'label' => 'Abbr.', 'attribute' => 'machine.abbreviation', ],
             [ 'attribute' => 'statusString', 'format' => 'html', ],
 //            'statusDetailCode',
             [ 'label' => 'Winner', 'attribute' => 'WinnerName', 'format' => 'html'],

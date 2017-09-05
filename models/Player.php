@@ -48,7 +48,7 @@ class Player extends User {
       if ($results->match_status == 3) {
         $answer .= "<p>";
         $answer .= "You are done with the session.  Your final score was ";
-        $answer .= $results->matchuser->matchpoints;
+        $answer .= $results->matchUser->matchpoints;
         $answer .= " in ";
         $answer .= $results->match->code;
         $answer .= ".</p>";

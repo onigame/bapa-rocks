@@ -150,6 +150,7 @@ CREATE TABLE matchuser (
     matchrank INT, -- rank within match (1st place, 2nd, etc.) Ties are indeterminate.
     game_count INT NOT NULL,
     opponent_count INT NOT NULL,
+    forfeit_opponent_count INT NOT NULL DEFAULT 0,
     match_id INT NOT NULL,
     FOREIGN KEY match_key (match_id) REFERENCES `match`(id),
     user_id INT NOT NULL,
@@ -176,15 +177,16 @@ CREATE TABLE sessionuser (
 CREATE TABLE seasonuser (
     id INT AUTO_INCREMENT PRIMARY KEY,
     notes VARCHAR(255),
-    matchpoints INT NOT NULL, -- add all games in match (possible bonus)
+    matchpoints INT NOT NULL, -- add all games in match (including bonus)
     game_count INT NOT NULL, -- only effective games in season
     opponent_count INT NOT NULL, -- only effective opponents in season
+    forfeit_opponent_count INT NOT NULL DEFAULT 0,
     match_count INT NOT NULL, -- only effective matches in season
     dues INT NOT NULL, -- 0 = not paid, 1 = paid
     playoff_division VARCHAR(20), -- NULL = unassgned; 'A', 'B', 'DQ'
     playoff_rank INT, -- NULL = unassigned, otherwise within playoff
     mpg DOUBLE AS (IF(game_count=0,NULL,matchpoints / game_count)) STORED,
-    mpo DOUBLE AS (IF(game_count=0,NULL,matchpoints / opponent_count)) STORED,
+    mpo DOUBLE AS (IF(game_count=0,NULL,(matchpoints - forfeit_opponent_count) / opponent_count)) STORED,
     user_id INT NOT NULL,
     FOREIGN KEY user_key (user_id) REFERENCES user(id),
     season_id INT NOT NULL,
@@ -266,6 +268,37 @@ JOIN `match` m
 JOIN eliminationgraph eg
   ON (m.code = eg.code)
 WHERE mu2.id IS NULL
+);
+
+CREATE OR REPLACE VIEW regularresults AS (
+SELECT
+  p.name as name,
+  su.session_id,
+  su.user_id,
+  su.id as sessionuser_id,
+--  su.status as sessionuser_status,
+  mu1.id as matchuser_id,
+--  mu1.starting_playernum,
+  mu1.match_id,
+--  mu1.matchrank,
+  m.code as code,
+--  m.format as format,
+  m.status as match_status
+FROM sessionuser su
+JOIN matchuser mu1
+  ON (su.user_id = mu1.user_id)
+LEFT OUTER JOIN matchuser mu2
+  ON (su.user_id = mu2.user_id
+      AND mu1.created_at < mu2.created_at)
+JOIN `match` m
+  ON (m.id = mu1.match_id
+      AND m.session_id = su.session_id)
+JOIN session ss
+  ON (m.session_id = ss.id)
+JOIN profile p
+  ON (p.user_id = su.user_id)
+WHERE mu2.id IS NULL AND ss.type = 1
+ORDER BY name
 );
 
 CREATE OR REPLACE VIEW machinescore AS (

@@ -105,6 +105,14 @@ class Regularresults extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getMatchUser()
+    {
+        return $this->hasOne(MatchUser::className(), ['id' => 'matchuser_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getMatch()
     {
         return $this->hasOne(Match::className(), ['id' => 'match_id']);
