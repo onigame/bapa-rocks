@@ -105,6 +105,9 @@ class MachineStatus extends \yii\db\ActiveRecord
           foreach (Game::find()->where(['machine_id' => $this->machine_id, 'status' => 3])->all() as $progressgame) {
             $progressgame->disqualifySelection();
           }
+        } else if ($this->status == 1) {
+          // machine is repaired, see if any groups can be put on it.
+          $this->machine->maybeStartRegularSeasonGame();
         }
         parent::afterSave($insert, $changedAttributes);
     }

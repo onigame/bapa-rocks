@@ -53,6 +53,7 @@ class MatchUser extends \yii\db\ActiveRecord
             'id' => 'ID',
             'starting_playernum' => 'Starting Player Number',
             'matchpoints' => 'Matchpoints',
+            'matchpointsbreakdown' => 'Breakdown',
             'bonuspoints' => 'MP Adj.',
             'game_count' => 'Game Count',
             'opponent_count' => 'Opponent Count',
@@ -100,6 +101,23 @@ class MatchUser extends \yii\db\ActiveRecord
         $sum += $score->matchpoints;
       }
       return ($sum + $this->bonuspoints);
+    }
+
+    public function getMatchpointsBreakdown() { 
+      $terms = [];
+      $sum = 0;
+      foreach ($this->scores as $score) {
+        if ($score->game->status != 4) continue; // only completed games
+        $terms[] = "" . $score->matchpoints . " (" . $score->game->machine->abbreviation . ")";
+        $sum += $score->matchpoints;
+      }
+      $result = join(" + ", $terms);
+      if ($this->bonuspoints == 1) {
+        $result .= " + 1 bonus";
+      } else if ($this->bonuspoints == -1) {
+        $result .= " - 1 malus";
+      }
+      return $result;
     }
 
     public static function compareMatchpoints($matchuser_a, $matchuser_b) {

@@ -13,6 +13,11 @@ use kartik\grid\GridView;
     <?= GridView::widget([
         'dataProvider' => $machineData,
         'pjax' => true,
+        'pjaxSettings' => [
+          'options' => [
+            'enablePushState' => false,
+          ],
+        ],
         'columns' => [
             'id',
             'name',

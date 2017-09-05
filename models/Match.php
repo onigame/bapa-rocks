@@ -140,11 +140,18 @@ class Match extends \yii\db\ActiveRecord
      */
     public function getGames()
     {
-        return $this->hasMany(Game::className(), ['match_id' => 'id']);
+        return $this->hasMany(Game::className(), ['match_id' => 'id'])->orderBy(['created_at' => SORT_ASC]);
     }
 
     public function getMachinesPlayed() {
-        return $this->hasMany(Machine::className(), ['id' => 'machine_id'])->via('games');
+        // don't count DQ'd machines
+      $result = [];
+      foreach ($this->games as $game) {
+        if ($game->status == 5) continue;
+        if ($game->machine === NULL) continue;
+        $result[] = $game->machine;
+      }
+      return $result;
     }
 
     public function getCurrentGame() {

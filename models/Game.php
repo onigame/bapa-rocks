@@ -171,7 +171,7 @@ class Game extends \yii\db\ActiveRecord
       if ($this->status == 3) return ("In Progress:<br>".$this->machine->name);
       if ($this->status == 4) return ("Completed");
       if ($this->status == 5) return ("Disqualified");
-      if ($this->status == 6) return ("Awaiting Available Machine");
+      if ($this->status == 6) return ("Awaiting Available<br>Machine since ".date("g:i:sa", $this->created_at));
       return "Unknown Status";
     }
 
@@ -245,7 +245,7 @@ class Game extends \yii\db\ActiveRecord
       $game = $this;
       $game->status = 5;
       $game->save();
-      $machine->maybeStartQueuedGame();
+      $game->machine->maybeStartQueuedGame();
       $game->match->maybeStartGame();
     }
 
