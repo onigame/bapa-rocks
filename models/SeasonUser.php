@@ -98,11 +98,21 @@ class SeasonUser extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
+    public function getProfile()
+    {
+        return $this->hasOne(Profile::className(), ['user_id' => 'user_id']);
+    }
+
+    public function getPlayerName()
+    {
+        return $this->profile->name;
+    }
+
     public function getSessionUsers()
     {
         $results = [];
         foreach ($this->sessions as $session) {
-          foreach (Sessionuser::find()->where(['session_id' => $session->id, 'user_id' => $this->user_id])->all() as $su) {
+          foreach (SessionUser::find()->where(['session_id' => $session->id, 'user_id' => $this->user_id])->all() as $su) {
             $results[] = $su;
           }
         }
@@ -124,7 +134,7 @@ class SeasonUser extends \yii\db\ActiveRecord
      */
     public function getSessions()
     {
-        return $this->hasMany(Session::className(), ['season_id' => 'season_id'])->orderBy(['date' => SORT_DESC]);
+      return $this->hasMany(Session::className(), ['season_id' => 'season_id'])->orderBy(['date' => SORT_DESC]);
     }
 
     /**
@@ -175,9 +185,24 @@ class SeasonUser extends \yii\db\ActiveRecord
       }
     }
 
-    public function getPreviousPerformance() {
+    public function getMostRecentRegularSessionUser() {
+      $answer = null;
       $sus = $this->sessionUsers;
-      if ($sus == null || $sus[0]->previous_performance === null) {
+      if ($sus == null) return null;
+      foreach ($sus as $su) {
+        if ($su->session->type != 1) continue;
+        if ($answer == null) {
+          $answer = $su;
+        } else if ($answer->session->date < $su->session->date) {
+          $answer = $su;
+        }
+      }
+      return $answer;
+    }
+
+    public function getPreviousPerformance() {
+      $su = $this->mostRecentRegularSessionUser;
+      if ($su == null) {
         // they haven't played this season yet, so how'd they do in the playoffs?
         $ps = $this->season->previousSeason;
         if ($ps != null) {
@@ -185,13 +210,13 @@ class SeasonUser extends \yii\db\ActiveRecord
           if ($psu != null && $psu->playoff_division === 'A') return 12;
         }
         return mt_rand(7, 10);
-      } else if ($sus[0]->previous_performance !== null) {
-        return $sus[0]->previous_performance;
+      } else if ($su->session->status == 2) {
+        // the most recent session is finished, so what was their score?
+        $mu = $su->matchUsers;
+        return $mu[0]->matchpoints;
       } else {
-        // what was their last score?
-        $last_su = $sus[0];
-        $mu = $last_su->matchUsers->one();
-        return $my->matchpoints();
+        // the most recent session isn't finished, so what is its previous_performance?
+        return $su->previous_performance;
       }
     }
 

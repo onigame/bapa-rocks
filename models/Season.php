@@ -89,7 +89,7 @@ class Season extends \yii\db\ActiveRecord
      */
     public function getSessions()
     {
-        return $this->hasMany(Session::className(), ['season_id' => 'id']);
+        return $this->hasMany(Session::className(), ['season_id' => 'id'])->orderBy(['date' => SORT_DESC]);
     }
 
     /**
@@ -103,7 +103,7 @@ class Season extends \yii\db\ActiveRecord
     public function getLastLocationId() {
       $sessions = $this->sessions;
       if ($sessions == null) return null;
-      return $sessions->orderBy(['date' => ORDER_DESC])->one()->id;
+      return $sessions[0]->id;
     }
 
     public function getViewButton() {

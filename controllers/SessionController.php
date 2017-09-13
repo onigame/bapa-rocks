@@ -77,14 +77,27 @@ class SessionController extends Controller
       $dataProvider = new ActiveDataProvider([
         'query' => $query,
         'sort' => [
-//          'defaultOrder' => ['name' => SORT_ASC],
-        ]
+          'defaultOrder' => ['name' => SORT_ASC],
+          'attributes' => [
+             'id',
+             'name' => [
+                'asc' => ['profile.name' => SORT_ASC],
+                'desc' => ['profile.name' => SORT_DESC],
+                'label' => 'Player Name',
+             ],
+          ]
+        ],
+        'pagination' => [
+          'pageSize' => 0,
+        ],
+
       ]);
 
-      $query->select(['id', 'name']);
+      $query->select(['id', 'profile.name']);
 
-      $query->from(['user', 'profile']);
-      $query->where(['and', 'profile.user_id=user.id']);
+      $query->from(['user']);
+
+      $query->joinWith(['profile']);
 
       return $dataProvider;
     }

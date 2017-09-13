@@ -32,7 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'match_count',
             'dues',
             'user_id',
+            'profile.name',
             'season_id',
+            'previousPerformance',
             // 'created_at',
             // 'updated_at',
 

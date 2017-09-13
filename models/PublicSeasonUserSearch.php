@@ -14,6 +14,8 @@ use app\models\SessionUser;
  */
 class PublicSeasonUserSearch extends PublicSeasonUser
 {
+    public $playerName;
+
     /**
      * @inheritdoc
      */
@@ -23,7 +25,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
             [['id', 'matchpoints', 'game_count', 'opponent_count', 'match_count', 
               'dues', 'playoff_rank', 'user_id', 'row_number'], 'integer'],
             [['mpg'], 'double'],
-            [['playoff_division', 'notes'], 'safe'],
+            [['playoff_division', 'notes', 'playerName'], 'safe'],
         ];
     }
 
@@ -53,7 +55,18 @@ class PublicSeasonUserSearch extends PublicSeasonUser
             'query' => $query,
             'sort' => [
                'defaultOrder' => ['matchpoints' => SORT_DESC, 'mpg' => SORT_DESC],
-               'attributes' => ['mpg', 'notes', 'matchpoints', 'game_count', 'opponent_count', 'match_count'],
+               'attributes' => ['mpg', 
+                                'notes', 
+                                'matchpoints', 
+                                'game_count', 
+                                'opponent_count', 
+                                'match_count',
+                                'playerName' => [
+                                   'asc' => ['profile.name' => SORT_ASC],
+                                   'desc' => ['profile.name' => SORT_DESC],
+                                   'label' => 'Player Name',
+                                ],
+                               ],
             ],
             'pagination' => [
                'pageSize' => 0,
@@ -65,6 +78,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
+            $query->joinWith(['profile']);
             return $dataProvider;
         }
 
@@ -72,20 +86,20 @@ class PublicSeasonUserSearch extends PublicSeasonUser
 
         $query->select([
           'id', 'notes', 'matchpoints', 'game_count', 'opponent_count', 'previous_season_rank', 'previous_season_rank', 'previous_season_rank',
-          'match_count', 'dues', 'mpg', 'user_id', 'season_id',
-          new Expression('@ID := @ID + 1 AS row_number'),
+          'match_count', 'dues', 'mpg', 's.user_id', 'season_id',
+          //new Expression('@ID := @ID + 1 AS row_number'),
         ]);
 
         if (array_key_exists('session_id', $params)) {
           $query->andWhere([
-            $params['include'], 'user_id', SessionUser::find()->select('user_id')
+            $params['include'], 's.user_id', SessionUser::find()->select('user_id')
                                           ->where(['session_id' => $params['session_id']])
           ]);
         }
 
         $query->from([
-          'seasonuser',
-          '(SELECT @ID := 0) tempr'
+          'seasonuser s',
+          //'(SELECT @ID := 0) tempr'
         ]);
 
         // grid filtering conditions
@@ -98,11 +112,15 @@ class PublicSeasonUserSearch extends PublicSeasonUser
             'dues' => $this->dues,
             'user_id' => $this->user_id,
             'season_id' => $this->season_id,
-            'row_number' => $this->row_number,
+            //'row_number' => $this->row_number,
             'mpg' => $this->mpg,
         ]);
 
         $query->andFilterWhere(['like', 'notes', $this->notes]);
+
+        $query->joinWith(['profile' => function($q) {
+          $q->where('profile.name LIKE "%' . $this->playerName . '%"');
+        }]);
 
         return $dataProvider;
     }

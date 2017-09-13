@@ -110,16 +110,10 @@ class SessionUser extends \yii\db\ActiveRecord
       return $this->hasOne(Season::className(), ['id' => 'season_id'])->via('session');
     }
 
-    public function getAllSessionMatches() {
-      return $this->hasMany(Match::className(), ['session_id' => 'id'])->via('session');
-    }
-
     public function getMatchUsers() {
       $results = [];
-      foreach ($this->allSessionMatches as $match) {
-        foreach (Matchuser::find()->where(['match_id' => $match->id, 'user_id' => $this->user_id])->all() as $mu) {
-          $results[] = $mu;
-        }
+      foreach (Matchuser::find()->where(['user_id' => $this->user_id])->all() as $mu) {
+        if ($mu->match->session_id == $this->session_id) $results[] = $mu;
       }
       return $results;
     }

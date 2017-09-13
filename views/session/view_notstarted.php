@@ -92,7 +92,8 @@ $this->params['breadcrumbs'][] = $model->name;
         'dataProvider' => $outdataProvider,
         'id' => 'playergrid',
         'columns' => [
-            'user_name',
+            'user_id',
+            'playerName',
             ['class' => 'yii\grid\ActionColumn',
               'template' => '{addplayer}',
               'buttons' => [
@@ -125,7 +126,7 @@ $this->params['breadcrumbs'][] = $model->name;
 <?php
   if (Yii::$app->user->can('GenericManagerPermission')) {
 ?>
-    <h2>Other Players not in Season (Managers only)</h2>
+    <h2>All Players (Managers only)</h2>
 
 <?= GridView::widget([
         'dataProvider' => $otherdataProvider,
