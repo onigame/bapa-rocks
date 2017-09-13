@@ -63,15 +63,15 @@ $this->params['breadcrumbs'][] = $model->code;
 //        'options' => ['style' => 'font-size:10px'],
         'responsiveWrap' => false,
         'columns' => [
-            'id',
             [ 'attribute' => 'number', 'value' => function($model) { return "Game ".$model->number; } ],
+            [ 'label' => 'Abbr.', 'attribute' => 'machine.abbreviation', ],
+            [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
 //            'match_id',
             [ 'label' => 'Machine', 'attribute' => 'MachineCell', ],
-            [ 'label' => 'Abbr.', 'attribute' => 'machine.abbreviation', ],
             [ 'attribute' => 'statusString', 'format' => 'html', ],
 //            'statusDetailCode',
             [ 'label' => 'Winner', 'attribute' => 'WinnerName', 'format' => 'html'],
-            [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
+            'id',
         ],
     ]); ?>
 

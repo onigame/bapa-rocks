@@ -40,6 +40,7 @@ $this->title = 'BAPA Manager';
           ]);
           echo GridView::widget([
             'dataProvider' => $sessionData,
+            'responsiveWrap' => false,
             'columns' => [
               ['class' => 'yii\grid\SerialColumn'],
               'seasonName',
@@ -64,15 +65,16 @@ $this->title = 'BAPA Manager';
           ]);
           echo GridView::widget([
             'dataProvider' => $sessionData,
+            'responsiveWrap' => false,
             'columns' => [
               ['class' => 'yii\grid\SerialColumn'],
               'seasonName',
               'name',
+              [ 'label' => 'Am I in?', 'attribute' => 'JoinButton', 'format' => 'html'],
               'locationName',
               'typeName',
               'statusString',
               [ 'attribute' => 'date', 'format' => 'date'],
-              [ 'label' => 'Am I in?', 'attribute' => 'JoinButton', 'format' => 'html'],
               [ 'label' => 'Details', 'attribute' => 'GoButton', 'format' => 'html'],
             ],
           ]);

@@ -53,6 +53,7 @@ $this->params['breadcrumbs'][] = $model->name;
 <?= GridView::widget([
         'dataProvider' => $indataProvider,
         'id' => 'playergrid',
+        'responsiveWrap' => false,
         'columns' => [
             'user_name',
             ['class' => 'yii\grid\ActionColumn',

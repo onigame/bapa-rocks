@@ -332,7 +332,7 @@ class Game extends \yii\db\ActiveRecord
       else if ($count == 3 && $this->number == 5) { $playernumbers = [1,2,3]; }
       else if ($count == 4 && $this->number == $this->match->maximumGameCount) {   $playernumbers = [1,2,3,4]; }
       else if ($count == 4 && $this->number == $this->match->maximumGameCount-1) { $playernumbers = [2,4,1,3]; }
-      else if ($count == 4 && $this->number == $this->match->maximumGameCount-2) { $playernumbers = [3,1,2,4]; }
+      else if ($count == 4 && $this->number == $this->match->maximumGameCount-2) { $playernumbers = [3,1,4,2]; }
       else if ($count == 4 && $this->number == 1) { $playernumbers = [4,3,2,1]; } 
       else {  throw new \yii\base\UserException("Impossible playercount/gamenumber combo at createScores"); }
 
