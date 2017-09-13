@@ -111,4 +111,14 @@ JAVASCRIPT;
    $this->registerAssetBundle(yii\web\JqueryAsset::className(), \yii\web\View::POS_HEAD);
 ?>
 
+<?php
+          if (Yii::$app->user->can('GenericManagerPermission')) {
+            //echo "<h3>Manager Actions</h3>";
+            echo "<p>";
+            echo Html::a('Kick Group Off Machine', ['kick', 'id' => $model->id], ['class' => 'btn btn-success']);
+            echo "</p>";
+          }
+
+?>
+
 </div>

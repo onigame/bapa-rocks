@@ -181,9 +181,14 @@ class Session extends \yii\db\ActiveRecord
        return $this->location->unselectableMachines;
     }
 
-    public function getJoinButton() {
+    public function getCurrentPlayerIn() {
       $su = SessionUser::find()->where(['session_id' => $this->id, 'user_id' => Yii::$app->user->id])->one();
-      if ($su != null) {
+      if ($su != null) return true;
+      return false;
+    }
+
+    public function getJoinButton() {
+      if ($this->currentPlayerIn) {
         return "Yes; " . Html::a( "Leave",
                       ["/session/leave", 'id' => $this->id],
                       [

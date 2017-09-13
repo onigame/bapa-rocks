@@ -47,11 +47,23 @@ class Player extends User {
       }
       if ($results->match_status == 3) {
         $answer .= "<p>";
-        $answer .= "You are done with the session.  Your final score was ";
+        $answer .= "You are done with that session.  Your final score was ";
         $answer .= $results->matchUser->matchpoints;
         $answer .= " in ";
         $answer .= $results->match->code;
         $answer .= ".</p>";
+        // Is there an upcoming session?
+        $next_session = Session::find()->where(['status' => 0])->orderBy(['date' => SORT_ASC])->one();
+        if ($next_session != null) {
+          $answer .= "<p>";
+          $answer .= "The next session is ".$next_session->name.".  ";
+          if ($next_session->currentPlayerIn) {
+            $answer .= "You have signed up to play.";
+          } else {
+            $answer .= "You have NOT signed up to play.";
+          }
+          $answer .= "</p>";
+        }
       } else if ($results->match_status == 2) {
         $answer .= "<p>";
         $answer .= "You are currently in ".$results->match->code." vs. ".$results->match->opponentNames;

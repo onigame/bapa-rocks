@@ -201,7 +201,10 @@ class Game extends \yii\db\ActiveRecord
     public function getMachineCell() {
       $machine = $this->machine;
       if ($machine == null) {
-        return "[not selected yet]";
+        if ($this->match->session->type == 2) {
+          return "[not selected yet]";
+        }
+        return "[not assigned yet]";
       } else {
         return $machine->name;
       }

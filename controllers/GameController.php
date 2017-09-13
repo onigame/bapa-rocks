@@ -8,6 +8,7 @@ use app\models\GameSearch;
 use app\models\Machine;
 use app\models\QueueGame;
 use app\models\Score;
+use app\models\MachineStatus;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -30,7 +31,7 @@ class GameController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => [],
+                        'actions' => ['kick'],
                         'roles' => ['GenericManagerPermission'],
                     ],
                 ],
@@ -66,6 +67,28 @@ class GameController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    // should only be called when something is wrong
+    public function actionKick($id) {
+      $game = $this->findModel($id); 
+      $game::getDb()->transaction(function($db) use ($game) {
+        // remove all scores for this game.
+        foreach (Score::find()->where(['game_id' => $game->id])->all() as $score) {
+          $score->delete();
+        }
+        foreach (MachineStatus::find()->where(['game_id' => $game->id])->all() as $ms) {
+          $ms->delete();
+        }
+        $game->machine_id = 0;
+        $game->status = 6;
+        $game->save();
+      });
+
+      return $this->render('view', [
+          'model' => $this->findModel($id),
+      ]);
+
     }
 
     /**
