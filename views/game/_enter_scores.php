@@ -66,7 +66,7 @@ JAVASCRIPT;
         [ 'class' => 'kartik\grid\EditableColumn',
           'attribute' => 'value',
           'label' => 'Change Score',
-          'format' => 'decimal',
+          'format' => ['decimal', 0],
           'refreshGrid' => true,
           'contentOptions' => ['style' => 'text-align:right'],
           'headerOptions' => ['style' => 'text-align:right'],
