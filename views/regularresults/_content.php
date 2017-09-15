@@ -13,6 +13,7 @@ use kartik\grid\GridView;
     <?= GridView::widget([
         'dataProvider' => $regularresultsData,
         'responsiveWrap' => false,
+        'id' => 'regularresults',
         'pjax' => true,
         'columns' => [
             'user.name',
@@ -23,6 +24,14 @@ use kartik\grid\GridView;
             ['attribute' => 'seasonUser.dues_string', 'format' => 'html', 'label' => 'Dues'],
         ],
     ]); ?>
+
+<?php
+$this->registerJs('
+    setInterval(function(){
+         $.pjax.reload({container:"#regularresults"});
+    }, 10000);', \yii\web\VIEW::POS_HEAD);
+?>
+
 
 
 </div>

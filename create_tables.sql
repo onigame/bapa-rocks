@@ -186,7 +186,7 @@ CREATE TABLE seasonuser (
     playoff_division VARCHAR(20), -- NULL = unassgned; 'A', 'B', 'DQ'
     playoff_rank INT, -- NULL = unassigned, otherwise within playoff
     mpg DOUBLE AS (IF(game_count=0,NULL,matchpoints / game_count)) STORED,
-    mpo DOUBLE AS (IF(game_count=0,NULL,(matchpoints - forfeit_opponent_count) / opponent_count)) STORED,
+    mpo DOUBLE AS (IF(game_count=0,NULL,(matchpoints - forfeit_opponent_count) / (opponent_count - forfeit_opponent_count))) STORED,
     user_id INT NOT NULL,
     FOREIGN KEY user_key (user_id) REFERENCES user(id),
     season_id INT NOT NULL,
@@ -373,7 +373,7 @@ LEFT OUTER JOIN machinestatus ms1
   ON (m.id = ms1.machine_id)
 LEFT OUTER JOIN machinestatus ms2
   ON (m.id = ms2.machine_id
-      AND (ms1.updated_at < ms2.updated_at
+      AND (ms1.created_at < ms2.created_at
            OR ms1.id IS NULL AND ms2.id IS NULL))
 LEFT OUTER JOIN machinescoreminmax mmx
   ON (m.id = mmx.id)

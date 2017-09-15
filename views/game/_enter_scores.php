@@ -79,6 +79,7 @@ JAVASCRIPT;
               'class' => '\extead\autonumeric\AutoNumeric',
               'pluginOptions' => [
                 'allowClear' => true,
+                'decimalPlaces' => '0',
                 'aSep' => ',',
                 'vMin' => '0',
                 'vMax' => '9999999999999',

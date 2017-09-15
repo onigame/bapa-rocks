@@ -56,6 +56,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
             'sort' => [
                'defaultOrder' => ['matchpoints' => SORT_DESC, 'mpg' => SORT_DESC],
                'attributes' => ['mpg', 
+                                'mpo',
                                 'notes', 
                                 'matchpoints', 
                                 'game_count', 
@@ -86,7 +87,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
 
         $query->select([
           'id', 'notes', 'matchpoints', 'game_count', 'opponent_count', 'previous_season_rank', 'previous_season_rank', 'previous_season_rank',
-          'match_count', 'dues', 'mpg', 's.user_id', 'season_id',
+          'match_count', 'dues', 'mpg', 'mpo', 's.user_id', 'season_id',
           //new Expression('@ID := @ID + 1 AS row_number'),
         ]);
 

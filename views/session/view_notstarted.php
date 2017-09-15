@@ -52,10 +52,12 @@ $this->params['breadcrumbs'][] = $model->name;
 
 <?= GridView::widget([
         'dataProvider' => $indataProvider,
-        'id' => 'playergrid',
+        'id' => 'inplayergrid',
         'responsiveWrap' => false,
+        'pjax' => true,
         'columns' => [
-            'user_name',
+            'user_id',
+            'playerName',
             ['class' => 'yii\grid\ActionColumn',
               'template' => '{removeplayer}',
               'buttons' => [
@@ -76,21 +78,30 @@ $this->params['breadcrumbs'][] = $model->name;
             ],
             //'notes',
             'matchpoints',
-            'game_count',
+            //'game_count',
             'opponent_count',
             'match_count',
-            //'mpg',
+            'mpo',
             'previousperformance',
             'previous_season_rank',
             'five_weeks_string',
             ['attribute' => 'dues_string', 'format' => 'html'],
         ],
     ]); ?>
+<?php 
+/*
+$this->registerJs(' 
+    setInterval(function(){  
+         $.pjax.reload({container:"#inplayergrid"});
+    }, 10000);', \yii\web\VIEW::POS_HEAD); 
+*/
+?>
 
     <h2>Other Players in Season</h2>
 <?= GridView::widget([
         'dataProvider' => $outdataProvider,
-        'id' => 'playergrid',
+        'id' => 'outplayergrid',
+        'pjax' => true,
         'columns' => [
             'user_id',
             'playerName',
@@ -117,11 +128,19 @@ $this->params['breadcrumbs'][] = $model->name;
             'game_count',
             'opponent_count',
             'match_count',
-            'mpg',
+            'mpo',
             'five_weeks_string',
             ['attribute' => 'dues_string', 'format' => 'html'],
         ],
     ]); ?>
+<?php
+/*
+$this->registerJs(' 
+    setInterval(function(){  
+         $.pjax.reload({container:"#outplayergrid"});
+    }, 10000);', \yii\web\VIEW::POS_HEAD); 
+*/
+?>
 
 <?php
   if (Yii::$app->user->can('GenericManagerPermission')) {

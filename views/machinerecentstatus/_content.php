@@ -12,6 +12,8 @@ use kartik\grid\GridView;
 
     <?= GridView::widget([
         'dataProvider' => $machineData,
+        'id' => 'machineview',
+        'pjax' => 'true',
         'responsiveWrap' => false,
         'columns' => [
             ['attribute' => 'name', 'format' => 'raw', 'value' => function ($model, $key, $index, $column) { 
@@ -32,6 +34,14 @@ use kartik\grid\GridView;
             [ 'label' => 'Go', 'attribute' => 'PotentialGoButton', 'format' => 'html'],
         ],
     ]); ?>
+
+<?php
+$this->registerJs('
+    setInterval(function(){
+         $.pjax.reload({container:"#machineview"});
+    }, 10000);', \yii\web\VIEW::POS_HEAD);
+?>
+
 
 
 </div>

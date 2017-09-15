@@ -24,6 +24,8 @@ use kartik\grid\GridView;
     <?= GridView::widget([
         'dataProvider' => $curMatchData,
         'responsiveWrap' => false,
+        'id' => 'currentmatches',
+        'pjax' => true,
         'columns' => [
  //           'id',
  //           'session_id',
@@ -36,6 +38,13 @@ use kartik\grid\GridView;
             [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
         ],
     ]); ?>
+<?php
+$this->registerJs('
+    setInterval(function(){
+         $.pjax.reload({container:"#currentmatches"});
+    }, 10000);', \yii\web\VIEW::POS_HEAD);
+?>
+
 
     <h2>Players</h2>
 <?php
