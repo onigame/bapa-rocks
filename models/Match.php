@@ -64,6 +64,7 @@ class Match extends \yii\db\ActiveRecord
             'formatString' => "Format",
             'statusString' => "Status",
             'matchusersString' => "Players",
+            'matchusersScoresString' => "Players (Matchpoints)",
         ];
     }
 
@@ -314,6 +315,50 @@ class Match extends \yii\db\ActiveRecord
         $names = [];
         foreach ($matchusers as $matchuser) {
           $names[] = $matchuser->user->profile->name;
+        }
+        $actualcount = count($names);
+
+        $namelist = join(", ", $names);
+        if ($actualcount >= $this->startingPlayerCount) {
+          return $namelist;
+        }
+        if ($actualcount == 0) {
+          return "(empty)";
+        }
+        if ($actualcount < $this->startingPlayerCount) {
+          $namelist .= " (+". ($this->startingPlayerCount - $actualCount) . ")";
+        }
+        return $namelist;
+    }
+
+    public function getMatchusersScoresString() {
+        if ($this->isPlayoffs) {
+          if ($this->status == 3) {
+            return $this->results;
+          }
+          $mu = MatchUser::find()->where(['match_id' => $this->id, 'starting_playernum' => 1])->one();
+          $p1_seed = Eliminationgraph::getPlayerSeedFor($this->code, 1);
+          if ($mu == null) {
+            $p1 = Eliminationgraph::prevString($this->code, $p1_seed, $this->session->playerCount);
+          } else {
+            $p1 = $mu->name;
+          }
+          $mu = MatchUser::find()->where(['match_id' => $this->id, 'starting_playernum' => 2])->one();
+          $p2_seed = Eliminationgraph::getPlayerSeedFor($this->code, 2);
+          if ($mu == null) {
+            $p2 = Eliminationgraph::prevString($this->code, $p2_seed, $this->session->playerCount);
+          } else {
+            $p2 = $mu->name;
+          }
+          $p1s = Eliminationgraph::seedString($p1_seed);
+          $p2s = Eliminationgraph::seedString($p2_seed);
+          return "($p1s)$p1, ($p2s)$p2";
+        }
+
+        $matchusers = $this->matchusers;
+        $names = [];
+        foreach ($matchusers as $matchuser) {
+          $names[] = $matchuser->user->profile->name . " (" . $matchuser->matchpoints . ")";
         }
         $actualcount = count($names);
 

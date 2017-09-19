@@ -38,7 +38,7 @@ use kartik\grid\GridView;
 <?php
 $this->registerJs('
     setInterval(function(){
-         $.pjax.reload({container:"#machineview"});
+         $.pjax.reload({container:"#machineview-pjax", timeout:false});
     }, 10000);', \yii\web\VIEW::POS_HEAD);
 ?>
 

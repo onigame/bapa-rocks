@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
-use yii\grid\GridView;
+use kartik\grid\GridView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
@@ -42,8 +42,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'statustext',
             'name',
             'previousSeason.name',
-            'created_at',
-            'updated_at',
+//            'created_at',
+//            'updated_at',
         ],
     ]) ?>
 
@@ -62,7 +62,6 @@ $this->params['breadcrumbs'][] = $this->title;
       $sessionData = new yii\data\ActiveDataProvider([
           'query' => app\models\Session::find()->where(['season_id' => $model->id])->orderBy(['date' => SORT_ASC]),
         ]);
-      Pjax::begin(); 
       echo GridView::widget([
         'dataProvider' => $sessionData,
 //        'filterModel' => $searchModel,
@@ -93,8 +92,30 @@ $this->params['breadcrumbs'][] = $this->title;
              ]
             ],
         ],
-    ]); ?>
-<?php Pjax::end(); ?></div>
+    ]); 
+?>
 
+    <h3>Scores</h3>
+
+(TODO: make this a grid with weeks as columns)
+
+<?php 
+      $scoresData = new yii\data\ActiveDataProvider([
+          'query' => app\models\Regularmatchpoints::find()->where(['season_id' => $model->id])
+        ]);
+      echo GridView::widget([
+        'dataProvider' => $scoresData,
+//        'filterModel' => $searchModel,
+        'columns' => [
+//            ['class' => 'yii\grid\SerialColumn'],
+
+            'name',
+            ['attribute' => 'session_name', 'label' => 'Week',],
+            ['attribute' => 'code', 'label' => 'Group',],
+            'matchpoints',
+
+        ],
+    ]); 
+?>
 
 </div>

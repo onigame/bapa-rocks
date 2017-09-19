@@ -287,9 +287,6 @@ SELECT
 FROM sessionuser su
 JOIN matchuser mu1
   ON (su.user_id = mu1.user_id)
-LEFT OUTER JOIN matchuser mu2
-  ON (su.user_id = mu2.user_id
-      AND mu1.created_at < mu2.created_at)
 JOIN `match` m
   ON (m.id = mu1.match_id
       AND m.session_id = su.session_id)
@@ -297,8 +294,40 @@ JOIN session ss
   ON (m.session_id = ss.id)
 JOIN profile p
   ON (p.user_id = su.user_id)
+LEFT OUTER JOIN matchuser mu2
+  ON (su.user_id = mu2.user_id
+      AND mu1.match_id = mu2.match_id
+      AND mu1.created_at < mu2.created_at)
 WHERE mu2.id IS NULL AND ss.type = 1
 ORDER BY name
+);
+
+CREATE OR REPLACE VIEW regularmatchpoints AS (
+SELECT
+  mu.id,
+  p.name as name,
+  sess.season_id,
+  m.session_id,
+  mu.match_id,
+  mu.user_id,
+  sess.name as session_name,
+  m.code,
+  mu.bonuspoints + SUM(s.matchpoints) as matchpoints
+FROM matchuser mu
+JOIN `match` m
+  ON (m.id = mu.match_id)
+JOIN game g
+  ON (g.match_id = mu.match_id)
+JOIN score s
+  ON (s.game_id = g.id AND s.user_id = mu.user_id)
+JOIN profile p
+  ON (p.user_id = s.user_id)
+JOIN session sess
+  ON (sess.id = m.session_id)
+WHERE
+  s.matchpoints IS NOT NULL
+GROUP BY
+  mu.id
 );
 
 CREATE OR REPLACE VIEW machinescore AS (

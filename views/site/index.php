@@ -83,10 +83,10 @@ $this->title = 'BAPA Manager';
 <?php
           $sessionData = new yii\data\ActiveDataProvider([
             'query' => app\models\Session::find()->where(['status' => 2]),
-            'pagination' => [ 'pageSize' => 3 ],
+            'pagination' => [ 'pageSize' => 5 ],
             'sort' => [
                'defaultOrder' => [
-                  'created_at' => SORT_ASC,
+                  'created_at' => SORT_DESC,
                ]
             ],
           ]);

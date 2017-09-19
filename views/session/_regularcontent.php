@@ -30,19 +30,18 @@ use kartik\grid\GridView;
  //           'id',
  //           'session_id',
             'code',
-            'bracket',
-            'formatString',
-            'matchusersString',
-            ['attribute' => 'statusString', 'format' => 'html'],
-//            'statusDetailCode',
             [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
+            ['attribute' => 'statusString', 'format' => 'html'],
+            'matchusersScoresString',
+            'formatString',
+//            'statusDetailCode',
         ],
     ]); ?>
 <?php
-$this->registerJs('
-    setInterval(function(){
-         $.pjax.reload({container:"#currentmatches"});
-    }, 10000);', \yii\web\VIEW::POS_HEAD);
+//$this->registerJs('
+//    setInterval(function(){
+//         $.pjax.reload({container:"#currentmatches"});
+//    }, 10000);', \yii\web\VIEW::POS_HEAD);
 ?>
 
 
