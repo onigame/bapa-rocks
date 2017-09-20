@@ -38,10 +38,10 @@ use kartik\grid\GridView;
         ],
     ]); ?>
 <?php
-//$this->registerJs('
-//    setInterval(function(){
-//         $.pjax.reload({container:"#currentmatches"});
-//    }, 10000);', \yii\web\VIEW::POS_HEAD);
+$this->registerJs('
+    setInterval(function(){
+         $.pjax.reload({container:"#currentmatches-pjax"});
+    }, 10000);', \yii\web\VIEW::POS_HEAD);
 ?>
 
 

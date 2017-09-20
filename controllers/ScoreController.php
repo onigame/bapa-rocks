@@ -24,7 +24,7 @@ class ScoreController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete', 'verify'],
+                'only' => ['update', 'create', 'delete', 'verify', 'forfeit', 'unforfeit'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -35,7 +35,7 @@ class ScoreController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['verify'],
+                        'actions' => ['verify', 'forfeit', 'unforfeit'],
                         'roles' => ['@'],
                     ],
                 ],
@@ -129,6 +129,45 @@ class ScoreController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionForfeit($id) {
+      $score = $this->findModel($id);
+      if ($score->game->status != 3) {
+        Yii::$app->session->setFlash('warning', "only in-progress games can be forfeited!");
+        throw new \yii\base\UserException("only in-progress games can be forfeited!");
+      }
+      if ($score->value == NULL && $score->forfeit == 1) {
+        Yii::$app->session->setFlash('warning', "already forfeited!");
+        throw new \yii\base\UserException("already forfeited!");
+      }
+      $score->forfeit = 1;
+      $score->recorder_id = Yii::$app->user->id;
+      $score->verified = 0;
+      $score->verifier_id = null;
+      $score->value = -1;
+      $score->save();
+      $score->game->maybeCompleted();
+      return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    public function actionUnforfeit($id) {
+      $score = $this->findModel($id);
+      if ($score->game->status != 3) {
+        Yii::$app->session->setFlash('warning', "only in-progress games can be unforfeited!");
+        throw new \yii\base\UserException("only in-progress games can be unforfeited!");
+      }
+      if ($score->value == NULL && $score->forfeit == 0) {
+        Yii::$app->session->setFlash('warning', "already not forfeited!");
+        throw new \yii\base\UserException("already not forfeited!");
+      }
+      $score->forfeit = 0;
+      $score->recorder_id = Yii::$app->user->id;
+      $score->verified = 0;
+      $score->verifier_id = null;
+      $score->value = NULL;
+      $score->save();
+      return $this->redirect(Yii::$app->request->referrer);
     }
 
     public function actionVerify($id) {

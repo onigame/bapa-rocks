@@ -86,6 +86,9 @@ JAVASCRIPT;
               ],
             ],
           ],
+          'readonly' => function ($model, $key, $index, $widget) {
+            return ($model->forfeit == 1);
+          },
         ],
         [ 'attribute' => 'username', 'label' => 'Player Name',
           'contentOptions' => ['style' => 'text-align:left'],
@@ -99,6 +102,7 @@ JAVASCRIPT;
           'label' => 'Verify?',
           'format' => 'raw',
         ],
+        [ 'label' => 'Forfeit?', 'attribute' => 'ForfeitButton', 'format' => 'html'],
         [ 'attribute' => 'recordername', 'format' => 'html', 'label' => 'Recorded By',
           'contentOptions' => ['style' => 'text-align:left'],
           'headerOptions' => ['style' => 'text-align:left'],

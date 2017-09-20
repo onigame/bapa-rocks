@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $model->name;
         'dataProvider' => $indataProvider,
         'id' => 'inplayergrid',
         'responsiveWrap' => false,
-        'pjax' => true,
+//        'pjax' => true,
         'columns' => [
             'user_id',
             'playerName',
@@ -101,7 +101,7 @@ $this->registerJs('
 <?= GridView::widget([
         'dataProvider' => $outdataProvider,
         'id' => 'outplayergrid',
-        'pjax' => true,
+//        'pjax' => true,
         'columns' => [
             'user_id',
             'playerName',

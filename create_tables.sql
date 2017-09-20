@@ -145,12 +145,10 @@ CREATE TABLE score (
 CREATE TABLE matchuser (
     id INT AUTO_INCREMENT PRIMARY KEY,
     starting_playernum INT NOT NULL, -- useful for playoff sources
- --   matchpoints INT NOT NULL, -- add all games in match (with possible bonus)
-    bonuspoints INT NOT NULL DEFAULT 0, -- bonus matchpoints (or malus)
     matchrank INT, -- rank within match (1st place, 2nd, etc.) Ties are indeterminate.
     game_count INT NOT NULL,
-    opponent_count INT NOT NULL,
-    forfeit_opponent_count INT NOT NULL DEFAULT 0,
+    opponent_count INT NOT NULL, -- includes forfeit opponents
+    forfeit_opponent_count INT NOT NULL DEFAULT 0, -- will be subtracted later
     match_id INT NOT NULL,
     FOREIGN KEY match_key (match_id) REFERENCES `match`(id),
     user_id INT NOT NULL,
@@ -179,8 +177,8 @@ CREATE TABLE seasonuser (
     notes VARCHAR(255),
     matchpoints INT NOT NULL, -- add all games in match (including bonus)
     game_count INT NOT NULL, -- only effective games in season
-    opponent_count INT NOT NULL, -- only effective opponents in season
-    forfeit_opponent_count INT NOT NULL DEFAULT 0,
+    opponent_count INT NOT NULL, -- only effective opponents in season, including forfeits
+    forfeit_opponent_count INT NOT NULL DEFAULT 0, -- will be subtracted from opponent_count to calculate mpo
     match_count INT NOT NULL, -- only effective matches in season
     dues INT NOT NULL, -- 0 = not paid, 1 = paid
     playoff_division VARCHAR(20), -- NULL = unassgned; 'A', 'B', 'DQ'

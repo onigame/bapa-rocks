@@ -411,6 +411,7 @@ class Game extends \yii\db\ActiveRecord
             $cur_mp_if_tied = $cur_mp_if_not_tied;
           }
           $cur_mp_if_not_tied--;
+          if ($score->forfeit == 1) $score->matchpoints = 0;
           if (!$score->save()) {
             Yii::error($score->errors);
             throw new \yii\base\UserException("Error saving score at finishGame");
@@ -441,11 +442,14 @@ class Game extends \yii\db\ActiveRecord
         }
 
         foreach ($scores as $score) {
-          if ($score->forfeit == 1) continue;
           $mu = MatchUser::find()->where(['match_id' => $game->match_id, 'user_id' => $score->user_id])->one();
           $mu->game_count += 1;
-          $mu->opponent_count += $addl_opponent_count;
-          $mu->forfeit_opponent_count += $addl_forfeit_opponent_count;
+          if ($score->forfeit == 0) {
+            $mu->opponent_count += $addl_opponent_count;
+            $mu->forfeit_opponent_count += $addl_forfeit_opponent_count;
+          } else {
+            // forfeit scores do not add to opponent_count or forfeit_opponent_count.
+          }
           if (!$mu->save()) {
             Yii::error($mu->errors);
             throw new \yii\base\UserException("Error saving mu at finishGame");

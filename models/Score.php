@@ -160,4 +160,27 @@ class Score extends \yii\db\ActiveRecord
         return Html::a("Verify", ['/score/verify', 'id' => $this->id], ['class' => 'btn-sm btn-success']);
       }
     }
+
+    public function getForfeitButton() {
+      if ($this->forfeit == 0) {
+        return Html::a( "Forfeit",
+                        ["/score/forfeit", 'id' => $this->id],
+                        [
+                          'title' => 'Forfeit',
+                          //'data-pjax' => '0',
+                          'class' => 'btn-sm btn-danger',
+                        ]
+                      );
+      } else {
+        return Html::a( "Un-Forfeit",
+                        ["/score/unforfeit", 'id' => $this->id],
+                        [
+                          'title' => 'Un-Forfeit',
+                          //'data-pjax' => '0',
+                          'class' => 'btn-sm btn-info',
+                        ]
+                      );
+      }
+    }
+
 }
