@@ -133,7 +133,7 @@ class Match extends \yii\db\ActiveRecord
       if ($this->statusDetailCode == 3) return "Completed";
       if ($this->currentGame == null) return "ERROR -- in progress, but no current game";
       $curGameStatus = $this->currentGame->statusString; 
-      return "On Game " . ($this->statusDetailCode-3) . " ($curGameStatus)";
+      return "On Game " . $this->currentGame->number . " ($curGameStatus)";
     }
 
     /**
