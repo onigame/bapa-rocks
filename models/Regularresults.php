@@ -37,7 +37,7 @@ class Regularresults extends \yii\db\ActiveRecord
     {
         return [
             [['session_id', 'user_id', 'match_id', 'code', 'match_status'], 'required'],
-            [['session_id', 'user_id', 'sessionuser_id', 'matchuser_id', 'match_id', 'match_status'], 'integer'],
+            [['session_id', 'user_id', 'sessionuser_id', 'matchuser_id', 'match_id', 'match_status', 'date'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['code'], 'string', 'max' => 255],
         ];
@@ -56,6 +56,7 @@ class Regularresults extends \yii\db\ActiveRecord
             'match_id' => 'Match ID',
             'code' => 'Code',
             'name' => 'Name',
+            'date' => 'Date',
             'matchGoButton' => 'Go',
             'match_status' => 'Match Status',
         ];

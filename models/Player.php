@@ -32,7 +32,7 @@ class Player extends User {
     $answer = "";
     // is the player currently in a game?
     $results = Regularresults::find()
-                 ->where(["user_id" => $this->id])->one();
+                 ->where(["user_id" => $this->id])->orderBy(['date' => SORT_DESC])->one();
     if ($results != NULL) {
       if ($results->session->status == 2) {
         $answer .= "<p>You last played in " . $results->session->season->name . " " 

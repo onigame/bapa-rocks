@@ -102,7 +102,6 @@ JAVASCRIPT;
           'label' => 'Verify?',
           'format' => 'raw',
         ],
-        [ 'label' => 'Forfeit?', 'attribute' => 'ForfeitButton', 'format' => 'html'],
         [ 'attribute' => 'recordername', 'format' => 'html', 'label' => 'Recorded By',
           'contentOptions' => ['style' => 'text-align:left'],
           'headerOptions' => ['style' => 'text-align:left'],
@@ -111,6 +110,7 @@ JAVASCRIPT;
           'contentOptions' => ['style' => 'text-align:left'],
           'headerOptions' => ['style' => 'text-align:left'],
         ],
+        [ 'label' => 'Forfeit?', 'attribute' => 'ForfeitButton', 'format' => 'raw'],
      ],
    ]);
    $this->registerAssetBundle(yii\web\JqueryAsset::className(), \yii\web\View::POS_HEAD);

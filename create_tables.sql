@@ -281,6 +281,7 @@ SELECT
 --  mu1.matchrank,
   m.code as code,
 --  m.format as format,
+  ss.date as date,
   m.status as match_status
 FROM sessionuser su
 JOIN matchuser mu1

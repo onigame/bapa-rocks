@@ -169,6 +169,9 @@ class Score extends \yii\db\ActiveRecord
                           'title' => 'Forfeit',
                           //'data-pjax' => '0',
                           'class' => 'btn-sm btn-danger',
+                          'data' => [
+                            'confirm' => ('Did you make sure this is really a FORFEIT situation?'),
+                          ],
                         ]
                       );
       } else {
