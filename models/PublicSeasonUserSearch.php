@@ -119,9 +119,11 @@ class PublicSeasonUserSearch extends PublicSeasonUser
 
         $query->andFilterWhere(['like', 'notes', $this->notes]);
 
+/*
         $query->joinWith(['profile' => function($q) {
           $q->where('profile.name LIKE "%' . $this->playerName . '%"');
         }]);
+*/
 
         return $dataProvider;
     }
