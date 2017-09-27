@@ -172,6 +172,7 @@ $this->registerJs('
                 }
               ],
             ],
+            'profile.user.username',
 /*
             'notes',
             'matchpoints',
