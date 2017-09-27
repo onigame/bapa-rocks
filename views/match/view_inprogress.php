@@ -43,10 +43,10 @@ $this->params['breadcrumbs'][] = $model->code;
 //        'options' => ['style' => 'font-size:10px'],
         'responsiveWrap' => false,
         'columns' => [
-//            'id',
             [ 'label' => 'Name', 'attribute' => 'user.name', ],
             [ 'label' => 'Matchpoints', 'attribute' => 'matchpoints', ],
             [ 'label' => 'Breakdown', 'attribute' => 'matchpointsbreakdown', ],
+//            'user.id',
         ],
     ]); ?>
 

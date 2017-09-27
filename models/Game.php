@@ -240,7 +240,8 @@ class Game extends \yii\db\ActiveRecord
 
     public function maybeCompleted() {
       if (!$this->allEntered) return false;
-      if ($this->allVerified) $this->finishGame();
+      //if ($this->allVerified) $this->finishGame();
+      if ($this->allVerified && $this->status != 4) $this->finishGame();
       return true;
     }
 
@@ -381,6 +382,10 @@ class Game extends \yii\db\ActiveRecord
 
     public function finishGame() {
       // we assume that all checks are done and there won't be errors.
+      // but just in case...
+      if ($this->status == 4) {
+         throw new \yii\base\UserException("Cannot finish a Game that is already finished!");
+      }
       $game = $this;
       $game::getDb()->transaction(function($db) use ($game) {
         $lastvalue = -20; // no one will get this score, right?
