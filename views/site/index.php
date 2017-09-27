@@ -9,8 +9,6 @@ $this->title = 'BAPA Manager';
 ?>
 <div class="site-index">
 
-<h3>Wei-Hwa is debugging.  The current state is not accurate.</h3>
-
     <h1>BAPA Rocks!</h1>
 <?php      
         if (Yii::$app->user->isGuest) {

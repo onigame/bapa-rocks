@@ -80,15 +80,12 @@ class GameController extends Controller
         foreach (MachineStatus::find()->where(['game_id' => $game->id])->all() as $ms) {
           $ms->delete();
         }
-Yii::warning("Setting stuff");
         $game->machine_id = null;
         $game->status = 6;
-Yii::warning("Save?");
         if (!$game->save()) {
           Yii::error($game->errors);
           throw new \yii\base\UserException("Error saving game direction actionKick" . $game->id);
         }
-Yii::warning("SaveDone");
       });
 
       return $this->render('view', [
