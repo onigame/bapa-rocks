@@ -94,7 +94,7 @@ $this->title = 'BAPA Manager';
             'dataProvider' => $sessionData,
             'columns' => [
               ['class' => 'yii\grid\SerialColumn'],
-              'seasonName',
+              [ 'label' => 'Season', 'attribute' => 'seasonName', 'format' => 'html'],
               'name',
               'locationName',
               'typeName',

@@ -135,7 +135,13 @@ class Session extends \yii\db\ActiveRecord
     }
 
     public function getSeasonName() {
-        return $this->season->name;
+        return Html::a( $this->season->name,
+                      ["/season/view", 'id' => $this->season_id],
+                      [
+                        'title' => 'View Season',
+                        'data-pjax' => '0',
+                      ]
+                    );
     }
 
     public function getCloseable() {

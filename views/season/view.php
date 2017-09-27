@@ -97,25 +97,32 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h3>Scores</h3>
 
-(TODO: make this a grid with weeks as columns)
 
 <?php 
-      $scoresData = new yii\data\ActiveDataProvider([
-          'query' => app\models\Regularmatchpoints::find()->where(['season_id' => $model->id])
-        ]);
-      echo GridView::widget([
+      $scoresData = app\models\Regularmatchpoints::seasonArrayDataProvider($model->id);
+      $gvdata = [
         'dataProvider' => $scoresData,
+        'pjax' => true, 
 //        'filterModel' => $searchModel,
+        'formatter' => ['class' => 'yii\i18n\Formatter','nullDisplay' => ''],
         'columns' => [
 //            ['class' => 'yii\grid\SerialColumn'],
-
-            'name',
-            ['attribute' => 'session_name', 'label' => 'Week',],
-            ['attribute' => 'code', 'label' => 'Group',],
-            'matchpoints',
-
+//            'id',
+            'Name',
+//            ['attribute' => 'session_name', 'label' => 'Week',],
+//            ['attribute' => 'code', 'label' => 'Group',],
+//            'matchpoints',
+            'Total',
         ],
-    ]); 
+      ]; 
+      for ($wn = 1; $wn <= 12; ++$wn) {
+//        $gvdata['columns'][] = [ 'attribute' => "Week $wn group", 'label' => 'Grp', 'format' => 'html' ];
+        $gvdata['columns'][] = [ 'attribute' => "Week $wn", 'label' => "Wk$wn", 'format' => 'html' ];
+      }
+      if (Yii::$app->user->can('GenericManagerPermission')) {
+        $gvdata['columns'][] = 'id';
+      }
+      echo GridView::widget($gvdata);
 ?>
 
 </div>
