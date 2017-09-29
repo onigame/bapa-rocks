@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $model->name;
         'attributes' => [
 //            'typeName',
 //            'statusString',
-            'seasonName',
+            [ 'attribute' => 'seasonName', 'format' => 'raw'],
             [
               'attribute' => 'locationName',
               'format' => 'raw',

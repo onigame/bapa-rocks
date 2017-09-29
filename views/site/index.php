@@ -68,7 +68,7 @@ $this->title = 'BAPA Manager';
             'responsiveWrap' => false,
             'columns' => [
               ['class' => 'yii\grid\SerialColumn'],
-              'seasonName',
+              [ 'attribute' => 'seasonName', 'format' => 'html'],
               'name',
               [ 'label' => 'Am I in?', 'attribute' => 'JoinButton', 'format' => 'html'],
               'locationName',
