@@ -104,7 +104,8 @@ $this->registerJs('
 //        'pjax' => true,
         'columns' => [
             'user_id',
-            'playerName',
+            'name',
+//            'playerName',
             ['class' => 'yii\grid\ActionColumn',
               'template' => '{addplayer}',
               'buttons' => [

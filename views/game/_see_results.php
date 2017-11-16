@@ -48,6 +48,7 @@ use yii\widgets\ActiveForm;
           'contentOptions' => ['style' => 'text-align:left'],
           'headerOptions' => ['style' => 'text-align:left'],
         ],
+        [ 'attribute' => 'id'],
      ],
    ]);
 

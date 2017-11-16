@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'matchpoints',
             'forfeit',
             // 'verified',
-            // 'game_id',
+            'game_id',
             // 'user_id',
             // 'recorder_id',
             // 'verifier_id',

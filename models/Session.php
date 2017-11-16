@@ -151,6 +151,14 @@ class Session extends \yii\db\ActiveRecord
       return true;
     }
 
+    public function getLateslotcount() {
+      $count = 0;
+      foreach ($this->matches as $match) {
+        if ($match->latePlayerOkay) $count++;
+      }
+      return $count;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -233,6 +241,19 @@ class Session extends \yii\db\ActiveRecord
       $newSessionUser->status = 1;
       $newSessionUser->recorder_id = Yii::$app->user->id;
       $newSessionUser->previous_performance = $seasonuser->previousPerformance;
+      if (!$newSessionUser->save()) {
+        Yii::error($newSessionUser->errors);
+        throw new \yii\base\UserException("Error saving sessionUser");
+      }
+    }
+
+    public function addLatePlayer($user_id) {
+      $newSessionUser = new SessionUser();
+      $newSessionUser->user_id = $user_id;
+      $newSessionUser->session_id = $this->id;
+      $newSessionUser->status = 2;
+      $newSessionUser->recorder_id = Yii::$app->user->id;
+      $newSessionUser->previous_performance = 30;
       if (!$newSessionUser->save()) {
         Yii::error($newSessionUser->errors);
         throw new \yii\base\UserException("Error saving sessionUser");

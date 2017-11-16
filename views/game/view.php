@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		'playerOrderSelector.name',
 		'machineSelector.name',
 		'masterSelector.name',
-		[ 'label' => 'Players', 'value' => $model->match->matchusersString ],
+		[ 'label' => 'Players', 'value' => $model->playersString ],
 ],
 ]) ?>
 

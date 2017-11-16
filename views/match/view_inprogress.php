@@ -46,6 +46,7 @@ $this->params['breadcrumbs'][] = $model->code;
             [ 'label' => 'Name', 'attribute' => 'user.name', ],
             [ 'label' => 'Matchpoints', 'attribute' => 'matchpoints', ],
             [ 'label' => 'Breakdown', 'attribute' => 'matchpointsbreakdown', ],
+            [ 'label' => '', 'attribute' => 'admincolumn', 'format' => 'html'],
 //            'user.id',
         ],
     ]); ?>
@@ -71,7 +72,7 @@ $this->params['breadcrumbs'][] = $model->code;
             [ 'attribute' => 'statusString', 'format' => 'html', ],
 //            'statusDetailCode',
             [ 'label' => 'Winner', 'attribute' => 'WinnerName', 'format' => 'html'],
-            'id',
+            [ 'label' => '', 'attribute' => 'admincolumn', 'format' => 'html'],
         ],
     ]); ?>
 

@@ -111,6 +111,7 @@ JAVASCRIPT;
           'headerOptions' => ['style' => 'text-align:left'],
         ],
         [ 'label' => 'Forfeit?', 'attribute' => 'ForfeitButton', 'format' => 'raw'],
+        [ 'label' => '', 'attribute' => 'admincolumn', 'format' => 'html'],
      ],
    ]);
    $this->registerAssetBundle(yii\web\JqueryAsset::className(), \yii\web\View::POS_HEAD);

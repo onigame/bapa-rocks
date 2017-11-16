@@ -21,9 +21,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'machine_id') ?>
 
+    <?= $form->field($model, 'game_id') ?>
+
     <?= $form->field($model, 'recorder_id') ?>
 
-    <?= $form->field($model, 'created_at') ?>
+    <?php // echo $form->field($model, 'created_at') ?>
 
     <?php // echo $form->field($model, 'updated_at') ?>
 

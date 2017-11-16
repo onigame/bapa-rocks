@@ -34,6 +34,7 @@ use kartik\grid\GridView;
             ['attribute' => 'statusString', 'format' => 'html'],
             'matchusersScoresString',
             'formatString',
+            [ 'label' => '', 'attribute' => 'admincolumn', 'format' => 'html'],
 //            'statusDetailCode',
         ],
     ]); ?>

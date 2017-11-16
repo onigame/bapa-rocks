@@ -27,7 +27,7 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'verified') ?>
 
-    <?php // echo $form->field($model, 'game_id') ?>
+    <?= $form->field($model, 'game_id') ?>
 
     <?php // echo $form->field($model, 'user_id') ?>
 

@@ -23,5 +23,12 @@ $this->params['breadcrumbs'][] = $model->name;
     ]) ?>
 <?php } ?>
 
+<?php if ($model->lateslotcount > 0) { ?>
+    <?= Html::a('Add Late Player', ['addlate', 'id' => $model->id], ['class' => 'btn btn-success',
+       'data' => [
+       ],
+    ]) ?>
+<?php } ?>
+
 
 </div>

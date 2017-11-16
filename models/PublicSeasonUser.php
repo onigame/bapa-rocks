@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\base\Security;
+use app\models\Player;
 use app\models\SeasonUser;
 use yii\helpers\Html;
 
@@ -70,6 +71,15 @@ class PublicSeasonUser extends SeasonUser
     {
         $labels = parent::attributeLabels();
         return $labels;
+    }
+
+    public function getPlayer() {
+        return $this->hasOne(Player::className(), ['id' => 'user_id']);
+    }
+
+    public function getName() {
+      if ($this->player == null) return null;
+      return $this->player->name;
     }
 
     public function getRecommended_Division() {

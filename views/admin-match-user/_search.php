@@ -19,11 +19,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'starting_playernum') ?>
 
-    <?= $form->field($model, 'matchpoints') ?>
+    <?= $form->field($model, 'matchrank') ?>
 
     <?= $form->field($model, 'game_count') ?>
 
     <?= $form->field($model, 'opponent_count') ?>
+
+    <?= $form->field($model, 'forfeit_opponent_count') ?>
 
     <?php // echo $form->field($model, 'match_id') ?>
 

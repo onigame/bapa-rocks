@@ -16,6 +16,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'machine_id')->textInput() ?>
 
+    <?= $form->field($model, 'game_id')->textInput() ?>
+
     <?= $form->field($model, 'recorder_id')->textInput() ?>
 
     <div class="form-group">

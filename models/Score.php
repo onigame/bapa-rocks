@@ -186,4 +186,19 @@ class Score extends \yii\db\ActiveRecord
       }
     }
 
+    public function getAdmincolumn() {
+      if (Yii::$app->user->can('GenericAdminPermission')) {
+        return Html::a( $this->id,
+                        ["/admin-score/update", 'id' => $this->id],
+                        [
+                          'title' => $this->id,
+                          'data-pjax' => '0',
+                          'class' => 'btn-sm btn-success',                                                                                                     ]
+                      );
+      } else {
+        return "";
+      }
+    }
+
+
 }

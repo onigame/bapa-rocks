@@ -19,6 +19,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 
 /**
  * SessionController implements the CRUD actions for Session model.
@@ -33,11 +36,11 @@ class SessionController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete', 'start', 'removeplayer', 'addplayer', 'finish', 'leave', 'join'],
+                'only' => ['update', 'create', 'delete', 'start', 'removeplayer', 'addplayer', 'finish', 'leave', 'join', 'addlate'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['update', 'create', 'start', 'removeplayer', 'addplayer', 'finish'],
+                        'actions' => ['update', 'create', 'start', 'removeplayer', 'addplayer', 'finish', 'addlate'],
                         'roles' => ['Manager'],
                     ],
                     [
@@ -166,6 +169,94 @@ class SessionController extends Controller
             'matchDataProvider' => $dataProvider,
           ]);
         }
+    }
+
+    /**
+     * Displays the "add late" screen.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionAddlate($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->status == 1 && $model->type == 1) {
+
+          $openMatches = [];
+          foreach ($model->matches as $match) {
+            if ($match->latePlayerOkay) $openMatches[] = $match;
+          }
+
+          $searchModel = new PublicSeasonUserSearch();
+
+          $data = [];
+          $seasonusers = SeasonUser::find()->from(['seasonuser s'])->where(['season_id' => $model->season_id])
+             ->andWhere(['not in', 's.user_id', SessionUser::find()->select('user_id')
+                                               ->where(['session_id' => $id])])->all();
+          foreach ($seasonusers as $su) {
+            $data[$su->id]['id'] = $su->id;
+            $data[$su->id]['Name'] = $su->playerName;
+
+            $buttons = "";
+            foreach ($openMatches as $match) {
+              $buttons .= Html::a(
+                    $match->code,
+                    [ 'addlateplayer',
+                      'id' => $id,
+                      'match_id' => $match->id,
+                      'user_id' => $su->user->id,
+                    ],
+                    [
+                      'title' => 'Add Late',
+                      'class' => 'btn-sm btn-success',
+                    ]
+                  );
+              $buttons .= " &nbsp; ";
+            }
+            $data[$su->id]['Join'] = $buttons;
+          }
+          $arrayData = ArrayHelper::toArray($data);
+          $adpinit = [
+            'allModels' => $arrayData,
+            'pagination' => [
+              'pageSize' => 0,
+            ],
+            'sort' => [
+              'attributes' => [
+                'Name',
+                'id',
+              ],
+            ],
+          ];
+          $outdataProvider = new ArrayDataProvider($adpinit);
+/*
+          $outdataProvider = $searchModel->search(['season_id' => $model->season_id,
+                                                'session_id' => $id,
+                                                'include' => 'not in',
+                                               ]);
+*/
+
+          $searchModel = new MatchSearch();
+          $searchModel->session_id = $id;
+          $dataProvider = $searchModel->search([]);
+          return $this->render('addlate', [
+            'model' => $model,
+            'matchSearchModel' => $searchModel,
+            'matchDataProvider' => $dataProvider,
+            'outdataProvider' => $outdataProvider,
+          ]);
+        }
+    }
+
+    public function actionAddlateplayer($id, $match_id, $user_id) {
+      $session = Session::findOne($id);
+      $match = Match::findOne($match_id);
+      $player = Player::findOne($user_id);
+
+      $session->addLatePlayer($user_id);
+      $match->addRegularPlayer($user_id);
+
+      Yii::$app->session->setFlash('success', "Added ".$player->name." as latecomer to ".$match->code." successfully!");
+      return $this->redirect(Yii::$app->request->referrer);
     }
 
     public function actionFinish($id) {

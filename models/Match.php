@@ -112,6 +112,13 @@ class Match extends \yii\db\ActiveRecord
       return 1;
     }
 
+    public function getLatePlayerOkay() {
+      if ($this->format != 3) return false;
+      if ($this->gamesAllCompleted) return false;
+      if ($this->currentPlayerCount != 3) return false;
+      return true;
+    }
+
     public function getStatusDetailCode() {
       if ($this->status == 0) {
         if ($this->playersFilled) {
@@ -238,6 +245,20 @@ class Match extends \yii\db\ActiveRecord
       }
     }
 
+    public function getAdmincolumn() {
+      if (Yii::$app->user->can('GenericAdminPermission')) {
+        return Html::a( $this->id,
+                        ["/admin-match/update", 'id' => $this->id],
+                        [
+                          'title' => $this->id,
+                          'data-pjax' => '0',
+                          'class' => 'btn-sm btn-success',                                                                                                     ]
+                      );
+      } else {
+        return "";
+      }
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -326,7 +347,7 @@ class Match extends \yii\db\ActiveRecord
           return "(empty)";
         }
         if ($actualcount < $this->startingPlayerCount) {
-          $namelist .= " (+". ($this->startingPlayerCount - $actualCount) . ")";
+          $namelist .= " (+". ($this->startingPlayerCount - $actualcount) . ")";
         }
         return $namelist;
     }
@@ -370,7 +391,7 @@ class Match extends \yii\db\ActiveRecord
           return "(empty)";
         }
         if ($actualcount < $this->startingPlayerCount) {
-          $namelist .= " (+". ($this->startingPlayerCount - $actualCount) . ")";
+          $namelist .= " (+". ($this->startingPlayerCount - $actualcount) . ")";
         }
         return $namelist;
     }

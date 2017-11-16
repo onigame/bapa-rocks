@@ -60,9 +60,10 @@ class MatchUserSearch extends MatchUser
         $query->andFilterWhere([
             'id' => $this->id,
             'starting_playernum' => $this->starting_playernum,
-            'matchpoints' => $this->matchpoints,
+            'matchrank' => $this->matchrank,
             'game_count' => $this->game_count,
             'opponent_count' => $this->opponent_count,
+            'forfeit_opponent_count' => $this->forfeit_opponent_count,
             'match_id' => $this->match_id,
             'user_id' => $this->user_id,
             'created_at' => $this->created_at,

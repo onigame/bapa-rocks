@@ -14,11 +14,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'starting_playernum')->textInput() ?>
 
-    <?= $form->field($model, 'matchpoints')->textInput() ?>
+    <?= $form->field($model, 'matchrank')->textInput() ?>
 
     <?= $form->field($model, 'game_count')->textInput() ?>
 
     <?= $form->field($model, 'opponent_count')->textInput() ?>
+
+    <?= $form->field($model, 'forfeit_opponent_count')->textInput() ?>
 
     <?= $form->field($model, 'match_id')->textInput() ?>
 

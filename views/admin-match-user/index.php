@@ -26,9 +26,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'starting_playernum',
-            'matchpoints',
+            'matchrank',
             'game_count',
             'opponent_count',
+            'forfeit_opponent_count',
             'match_id',
             'match.code',
             'match.session.name',

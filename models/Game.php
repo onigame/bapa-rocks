@@ -231,6 +231,20 @@ class Game extends \yii\db\ActiveRecord
       }
     }
 
+    public function getAdmincolumn() {
+      if (Yii::$app->user->can('GenericAdminPermission')) {
+        return Html::a( $this->id,
+                        ["/admin-game/update", 'id' => $this->id],
+                        [
+                          'title' => $this->id,
+                          'data-pjax' => '0',
+                          'class' => 'btn-sm btn-success',                                                                                                     ]
+                      );
+      } else {
+        return "";
+      }
+    }
+
     public function getAllVerified() {
       foreach ($this->scores as $score) {
         if (!($score->verified)) return false;
@@ -323,7 +337,8 @@ class Game extends \yii\db\ActiveRecord
       // remove latecomers if we're in game 1 or 2
       if ($this->number <= 2) {
         foreach ($players as $key => $player) {
-          if ($player->status == 2) unset($players[$player]);
+          Yii::warning($player->user->name . "$player->status");
+          if ($player->status == 2) unset($players[$key]);
         }
       }
       usort($players, ['app\models\SessionUser', 'byPreviousPerformance']);
@@ -338,7 +353,7 @@ class Game extends \yii\db\ActiveRecord
       else if ($count == 4 && $this->number == $this->match->maximumGameCount-1) { $playernumbers = [2,4,1,3]; }
       else if ($count == 4 && $this->number == $this->match->maximumGameCount-2) { $playernumbers = [3,1,4,2]; }
       else if ($count == 4 && $this->number == 1) { $playernumbers = [4,3,2,1]; } 
-      else {  throw new \yii\base\UserException("Impossible playercount/gamenumber combo at createScores"); }
+      else {  throw new \yii\base\UserException("$count $this->number Impossible playercount/gamenumber combo at createScores"); }
 
       $game = $this;
       $game::getDb()->transaction(function($db) use ($game, $players, $playernumbers) {
@@ -576,7 +591,13 @@ class Game extends \yii\db\ActiveRecord
     }
 
     public function getPlayersString() {
-      return ($this->match->playersString);
+      $players = $this->players;
+      if (count($players) == 0) return "(nobody)";
+      $list = [];
+      foreach ($players as $player) {
+        $list[] = $player->name;
+      }
+      return join(', ', $list);
     }
 
     /**

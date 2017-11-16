@@ -25,7 +25,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
             [['id', 'matchpoints', 'game_count', 'opponent_count', 'match_count', 
               'dues', 'playoff_rank', 'user_id', 'row_number'], 'integer'],
             [['mpg'], 'double'],
-            [['playoff_division', 'notes', 'playerName'], 'safe'],
+            [['playoff_division', 'notes', 'name'], 'safe'],
         ];
     }
 
@@ -62,7 +62,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
                                 'game_count', 
                                 'opponent_count', 
                                 'match_count',
-                                'playerName' => [
+                                'name' => [
                                    'asc' => ['profile.name' => SORT_ASC],
                                    'desc' => ['profile.name' => SORT_DESC],
                                    'label' => 'Player Name',
@@ -119,11 +119,9 @@ class PublicSeasonUserSearch extends PublicSeasonUser
 
         $query->andFilterWhere(['like', 'notes', $this->notes]);
 
-/*
         $query->joinWith(['profile' => function($q) {
-          $q->where('profile.name LIKE "%' . $this->playerName . '%"');
+          $q->where('profile.name LIKE "%' . $this->name . '%"');
         }]);
-*/
 
         return $dataProvider;
     }

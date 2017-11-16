@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use yii\db\ActiveRecord;
 use app\models\Score;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "matchuser".
@@ -38,7 +39,7 @@ class MatchUser extends \yii\db\ActiveRecord
     {
         return [
             [['bonuspoints', 'game_count', 'opponent_count', 'match_id', 'user_id', 'starting_playernum'], 'required'],
-            [['bonuspoints', 'game_count', 'opponent_count', 'match_id', 'user_id', 'created_at', 'updated_at', 'starting_playernum'], 'integer'],
+            [['bonuspoints', 'matchrank', 'game_count', 'opponent_count', 'match_id', 'user_id', 'created_at', 'updated_at', 'starting_playernum'], 'integer'],
             [['match_id'], 'exist', 'skipOnError' => true, 'targetClass' => Match::className(), 'targetAttribute' => ['match_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -85,6 +86,7 @@ class MatchUser extends \yii\db\ActiveRecord
     }
 
     public function getScores() {
+      if ($this->match == null) return [];
       $games = $this->match->games;
       $scores = [];
       foreach ($games as $game) {
@@ -118,6 +120,20 @@ class MatchUser extends \yii\db\ActiveRecord
         $result .= " - 1 malus";
       }
       return $result;
+    }
+
+    public function getAdmincolumn() {
+      if (Yii::$app->user->can('GenericAdminPermission')) {
+        return Html::a( $this->id,
+                        ["/admin-match-user/update", 'id' => $this->id],
+                        [
+                          'title' => $this->id,
+                          'data-pjax' => '0',
+                          'class' => 'btn-sm btn-success',                                                                                                     ]
+                      );
+      } else {
+        return "";
+      }
     }
 
     public static function compareMatchpoints($matchuser_a, $matchuser_b) {

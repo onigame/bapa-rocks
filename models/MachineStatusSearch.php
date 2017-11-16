@@ -18,7 +18,8 @@ class MachineStatusSearch extends MachineStatus
     public function rules()
     {
         return [
-            [['id', 'status', 'machine_id', 'recorder_id', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'status', 'machine_id', 'game_id', 'recorder_id'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -61,6 +62,7 @@ class MachineStatusSearch extends MachineStatus
             'id' => $this->id,
             'status' => $this->status,
             'machine_id' => $this->machine_id,
+            'game_id' => $this->game_id,
             'recorder_id' => $this->recorder_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

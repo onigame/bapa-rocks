@@ -30,9 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'starting_playernum',
-            'matchpoints',
+            'matchrank',
             'game_count',
             'opponent_count',
+            'forfeit_opponent_count',
             'match_id',
             'user_id',
             'created_at',
