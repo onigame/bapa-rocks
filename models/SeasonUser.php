@@ -49,6 +49,7 @@ class SeasonUser extends \yii\db\ActiveRecord
             [['matchpoints', 'game_count', 'opponent_count',
               'match_count', 'dues', 'user_id', 'season_id'], 'required'],
             [['matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id',
+              'surplus_matchpoints', 'surplus_game_count', 'surplus_opponent_count',
               'season_id', 'created_at', 'updated_at'], 'integer'],
             [['mpg', 'mpo', 'previous_season_rank'], 'double'],
             [['notes'], 'string', 'max' => 255],
@@ -69,6 +70,15 @@ class SeasonUser extends \yii\db\ActiveRecord
             'matchpoints' => 'MP',
             'game_count' => 'Games',
             'opponent_count' => 'Opponents',
+
+            'surplus_matchpoints' => 'S-MP',
+            'surplus_game_count' => 'S-Games',
+            'surplus_opponent_count' => 'S-Opponents',
+
+            'playoff_matchpoints' => 'PQ Score',
+            'playoff_game_count' => 'PQ Games',
+            'playoff_opponent_count' => 'PQ Opponents',
+
             'match_count' => 'Matches',
             'dues' => 'Dues',
             'playoff_division' => 'Playoff Division',

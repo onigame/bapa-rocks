@@ -183,8 +183,18 @@ CREATE TABLE seasonuser (
     dues INT NOT NULL, -- 0 = not paid, 1 = paid
     playoff_division VARCHAR(20), -- NULL = unassgned; 'A', 'B', 'DQ'
     playoff_rank INT, -- NULL = unassigned, otherwise within playoff
-    mpg DOUBLE AS (IF(game_count=0,NULL,matchpoints / game_count)) STORED,
-    mpo DOUBLE AS (IF(game_count=0,NULL,(matchpoints - forfeit_opponent_count) / (opponent_count - forfeit_opponent_count))) STORED,
+
+    surplus_matchpoints INT NOT NULL DEFAULT 0, -- matchpoints that aren't counted "drop 2 worst weeks"
+    surplus_mpo_matchpoints INT NOT NULL DEFAULT 0, -- opponents that aren't counted "drop 2 worst weeks"
+    surplus_mpo_opponent_count INT NOT NULL DEFAULT 0, -- opponents that aren't counted "drop 2 worst weeks"
+
+    playoff_matchpoints INT AS (matchpoints - surplus_matchpoints) STORED,
+    playoff_mpo_matchpoints INT AS (matchpoints - surplus_mpo_matchpoints - forfeit_opponent_count) STORED,
+    playoff_mpo_opponent_count INT AS (opponent_count - surplus_mpo_opponent_count - forfeit_opponent_count) STORED,
+
+    mpg DOUBLE AS (IF(game_count=0,NULL,(matchpoints / game_count))) STORED,
+    mpo DOUBLE AS (IF(game_count=0,NULL,(playoff_mpo_matchpoints / playoff_opponent_count))) STORED,
+
     user_id INT NOT NULL,
     FOREIGN KEY user_key (user_id) REFERENCES user(id),
     season_id INT NOT NULL,
@@ -309,6 +319,9 @@ SELECT
   m.session_id,
   mu.match_id,
   mu.user_id,
+  mu.game_count,
+  mu.opponent_count,
+  mu.forfeit_opponent_count,
   sess.name as session_name,
   m.code,
   mu.bonuspoints + SUM(s.matchpoints) as matchpoints

@@ -121,7 +121,12 @@ JAVASCRIPT;
           if (Yii::$app->user->can('GenericManagerPermission')) {
             //echo "<h3>Manager Actions</h3>";
             echo "<p>";
-            echo Html::a('Kick Group Off Machine', ['kick', 'id' => $model->id], ['class' => 'btn btn-success']);
+            echo Html::a('Kick Group Off Machine', ['kick', 'id' => $model->id], [
+                  'class' => 'btn btn-success',
+                  'data' => [
+                    'confirm' => ('Did you make sure this is an intentional kick?'),
+                  ],
+                 ]);
             echo "</p>";
           }
 

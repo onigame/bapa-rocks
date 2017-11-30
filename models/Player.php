@@ -34,6 +34,17 @@ class Player extends User {
     $results = Regularresults::find()
                  ->where(["user_id" => $this->id])->orderBy(['date' => SORT_DESC])->one();
     if ($results != NULL) {
+      $seasonuser = SeasonUser::find()->where(['season_id' => $results->session->season->id, 
+                                               'user_id' => $this->id])->one();
+      if ($seasonuser->dues == 0) {
+        $answer .= "<p>You have NOT paid your dues for " 
+                   . $results->session->season->name
+                   . ".  Please do so at your first opportunity.</p>";
+      } else {
+        $answer .= "<p>You have paid your dues for " 
+                   . $results->session->season->name
+                   . ".  Thanks!</p>";
+      }
       if ($results->session->status == 2) {
         $answer .= "<p>You last played in " . $results->session->season->name . " " 
                     . $results->session->name 
@@ -67,7 +78,7 @@ class Player extends User {
       } else if ($results->match_status == 2) {
         $answer .= "<p>";
         $answer .= "You are currently in ".$results->match->code." vs. ".$results->match->opponentNames;
-        $answer .= "; on Game ".$results->match->gameCount.".";
+        $answer .= "; on Game ".$results->match->gameCount." (".$results->match->currentGame->machine->name.").";
         $answer .= "</p>";
         $game = $results->match->currentGame;
         if ($game == null) {

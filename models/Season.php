@@ -100,6 +100,17 @@ class Season extends \yii\db\ActiveRecord
         return $this->hasOne(Season::className(), ['id' => 'previous_season_id']);
     }
 
+    public function getWeeksPlayed() {
+      $sessions = $this->sessions;
+      $answer = 0;
+      foreach ($sessions as $session) {
+        if ($session->type == 1 && $session->status == 2) {
+          $answer++;
+        }
+      }
+      return $answer;
+    }
+
     public function getLastLocationId() {
       $sessions = $this->sessions;
       if ($sessions == null) return null;

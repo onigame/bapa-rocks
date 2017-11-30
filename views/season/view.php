@@ -95,8 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); 
 ?>
 
-    <h3>Scores</h3>
-
+    <h3>Matchpoints</h3>
 
 <?php 
       $scoresData = app\models\Regularmatchpoints::seasonArrayDataProvider($model->id);
@@ -123,6 +122,58 @@ $this->params['breadcrumbs'][] = $this->title;
         $gvdata['columns'][] = 'id';
       }
       echo GridView::widget($gvdata);
+?>
+
+    <h3>Stats</h3>
+<?php
+      $gvdata2 = [
+        'dataProvider' => $scoresData,
+        'pjax' => true, 
+//        'filterModel' => $searchModel,
+        'formatter' => ['class' => 'yii\i18n\Formatter','nullDisplay' => ''],
+        'columns' => [
+//            ['class' => 'yii\grid\SerialColumn'],
+//            'id',
+            'Name',
+//            ['attribute' => 'session_name', 'label' => 'Week',],
+//            ['attribute' => 'code', 'label' => 'Group',],
+//            'matchpoints',
+            'Playoff Qual. Score',
+            ['attribute' => 'MPO', 'label' => 'MPO', 'format' => ['decimal', 4]],
+
+            'Dues Paid?',
+            'Weeks Played',
+            ['attribute' => '5 Weeks?', 'label' => '5 Wks?'],
+            ['attribute' => 'Total', 'label' => 'Total MP'],
+            ['attribute' => 'Opponent Count', 'label' => 'Opp. Ct.'],
+            ['attribute' => 'Forfeit Opponent Count', 'label' => 'Forf. Opp.'],
+            ['attribute' => 'Effective Opponent Count', 'label' => 'Eff. Opp.'],
+            ['attribute' => 'Effective Matchpoints', 'label' => 'Eff. MP'],
+            'Lowest Wk',
+            '2nd Lowest Wk',
+//            'Surplus MP',
+            'Lowest MPO',
+//            'Lowest MPO float',
+//            'Lowest MPO EM',
+//            'Lowest MPO EO',
+            '2nd Lowest MPO',
+//            '2nd Lowest MPO float',
+//            '2nd Lowest MPO EM',
+//            '2nd Lowest MPO EO',
+            ['attribute' => 'Adj. MPO', 'label' => 'Adj. MPO', 'format' => ['decimal', 4]],
+        ],
+        'options' => [
+          'style'=>'overflow: auto; word-wrap: break-word;'
+        ],
+      ]; 
+//      for ($wn = 1; $wn <= 12; ++$wn) {
+//        $gvdata['columns'][] = [ 'attribute' => "Week $wn group", 'label' => 'Grp', 'format' => 'html' ];
+//        $gvdata2['columns'][] = [ 'attribute' => "Week $wn", 'label' => "Wk$wn", 'format' => 'html' ];
+//      }
+      if (Yii::$app->user->can('GenericManagerPermission')) {
+        $gvdata2['columns'][] = 'id';
+      }
+      echo GridView::widget($gvdata2);
 ?>
 
 </div>
