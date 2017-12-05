@@ -18,8 +18,12 @@ class SeasonUserSearch extends SeasonUser
     public function rules()
     {
         return [
-            [['id', 'matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id', 'season_id', 'created_at', 'updated_at'], 'integer'],
-            [['mpg'], 'double'],
+
+            [['id', 'matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id',
+              'surplus_matchpoints', 'surplus_mpo_matchpoints', 'surplus_mpo_opponent_count',
+              'playoff_matchpoints', 'playoff_game_count', 'playoff_opponent_count',
+              'season_id', 'created_at', 'updated_at'], 'integer'],
+            [['mpg', 'mpo', 'adjusted_mpo', 'previous_season_rank'], 'double'],
             [['notes', 'playoff_division'], 'safe'],
         ];
     }

@@ -47,14 +47,15 @@ $this->params['breadcrumbs'][] = $this->title;
                }
             ],
 
-            'notes',
+            'playoff_matchpoints',
             'matchpoints',
-            'game_count',
-            'opponent_count',
-            'match_count',
-            'mpg',
+            'surplus_matchpoints',
+//            'game_count',
+//            'opponent_count',
+            'mpo',
+            'adjusted_mpo',
             'five_weeks_string',
-            'dues_string',
+            ['attribute' => 'dues_string', 'format' => 'html'],
 
         ],
     ]); ?>

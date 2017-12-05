@@ -22,10 +22,13 @@ class PublicSeasonUserSearch extends PublicSeasonUser
     public function rules()
     {
         return [
-            [['id', 'matchpoints', 'game_count', 'opponent_count', 'match_count', 
-              'dues', 'playoff_rank', 'user_id', 'row_number'], 'integer'],
-            [['mpg'], 'double'],
-            [['playoff_division', 'notes', 'name'], 'safe'],
+            [['id', 'matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id',
+              'surplus_matchpoints', 'surplus_mpo_matchpoints', 'surplus_mpo_opponent_count',
+              'playoff_matchpoints', 'playoff_mpo_matchpoints', 'playoff_mpo_opponent_count',
+              'season_id', 'created_at', 'updated_at'], 'integer'],
+            [['mpg', 'mpo', 'adjusted_mpo', 'previous_season_rank'], 'double'],
+            [['notes', 'playoff_division'], 'safe'],
+
         ];
     }
 
@@ -55,10 +58,12 @@ class PublicSeasonUserSearch extends PublicSeasonUser
             'query' => $query,
             'sort' => [
                'defaultOrder' => ['matchpoints' => SORT_DESC, 'mpg' => SORT_DESC],
-               'attributes' => ['mpg', 
+               'attributes' => [
+                                'mpg',
                                 'mpo',
                                 'notes', 
                                 'matchpoints', 
+                                'playoff_matchpoints', 
                                 'game_count', 
                                 'opponent_count', 
                                 'match_count',
@@ -86,9 +91,14 @@ class PublicSeasonUserSearch extends PublicSeasonUser
         Yii::trace($this->season_id);
 
         $query->select([
-          'id', 'notes', 'matchpoints', 'game_count', 'opponent_count', 'previous_season_rank', 'previous_season_rank', 'previous_season_rank',
+          'id', 'notes', 'matchpoints', 'game_count', 'opponent_count', 
+          'forfeit_opponent_count',
+          'previous_season_rank',
           'match_count', 'dues', 'mpg', 'mpo', 's.user_id', 'season_id',
-          //new Expression('@ID := @ID + 1 AS row_number'),
+          'playoff_division', 'playoff_rank',
+          'surplus_matchpoints', 'surplus_mpo_matchpoints', 'surplus_mpo_opponent_count',
+          'playoff_matchpoints', 'playoff_mpo_matchpoints', 'playoff_mpo_opponent_count',
+          new Expression('@ID := @ID + 1 AS row_number'),
         ]);
 
         if (array_key_exists('session_id', $params)) {
@@ -100,7 +110,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
 
         $query->from([
           'seasonuser s',
-          //'(SELECT @ID := 0) tempr'
+          '(SELECT @ID := 0) tempr',
         ]);
 
         // grid filtering conditions
@@ -115,13 +125,14 @@ class PublicSeasonUserSearch extends PublicSeasonUser
             'season_id' => $this->season_id,
             //'row_number' => $this->row_number,
             'mpg' => $this->mpg,
+            'mpo' => $this->mpo,
         ]);
 
         $query->andFilterWhere(['like', 'notes', $this->notes]);
 
-        $query->joinWith(['profile' => function($q) {
-          $q->where('profile.name LIKE "%' . $this->name . '%"');
-        }]);
+//        $query->joinWith(['profile' => function($q) {
+//          $q->where('profile.name LIKE "%' . $this->name . '%"');
+//        }]);
 
         return $dataProvider;
     }

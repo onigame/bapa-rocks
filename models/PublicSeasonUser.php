@@ -85,8 +85,10 @@ class PublicSeasonUser extends SeasonUser
     public function getRecommended_Division() {
       if ($this->dues != 1 or $this->match_count < 5) {
         return "No";
-      } else if ($this->row_number <= 12) {
-        return "A";
+      } else if ($this->row_number <= 8) {
+        return "A8";
+      } else if ($this->row_number <= 16) {
+        return "A16";
       } else {
         return "B";
       }

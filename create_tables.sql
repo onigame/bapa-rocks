@@ -193,7 +193,9 @@ CREATE TABLE seasonuser (
     playoff_mpo_opponent_count INT AS (opponent_count - surplus_mpo_opponent_count - forfeit_opponent_count) STORED,
 
     mpg DOUBLE AS (IF(game_count=0,NULL,(matchpoints / game_count))) STORED,
-    mpo DOUBLE AS (IF(game_count=0,NULL,(playoff_mpo_matchpoints / playoff_opponent_count))) STORED,
+    mpo DOUBLE AS (IF(game_count=0,NULL,(matchpoints - forfeit_opponent_count) 
+                                 / (opponent_count - forfeit_opponent_count))) STORED,
+    adjusted_mpo DOUBLE AS (IF(game_count=0,NULL,(playoff_mpo_matchpoints / playoff_mpo_opponent_count))) STORED,
 
     user_id INT NOT NULL,
     FOREIGN KEY user_key (user_id) REFERENCES user(id),
