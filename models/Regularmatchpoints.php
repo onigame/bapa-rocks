@@ -86,8 +86,7 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
         ];
     }
 
-    public static function seasonArrayDataProvider($season_id) {
-
+    public static function rawData($season_id) {
       $data = [];
       $items = Regularmatchpoints::find()->where(['season_id' => $season_id])->all();
       foreach ($items as $item) {
@@ -193,21 +192,23 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
         $datum['Effective Matchpoints'] = $datum['Total'] - $datum['Forfeit Opponent Count'];
         $datum['MPO'] = $datum['Effective Matchpoints'] / $datum['Effective Opponent Count'];
         $datum['5 Weeks?'] = ($datum['Weeks Played'] >= 5) ? 'Yes' : 'No';
-        if ($datum['Weeks Played'] == 12) {
+        if ($datum['Weeks Played'] >= 12) {
           $datum['Surplus MP'] = $datum['Lowest Wk'] + $datum['2nd Lowest Wk'];
-          $datum['Adj. MPO'] = 
-              ($datum['Effective Matchpoints'] - $datum['Lowest MPO EM'] - $datum['2nd Lowest MPO EM']) 
-             /($datum['Effective Opponent Count'] - $datum['Lowest MPO EO'] - $datum['2nd Lowest MPO EO']);
+          $datum['Surplus MPO EM'] = $datum['Lowest MPO EM'] + $datum['2nd Lowest MPO EM'];
+          $datum['Surplus MPO EO'] = $datum['Lowest MPO EO'] + $datum['2nd Lowest MPO EO'];
         } else if ($datum['Weeks Played'] == 11) {
           $datum['Surplus MP'] = $datum['Lowest Wk'];
-          $datum['Adj. MPO'] = 
-              ($datum['Effective Matchpoints'] - $datum['Lowest MPO EM']) 
-             /($datum['Effective Opponent Count'] - $datum['Lowest MPO EO']);
+          $datum['Surplus MPO EM'] = $datum['Lowest MPO EM'];
+          $datum['Surplus MPO EO'] = $datum['Lowest MPO EO'];
         } else {
           $datum['Surplus MP'] = 0;
-          $datum['Adj. MPO'] = $datum['Effective Matchpoints'] / $datum['Effective Opponent Count'];
+          $datum['Surplus MPO EM'] = 0;
+          $datum['Surplus MPO EO'] = 0;
         }
         $datum['Playoff Qual. Score'] = $datum['Total'] - $datum['Surplus MP'];
+        $datum['Adj. MPO'] = 
+              ($datum['Effective Matchpoints'] - $datum['Surplus MPO EM']) 
+             /($datum['Effective Opponent Count'] - $datum['Surplus MPO EO']);
 
         $su = SeasonUser::find()->where(['user_id' => $key, 'season_id' => $season_id])->one();
         if ($su->dues == 0) {
@@ -217,7 +218,12 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
         }
       }
 
-      $arrayData = ArrayHelper::toArray($data);
+      return $data;
+    }
+
+    public static function seasonArrayDataProvider($season_id) {
+
+      $arrayData = ArrayHelper::toArray(Regularmatchpoints::rawData($season_id));
 
       $adpinit = [
         'allModels' => $arrayData,

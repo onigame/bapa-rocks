@@ -10,6 +10,7 @@ use app\models\SeasonUser;
 use app\models\MatchSearch;
 use app\models\PublicSeasonUserSearch;
 use app\models\PublicSeasonUser;
+use app\models\Regularmatchpoints;
 use app\models\Eliminationgraph;
 use app\models\Match;
 use app\models\MatchUser;
@@ -263,6 +264,9 @@ class SessionController extends Controller
       $session = $this->findModel($id);
       if ($session->type == 1) {
         $session::getDb()->transaction(function($db) use ($session) {
+
+          $scoresData = Regularmatchpoints::rawData($session->season->id);
+
           foreach ($session->matchUsers as $mu) {
             $su = SeasonUser::find()->where(['season_id' => $session->season_id, 'user_id' => $mu->user_id])->one();
             $su->matchpoints += $mu->matchpoints;
@@ -270,6 +274,11 @@ class SessionController extends Controller
             $su->opponent_count += $mu->opponent_count;
             $su->forfeit_opponent_count += $mu->forfeit_opponent_count;
             $su->match_count += 1;
+
+            $su->surplus_matchpoints = $scoresData[$mu->user_id]['Surplus MP'];
+            $su->surplus_mpo_matchpoints = $scoresData[$mu->user_id]['Surplus MPO EM'];
+            $su->surplus_mpo_opponent_count = $scoresData[$mu->user_id]['Surplus MPO EO'];
+
             if (!$su->save()) {
               Yii::error($su->errors);
               throw new \yii\base\UserException("Error saving su in actionFinish");
