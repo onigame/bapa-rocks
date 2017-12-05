@@ -78,7 +78,10 @@ class Player extends User {
       } else if ($results->match_status == 2) {
         $answer .= "<p>";
         $answer .= "You are currently in ".$results->match->code." vs. ".$results->match->opponentNames;
-        $answer .= "; on Game ".$results->match->gameCount." (".$results->match->currentGame->machine->name.").";
+        $answer .= "; on Game ".$results->match->gameCount;
+        if ($results->match->currentGame->machine != null) {
+          $answer .= " (".$results->match->currentGame->machine->name.").";
+        }
         $answer .= "</p>";
         $game = $results->match->currentGame;
         if ($game == null) {
