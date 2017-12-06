@@ -78,8 +78,16 @@ class Location extends \yii\db\ActiveRecord
         return $this->hasMany(Machinerecentstatus::className(), ['location_id' => 'id'])->orderBy(['updated_at' => SORT_ASC]);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMachinerecentstatusesByName()
+    {
+        return $this->hasMany(Machinerecentstatus::className(), ['location_id' => 'id'])->orderBy(['name' => SORT_ASC]);
+    }
+
     public function getSelectableMachines() {
-      $machines = $this->machinerecentstatuses;
+      $machines = $this->machinerecentstatusesByName;
       $result = [];
       foreach ($machines as $machine) {
         if ($machine->selectable) {
@@ -90,7 +98,7 @@ class Location extends \yii\db\ActiveRecord
     }
 
     public function getUnselectableMachines() {
-      $machines = $this->machinerecentstatuses;
+      $machines = $this->machinerecentstatusesByName;
       $result = [];
       foreach ($machines as $machine) {
         if (!$machine->selectable) {

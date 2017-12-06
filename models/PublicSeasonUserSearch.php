@@ -61,6 +61,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
                'attributes' => [
                                 'mpg',
                                 'mpo',
+                                'adjusted_mpo',
                                 'notes', 
                                 'matchpoints', 
                                 'playoff_matchpoints', 
@@ -95,6 +96,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
           'forfeit_opponent_count',
           'previous_season_rank',
           'match_count', 'dues', 'mpg', 'mpo', 's.user_id', 'season_id',
+          'adjusted_mpo',
           'playoff_division', 'playoff_rank',
           'surplus_matchpoints', 'surplus_mpo_matchpoints', 'surplus_mpo_opponent_count',
           'playoff_matchpoints', 'playoff_mpo_matchpoints', 'playoff_mpo_opponent_count',

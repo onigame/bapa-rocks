@@ -497,16 +497,6 @@ class Game extends \yii\db\ActiveRecord
       return $this->hasMany(MatchUser::className(), ['match_id' => 'id'])->via('match');
     }
 
-    public function getSeasonUsers() {
-      $users = $this->users;
-      $result = [];
-      foreach ($users as $user) {
-        $result[] = SeasonUser::find()->where(['user_id' => $user->id, 
-                                               'season_id' => $this->season])->one();
-      }
-      return $result;
-    }
-
     public function getPositionInQueue() {
       if ($this->status == 3) return -1;
       if ($this->status != 2) {
@@ -522,9 +512,9 @@ class Game extends \yii\db\ActiveRecord
     }
 
     public function getHigherPlayerId() {
-      $seasonusers = $this->seasonUsers;
+      $seasonusers = $this->match->seasonUsers;
       if (count($seasonusers) != 2) {
-        throw new \yii\base\UserException("higherplayer called when > 2 players");
+        throw new \yii\base\UserException("higherplayer called when not 2 players :" . count($seasonusers) );
       }
       // Players with more MPs in the season is higher.
       if ($seasonusers[0]->matchpoints > $seasonusers[1]->matchpoints) return $seasonusers[0]->user_id;
@@ -540,7 +530,7 @@ class Game extends \yii\db\ActiveRecord
     }
 
     public function getLowerPlayerId() {
-      $seasonusers = $this->seasonUsers;
+      $seasonusers = $this->match->seasonUsers;
       if (count($seasonusers) != 2) {
         throw new \yii\base\UserException("higherplayer called when > 2 players");
       }

@@ -278,6 +278,10 @@ class Match extends \yii\db\ActiveRecord
       return $this->hasMany(Player::className(), ['id' => 'user_id'])->via('matchusers');
     }
 
+    public function getPlayers() {
+      return $this->users;
+    }
+
     public function getOpponentNames() {
       $names = [];
       foreach ($this->users as $player) {
@@ -306,6 +310,16 @@ class Match extends \yii\db\ActiveRecord
         $list[] = $player->name;
       }
       return join(', ', $list);
+    }
+
+    public function getSeasonUsers() {
+      $players = $this->players;
+      $result = [];
+      foreach ($players as $player) {
+        $result[] = SeasonUser::find()->where(['user_id' => $player->id,
+                                               'season_id' => $this->season])->one();
+      }
+      return $result;
     }
 
     public function getMatchusersString() {

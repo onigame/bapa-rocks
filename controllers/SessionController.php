@@ -576,10 +576,10 @@ class SessionController extends Controller
 
       // sort all the players by their initial seed.
       usort ($sessionUsers, function($a, $b) {
-        if ($a->seasonmpg > $b->seasonmpg) return -1;
-        if ($a->seasonmpg < $b->seasonmpg) return 1;
-        if ($a->seasonMatchpoints > $b->seasonMatchpoints) return -1;
-        if ($a->seasonMatchpoints < $b->seasonMatchpoints) return 1;
+        if ($a->seasonUser->mpo > $b->seasonUser->mpo) return -1;
+        if ($a->seasonUser->mpo < $b->seasonUser->mpo) return 1;
+        if ($a->seasonUser->matchpoints > $b->seasonUser->matchpoints) return -1;
+        if ($a->seasonUser->matchpoints < $b->seasonUser->matchpoints) return 1;
         if ($a->tiebreaker > $b->tiebreaker) return -1;
         if ($a->tiebreaker < $b->tiebreaker) return 1;
         return 0;

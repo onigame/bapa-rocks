@@ -258,6 +258,9 @@ class GameController extends Controller
       if ($game->status != 1) {
         throw new \yii\base\UserException("Wrong status for choosing player order! GameID = ". $game->id);
       }
+      if ($game->playerCount != 0) {
+        throw new \yii\base\UserException("Player order has already been chosen! GameID = ". $game->id);
+      }
       $game::getDb()->transaction(function($db) use ($game, $order) {
         $s1 = new Score();
         $s1->playernumber = $order;
@@ -294,8 +297,11 @@ class GameController extends Controller
     // selecting a machine
     public function actionSelectmachine($id, $machine_id) {
       $game = $this->findModel($id);
-      if ($game->status != 1) {
-        throw new \yii\base\UserException("Wrong status for selecting machine! GameID = ". $game->id);
+      if ($game->status == 0) {
+        throw new \yii\base\UserException("Master selection needs to be made first! GameID = ". $game->id);
+      }
+      if ($game->status > 1) {
+        throw new \yii\base\UserException("Machine has already been selected! GameID = ". $game->id);
       }
       if ($machine_id == -1) {
         Yii::$app->session->setFlash('error', "Invalid machine selection!");
