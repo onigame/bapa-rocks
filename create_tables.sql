@@ -425,6 +425,78 @@ LEFT OUTER JOIN machinescoremedian mmn
 WHERE ms2.id IS NULL
 );
 
+CREATE OR REPLACE VIEW pvp AS (
+SELECT
+  seas.id as season_id,
+  seas.name as season_name,
+  sess.id as session_id,
+  sess.name as session_name,
+  g.number as game_number,
+  g.id as game_id,
+  mach.id as machine_id,
+  mach.name as machine_name,
+  m.code as match_code,
+  m.id as match_id,
+  p1.user_id as p1_id,
+  u1.name as p1_name,
+  p1.value as p1_score,
+  p1.id as p1_score_id,
+  p1.matchpoints as p1_matchpoints,
+  p1.forfeit as p1_forfeit,
+  p2.user_id as p2_id,
+  u2.name as p2_name,
+  p2.value as p2_score,
+  p2.id as p2_score_id,
+  p2.matchpoints as p2_matchpoints,
+  p2.forfeit as p2_forfeit,
+  IF(p1.forfeit, IF(p2.forfeit, "(tie)", u2.name), 
+                 IF(p2.forfeit, u1.name, IF(p1.value >= p2.value, u1.name, 
+                                         IF(p2.value >= p1.value, u2.name, "(tie)")))) as winner_name,
+  IF(p1.forfeit, IF(p2.forfeit, NULL, p2.id), 
+                 IF(p2.forfeit, p1.id, IF(p1.value >= p2.value, p1.id, 
+                                       IF(p2.value >= p1.value, p2.id, NULL)))) as winner_id,
+  IF(p1.forfeit, 0, IF(p2.forfeit, 1, IF(p1.value > p2.value, 1, 0))) as p1_win,
+  IF(p2.forfeit, 0, IF(p1.forfeit, 1, IF(p2.value > p1.value, 1, 0))) as p2_win
+FROM
+  score p1
+INNER JOIN
+  score p2 ON p1.game_id = p2.game_id
+INNER JOIN
+  game g on p1.game_id = g.id
+INNER JOIN
+  `match` m on g.match_id = m.id
+INNER JOIN
+  session sess on m.session_id = sess.id
+INNER JOIN
+  machine mach on g.machine_id = mach.id
+INNER JOIN
+  season seas on sess.season_id = seas.id
+INNER JOIN
+  profile u1 on p1.user_id = u1.user_id
+INNER JOIN
+  profile u2 on p2.user_id = u2.user_id
+WHERE
+  p1.id != p2.id
+);
+
+CREATE OR REPLACE VIEW pvplist AS (
+SELECT DISTINCT
+  p1.user_id as p1_id,
+  u1.name as p1_name,
+  p2.user_id as p2_id,
+  u2.name as p2_name
+FROM
+  score p1
+INNER JOIN
+  score p2 ON p1.game_id = p2.game_id
+INNER JOIN
+  profile u1 on p1.user_id = u1.user_id
+INNER JOIN
+  profile u2 on p2.user_id = u2.user_id
+WHERE
+  p1.id != p2.id
+);
+
 
 
 /*
