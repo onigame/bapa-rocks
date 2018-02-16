@@ -18,10 +18,23 @@ use kartik\grid\GridView;
     $playoffresultsData = new yii\data\ActiveDataProvider([
           'query' => app\models\Playoffresults::find()->where(['session_id' => $model->id]),
           'sort' => [
+             'attributes' => [
+                'seed_max',
+                'seed',
+                'user.name' => [
+                  'asc' => ['user.name' => SORT_ASC],
+                  'desc' => ['user.name' => SORT_DESC],
+                ],
+                'seasonuser.mpo' => [
+                  'asc' => ['seasonuser.mpo' => SORT_ASC],
+                  'desc' => ['seasonuser.mpo' => SORT_DESC],
+                  'label' => 'MPO',
+                ],
+             ],
              'defaultOrder' => [
                 'seed_max' => SORT_ASC,
                 'seed' => SORT_ASC,
-             ]
+             ],
           ],
         ]);
 ?>

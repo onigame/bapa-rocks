@@ -111,8 +111,8 @@ class PublicSeasonUserSearch extends PublicSeasonUser
         }
 
         $query->from([
+          //'(SELECT @ID := 0) tempr',
           'seasonuser s',
-          '(SELECT @ID := 0) tempr',
         ]);
 
         // grid filtering conditions
@@ -135,6 +135,8 @@ class PublicSeasonUserSearch extends PublicSeasonUser
 //        $query->joinWith(['profile' => function($q) {
 //          $q->where('profile.name LIKE "%' . $this->name . '%"');
 //        }]);
+
+        $query->joinWith(['profile']);
 
         return $dataProvider;
     }

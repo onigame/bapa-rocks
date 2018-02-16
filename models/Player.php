@@ -39,7 +39,7 @@ class Player extends User {
       if ($seasonuser->dues == 0) {
         $answer .= "<p>You have NOT paid your dues for " 
                    . $results->session->season->name
-                   . ".  Please do so at your first opportunity.</p>";
+                   . ".  Please do so at your first opportunity, via Paypal to lebrachick@gmail.com .</p>";
       } else {
         $answer .= "<p>You have paid your dues for " 
                    . $results->session->season->name

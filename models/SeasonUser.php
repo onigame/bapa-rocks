@@ -78,8 +78,8 @@ class SeasonUser extends \yii\db\ActiveRecord
             'surplus_mpo_opponent_count' => 'S-MPO-EO',
 
             'playoff_matchpoints' => 'PQ Score',
-            'playoff_game_count' => 'PQ Games',
-            'playoff_opponent_count' => 'PQ Opponents',
+            'playoff_mpo_matchpoints' => 'PQ-MPO-EM',
+            'playoff_mpo_opponent_count' => 'PQ-MPO-EO',
 
             'match_count' => 'Matches',
             'dues' => 'Dues',

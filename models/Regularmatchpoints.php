@@ -154,8 +154,12 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
           $data[$item->user_id]['2nd Lowest Wk'] = $item->matchpoints;
         }
 
-        $mpo = ($item->matchpoints - $item->forfeit_opponent_count) /
-               ($item->opponent_count - $item->forfeit_opponent_count);
+        if ($item->opponent_count - $item->forfeit_opponent_count == 0) {
+          $mpo = 0;
+        } else {
+          $mpo = ($item->matchpoints - $item->forfeit_opponent_count) /
+                 ($item->opponent_count - $item->forfeit_opponent_count);
+        }
         if (!array_key_exists('Lowest MPO float', $data[$item->user_id])) {
           $data[$item->user_id]['Lowest MPO EM'] = $item->matchpoints - $item->forfeit_opponent_count;
           $data[$item->user_id]['Lowest MPO EO'] = $item->opponent_count - $item->forfeit_opponent_count;
@@ -211,7 +215,9 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
              /($datum['Effective Opponent Count'] - $datum['Surplus MPO EO']);
 
         $su = SeasonUser::find()->where(['user_id' => $key, 'season_id' => $season_id])->one();
-        if ($su->dues == 0) {
+        if ($su == null) {
+          $datum['Dues Paid?'] = '(error)';
+        } else if ($su->dues == 0) {
           $datum['Dues Paid?'] = 'No';
         } else {
           $datum['Dues Paid?'] = 'Yes';

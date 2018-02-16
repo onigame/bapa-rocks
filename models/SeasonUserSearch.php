@@ -19,12 +19,21 @@ class SeasonUserSearch extends SeasonUser
     {
         return [
 
-            [['id', 'matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id',
+            //[['notes', 'playoff_division'], 'safe'],
+
+            //[['id', 'matchpoints', 'game_count', 'opponent_count',
+            //  'match_count', 'dues', 'user_id', 'season_id'], 'required'],
+            [['matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id',
+              'forfeit_opponent_count',
               'surplus_matchpoints', 'surplus_mpo_matchpoints', 'surplus_mpo_opponent_count',
-              'playoff_matchpoints', 'playoff_game_count', 'playoff_opponent_count',
+              'playoff_matchpoints', 'playoff_mpo_matchpoints', 'playoff_mpo_opponent_count',
               'season_id', 'created_at', 'updated_at'], 'integer'],
-            [['mpg', 'mpo', 'adjusted_mpo', 'previous_season_rank'], 'double'],
-            [['notes', 'playoff_division'], 'safe'],
+            [['mpg', 'mpo', 'previous_season_rank', 'adjusted_mpo'], 'double'],
+            [['notes'], 'string', 'max' => 255],
+            [['playoff_division'], 'string', 'max' => 20],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['season_id'], 'exist', 'skipOnError' => true, 'targetClass' => Season::className(), 'targetAttribute' => ['season_id' => 'id']],
+
         ];
     }
 

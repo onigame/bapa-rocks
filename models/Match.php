@@ -419,22 +419,6 @@ class Match extends \yii\db\ActiveRecord
         return new MatchQuery(get_called_class());
     }
 
-    public function behaviors()
-    {
-        return [
-            [
-                'class' => 'bedezign\yii2\audit\AuditTrailBehavior',
-            ],
-            'timestamp' => [
-                'class' => 'yii\behaviors\TimestampBehavior',
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
-                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
-                ],
-            ],
-        ];
-    }
-
     // have we already played the machine in question?
     public function alreadyPlayed($machine_in_q) {
       foreach ($this->machinesPlayed as $machine) {
@@ -672,4 +656,21 @@ class Match extends \yii\db\ActiveRecord
         throw new \yii\base\UserException("Error saving matchuser when seed = " . $seed);
       }
     }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => 'bedezign\yii2\audit\AuditTrailBehavior',
+            ],
+            'timestamp' => [
+                'class' => 'yii\behaviors\TimestampBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+            ],
+        ];
+    }
+
 }

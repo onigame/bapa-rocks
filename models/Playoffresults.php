@@ -40,7 +40,8 @@ class Playoffresults extends \yii\db\ActiveRecord
     {
         return [
             [['session_id', 'user_id', 'match_id', 'code', 'match_status'], 'required'],
-            [['session_id', 'user_id', 'sessionuser_id', 'matchuser_id', 'match_id', 'match_status', 'seed_min', 'seed_max', 'seed'], 'integer'],
+            [['session_id', 'user_id', 'seasonuser_id', 'sessionuser_id', 'season_id',
+              'matchuser_id', 'match_id', 'match_status', 'seed_min', 'seed_max', 'seed'], 'integer'],
             [['code'], 'string', 'max' => 255],
         ];
     }
@@ -54,6 +55,7 @@ class Playoffresults extends \yii\db\ActiveRecord
             'session_id' => 'Session ID',
             'user_id' => 'User ID',
             'sessionuser_id' => 'Sessionuser ID',
+            'seasonuser_id' => 'Seasonuser ID',
             'matchuser_id' => 'Matchuser ID',
             'match_id' => 'Match ID',
             'code' => 'Code',
@@ -102,6 +104,13 @@ class Playoffresults extends \yii\db\ActiveRecord
     public function getSessionUser()
     {
         return $this->hasOne(SessionUser::className(), ['session_id' => 'session_id', 'user_id' => 'user_id']);
+    }
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSeasonUser()
+    {
+        return $this->hasOne(SeasonUser::className(), ['id' => 'seasonuser_id']);
     }
 
     /**

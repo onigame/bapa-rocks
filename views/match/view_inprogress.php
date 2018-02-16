@@ -32,25 +32,6 @@ $this->params['breadcrumbs'][] = $model->code;
         ],
     ]) ?>
 
-    <h2>Players</h2>
-<?php
-   $playerData = new yii\data\ActiveDataProvider([
-          'query' => app\models\Matchuser::find()->where(['match_id' => $model->id]),
-       ]);
-?>
-    <?= GridView::widget([
-        'dataProvider' => $playerData,
-//        'options' => ['style' => 'font-size:10px'],
-        'responsiveWrap' => false,
-        'columns' => [
-            [ 'label' => 'Name', 'attribute' => 'user.name', ],
-            [ 'label' => 'Matchpoints', 'attribute' => 'matchpoints', ],
-            [ 'label' => 'Breakdown', 'attribute' => 'matchpointsbreakdown', ],
-            [ 'label' => '', 'attribute' => 'admincolumn', 'format' => 'html'],
-//            'user.id',
-        ],
-    ]); ?>
-
     <h2>Games</h2>
 
 <?php
@@ -73,6 +54,25 @@ $this->params['breadcrumbs'][] = $model->code;
 //            'statusDetailCode',
             [ 'label' => 'Winner', 'attribute' => 'WinnerName', 'format' => 'html'],
             [ 'label' => '', 'attribute' => 'admincolumn', 'format' => 'html'],
+        ],
+    ]); ?>
+
+    <h2>Players</h2>
+<?php
+   $playerData = new yii\data\ActiveDataProvider([
+          'query' => app\models\Matchuser::find()->where(['match_id' => $model->id]),
+       ]);
+?>
+    <?= GridView::widget([
+        'dataProvider' => $playerData,
+//        'options' => ['style' => 'font-size:10px'],
+        'responsiveWrap' => false,
+        'columns' => [
+            [ 'label' => 'Name', 'attribute' => 'user.name', ],
+            [ 'label' => 'Matchpoints', 'attribute' => 'matchpoints', ],
+            [ 'label' => 'Breakdown', 'attribute' => 'matchpointsbreakdown', ],
+            [ 'label' => '', 'attribute' => 'admincolumn', 'format' => 'html'],
+//            'user.id',
         ],
     ]); ?>
 

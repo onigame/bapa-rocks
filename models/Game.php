@@ -352,6 +352,8 @@ class Game extends \yii\db\ActiveRecord
       else if ($count == 4 && $this->number == $this->match->maximumGameCount) {   $playernumbers = [1,2,3,4]; }
       else if ($count == 4 && $this->number == $this->match->maximumGameCount-1) { $playernumbers = [2,4,1,3]; }
       else if ($count == 4 && $this->number == $this->match->maximumGameCount-2) { $playernumbers = [3,1,4,2]; }
+      else if ($count == 4 && $this->match->maximumGameCount == 5 && $this->number == 2) { $playernumbers = [2,3,1,-1]; }
+      else if ($count == 4 && $this->match->maximumGameCount == 5 && $this->number == 1) { $playernumbers = [2,1,3,-1]; }
       else if ($count == 4 && $this->number == 1) { $playernumbers = [4,3,2,1]; } 
       else {  throw new \yii\base\UserException("$count $this->number Impossible playercount/gamenumber combo at createScores"); }
 
@@ -359,6 +361,7 @@ class Game extends \yii\db\ActiveRecord
       $game::getDb()->transaction(function($db) use ($game, $players, $playernumbers) {
         $index = 0;
         foreach ($players as $sessionuser) {
+          if ($playernumbers[$index] == -1) continue; // also part of 2/15 hack
           $s = new Score();
           $s->playernumber = $playernumbers[$index];
           $s->forfeit = 0;

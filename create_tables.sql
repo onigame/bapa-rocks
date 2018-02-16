@@ -245,6 +245,8 @@ CREATE OR REPLACE VIEW playoffresults AS (
 SELECT
   su.session_id,
   su.user_id,
+  seas.id as season_id,
+  seau.id as seasonuser_id,
   su.id as sessionuser_id,
 --  su.status as sessionuser_status,
   mu1.id as matchuser_id,
@@ -277,6 +279,12 @@ JOIN `match` m
       AND m.session_id = su.session_id)
 JOIN eliminationgraph eg
   ON (m.code = eg.code)
+JOIN `session` sess
+  ON (su.session_id = sess.id)
+JOIN `season` seas
+  ON (sess.season_id = seas.id)
+JOIN seasonuser seau
+  ON (seas.id = seau.season_id AND su.user_id = seau.user_id)
 WHERE mu2.id IS NULL
 );
 

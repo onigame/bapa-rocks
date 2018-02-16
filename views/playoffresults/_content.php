@@ -20,6 +20,7 @@ use kartik\grid\GridView;
             ['attribute' => 'match.statusString', 'format' => 'html'],
             ['attribute' => 'match.code', 'header' => 'Match<br>Code'],
             ['attribute' => 'matchGoButton', 'format' => 'html'],
+            ['attribute' => 'seasonUser.mpo', 'label' => 'MPO', 'format' => ['decimal', 4]],
             ['attribute' => 'seed', 'format' => 'ordinal'],
             ['attribute' => 'seed_max', 'format' => 'ordinal', 'header' => 'Best<br>Place'],
             ['attribute' => 'true_seed_min', 'format' => 'ordinal', 'header' => 'Worst<br>Place'],

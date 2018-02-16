@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $model->name;
 //        'pjax' => true,
         'columns' => [
             'user_id',
-            'playerName',
+            'name',
             ['class' => 'yii\grid\ActionColumn',
               'template' => '{removeplayer}',
               'buttons' => [
@@ -77,8 +77,8 @@ $this->params['breadcrumbs'][] = $model->name;
               ],
             ],
             //'notes',
-            //'matchpoints',
-            ['attribute' => 'playoff_matchpoints', 'label' => 'MP'],
+            'matchpoints',
+            ['attribute' => 'playoff_matchpoints', 'label' => 'Qual. MP'],
             //'game_count',
             'opponent_count',
             //'match_count',
@@ -127,6 +127,7 @@ $this->registerJs('
             ],
             'notes',
             'matchpoints',
+            ['attribute' => 'playoff_matchpoints', 'label' => 'Qual. MP'],
             'game_count',
             'opponent_count',
             'match_count',
