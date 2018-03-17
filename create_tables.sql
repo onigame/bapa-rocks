@@ -424,7 +424,7 @@ LEFT OUTER JOIN machinestatus ms1
   ON (m.id = ms1.machine_id)
 LEFT OUTER JOIN machinestatus ms2
   ON (m.id = ms2.machine_id
-      AND (ms1.created_at < ms2.created_at
+      AND (ms1.updated_at < ms2.updated_at
            OR ms1.id IS NULL AND ms2.id IS NULL))
 LEFT OUTER JOIN machinescoreminmax mmx
   ON (m.id = mmx.id)

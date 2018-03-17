@@ -120,11 +120,15 @@ class Location extends \yii\db\ActiveRecord
     }
 
     public function touchAvailableMachines() {
-      $machines = shuffle($this->availableMachines);
-      foreach ($machines as $machine) {
+      $machinelist = [];
+      foreach ($this->availableMachines as $machine) {
+        $machinelist[] = $machine;
+      }
+      shuffle($machinelist);
+      foreach ($machinelist as $machine) {
         $ms = new MachineStatus();
         $ms->status = 1;
-        $ms->machine_id = $machine->machine_id;
+        $ms->machine_id = $machine->id;
         $ms->recorder_id = Yii::$app->user->id;
         $ms->save();
       }

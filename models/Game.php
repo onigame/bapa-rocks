@@ -401,11 +401,8 @@ class Game extends \yii\db\ActiveRecord
     public function finishGame() {
       // we assume that all checks are done and there won't be errors.
       // but just in case...
-      if ($this->status == 4) {
-         throw new \yii\base\UserException("Cannot finish a Game that is already finished!");
-      }
       $game = $this;
-      $game::getDb()->transaction(function($db) use ($game) {
+      Game::getDb()->transaction(function($db) use ($game) {
         $lastvalue = -20; // no one will get this score, right?
         $scores = Score::find()->where(['game_id' => $game->id])->orderBy(['value' => SORT_DESC])->all();
         $pcount = $game->playerCount;
@@ -439,11 +436,6 @@ class Game extends \yii\db\ActiveRecord
             Yii::error($score->errors);
             throw new \yii\base\UserException("Error saving score at finishGame");
           }
-        }
-        $game->status = 4;
-        if (!$game->save()) {
-          Yii::error($game->errors);
-          throw new \yii\base\UserException("Error saving game at finishGame");
         }
         $machinestatus = new MachineStatus();
         $machinestatus->machine_id = $game->machine_id;
@@ -479,13 +471,22 @@ class Game extends \yii\db\ActiveRecord
           }
         }  
 
-        // now we should see if anyone is waiting in the queue for the machine.
-        $game->machine->maybeStartQueuedGame();
-        // then, if the machine is still available, then see if there's a regular season game waiting for it.
-        $game->machine->maybeStartRegularSeasonGame();
-        // and let's start a new game (or end the match).
-        $game->match->maybeStartGame();
+        if ($game->status == 4) {
+          throw new \yii\base\UserException("Cannot finish a Game that is already finished!");
+        }
+        $game->status = 4;
+        if (!$game->save()) {
+          Yii::error($game->errors);
+          throw new \yii\base\UserException("Error saving game at finishGame");
+        }
+
       });
+      // now we should see if anyone is waiting in the queue for the machine.
+      $game->machine->maybeStartQueuedGame();
+      // then, if the machine is still available, then see if there's a regular season game waiting for it.
+      $game->machine->maybeStartRegularSeasonGame();
+      // and let's start a new game (or end the match).
+      $game->match->maybeStartGame();
     }
 
     public function getSession() {

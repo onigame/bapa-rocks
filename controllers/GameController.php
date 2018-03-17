@@ -139,7 +139,7 @@ class GameController extends Controller
 
     public function actionFinish($id) {
         $model = $this->findModel($id);
-        if ($model->allEntered) $model->finishGame();
+        if ($model->allEntered && $model->status != 4) $model->finishGame();
         return $this->redirect(Yii::$app->request->referrer);
     }
 

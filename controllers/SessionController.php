@@ -467,6 +467,10 @@ class SessionController extends Controller
 
     public function actionStart($id) {
       $session = $this->findModel($id);
+      if ($session->status != 0) {
+        Yii::$app->session->setFlash('error', "Session has already been started!");
+        return $this->redirect(['view', 'id' => $id]);
+      }
       if ($session->type == 1 ) {
         $count = SessionUser::find()->where(['session_id' => $id])->count();
         if ($count < 6) {
@@ -531,6 +535,9 @@ class SessionController extends Controller
       usort ($sessionUsers, ['app\models\SessionUser', 'byPreviousPerformance']);
 
       $session::getDb()->transaction(function($db) use ($session, $sessionUsers) {
+
+        $session->location->touchAvailableMachines();
+
         $numplayers = count($sessionUsers);
         $matchcount = SessionController::matchCount($numplayers);
         $matches = [];
