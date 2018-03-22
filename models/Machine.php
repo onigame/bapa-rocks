@@ -134,7 +134,9 @@ class Machine extends \yii\db\ActiveRecord
         if ($game->match->alreadyPlayed($this)) continue;
 
         // okay, we'll start this game
+        \Yii::$app->mutex->acquire("machinestart");
         $game->startOnMachine($this);
+        \Yii::$app->mutex->release("machinestart");
 
         // don't bother with any other games.
         return;

@@ -8,6 +8,7 @@ use yii\helpers\Html;
 use app\models\QueueGame;
 use app\models\Location;
 use app\models\MachineStatus;
+use yii\mutex\MysqlMutex;
 
 /**
  * This is the model class for table "game".
@@ -302,6 +303,7 @@ class Game extends \yii\db\ActiveRecord
     }
 
     public function startOnMachine($machine) {
+
       $this->machine_id = $machine->id;
       $this->status = 3;
 
@@ -321,7 +323,11 @@ class Game extends \yii\db\ActiveRecord
         if (!$game->isPlayoffs) {
           $game->createScores($machinestatus->machine_id);
         }
-        if (!$game->save() || !$machinestatus->save()) {
+        $mrs = $this->machine->machinerecentstatus;
+        if ($mrs->status != 1) {
+          throw new \yii\base\UserException("startOnMachine called when Machine is not available.");
+        }
+        if (!$machinestatus->save() || !$game->save()) {
           Yii::error($game->errors);
           Yii::error($machinestatus->errors);
           throw new \yii\base\UserException("Error saving machinestatus or game in startOnMachine");
@@ -399,10 +405,16 @@ class Game extends \yii\db\ActiveRecord
     }
 
     public function finishGame() {
+
       // we assume that all checks are done and there won't be errors.
       // but just in case...
       $game = $this;
       Game::getDb()->transaction(function($db) use ($game) {
+        $mutex = \Yii::$app->mutex->acquire("gamefinish");
+        if ($mutex == 0) {
+          throw new \yii\base\UserException("Another group is finishing a game; please try again after a few seconds.");
+        }
+
         $lastvalue = -20; // no one will get this score, right?
         $scores = Score::find()->where(['game_id' => $game->id])->orderBy(['value' => SORT_DESC])->all();
         $pcount = $game->playerCount;
@@ -480,13 +492,16 @@ class Game extends \yii\db\ActiveRecord
           throw new \yii\base\UserException("Error saving game at finishGame");
         }
 
+        // now we should see if anyone is waiting in the queue for the machine.
+        $game->machine->maybeStartQueuedGame();
+        // then, if the machine is still available, then see if there's a regular season game waiting for it.
+        $game->machine->maybeStartRegularSeasonGame();
+        // and let's start a new game (or end the match).
+        $game->match->maybeStartGame();
       });
-      // now we should see if anyone is waiting in the queue for the machine.
-      $game->machine->maybeStartQueuedGame();
-      // then, if the machine is still available, then see if there's a regular season game waiting for it.
-      $game->machine->maybeStartRegularSeasonGame();
-      // and let's start a new game (or end the match).
-      $game->match->maybeStartGame();
+
+      \Yii::$app->mutex->release("gamefinish");
+
     }
 
     public function getSession() {
