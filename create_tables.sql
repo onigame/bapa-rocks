@@ -149,12 +149,14 @@ CREATE TABLE matchuser (
     game_count INT NOT NULL,
     opponent_count INT NOT NULL, -- includes forfeit opponents
     forfeit_opponent_count INT NOT NULL DEFAULT 0, -- will be subtracted later
+    `bonuspoints` int(11) NOT NULL DEFAULT '0',
     match_id INT NOT NULL,
     FOREIGN KEY match_key (match_id) REFERENCES `match`(id),
     user_id INT NOT NULL,
     FOREIGN KEY user_key (user_id) REFERENCES user(id),
     created_at int(11),
     updated_at int(11)
+
 );
 
 CREATE TABLE sessionuser (

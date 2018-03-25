@@ -38,8 +38,8 @@ class MatchUser extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['bonuspoints', 'game_count', 'opponent_count', 'match_id', 'user_id', 'starting_playernum'], 'required'],
-            [['bonuspoints', 'matchrank', 'game_count', 'opponent_count', 'match_id', 'user_id', 'created_at', 'updated_at', 'starting_playernum'], 'integer'],
+            [['bonuspoints', 'game_count', 'opponent_count', 'forfeit_opponent_count', 'match_id', 'user_id', 'starting_playernum'], 'required'],
+            [['bonuspoints', 'matchrank', 'game_count', 'opponent_count', 'forfeit_opponent_count', 'match_id', 'user_id', 'created_at', 'updated_at', 'starting_playernum'], 'integer'],
             [['match_id'], 'exist', 'skipOnError' => true, 'targetClass' => Match::className(), 'targetAttribute' => ['match_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -58,6 +58,7 @@ class MatchUser extends \yii\db\ActiveRecord
             'bonuspoints' => 'MP Adj.',
             'game_count' => 'Game Count',
             'opponent_count' => 'Opponent Count',
+            'forfeit_opponent_count' => 'Forfeit Opponent Count',
             'match_id' => 'Match ID',
             'user_id' => 'User ID',
             'created_at' => 'Created At',

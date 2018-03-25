@@ -27,6 +27,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'forfeit_opponent_count') ?>
 
+    <?= $form->field($model, 'bonuspoints') ?>
+
     <?php // echo $form->field($model, 'match_id') ?>
 
     <?php // echo $form->field($model, 'user_id') ?>

@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'game_count',
             'opponent_count',
             'forfeit_opponent_count',
+            'bonuspoints',
             'match_id',
             'match.code',
             'match.session.name',
