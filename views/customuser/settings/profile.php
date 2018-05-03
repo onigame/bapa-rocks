@@ -49,10 +49,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]); ?>
 
                 <?= $form->field($model, 'name') ?>
-
+<!--
                 <?= $form->field($model, 'public_email') ?>
+-->
 
                 <?= $form->field($model, 'ifpa')->textInput(['type' => 'number']) ?>
+
+                <?= $form->field($model, 'initials') ?>
+
+                <?= $form->field($model, 'phone_number') ?>
 <!--
                 <?= $form->field($model, 'website') ?>
 

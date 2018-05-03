@@ -28,7 +28,7 @@ class Player extends User {
                 ->viaTable('seasonuser', ['user_id' => 'id']);
   }
 
-  public function getStatusHtml() {
+  public function getRegularStatusHtml() {
     $answer = "";
     // is the player currently in a game?
     $results = Regularresults::find()
@@ -46,12 +46,12 @@ class Player extends User {
                    . ".  Thanks!</p>";
       }
       if ($results->session->status == 2) {
-        $answer .= "<p>You last played in " . $results->session->season->name . " " 
+        $answer .= "<p>Your last <b>regular session</b> was " . $results->session->season->name . " " 
                     . $results->session->name 
                     . " at " . $results->session->location->name
                     . ".</p>";
       } else {
-        $answer .= "<p>You are playing in " . $results->session->season->name . " " 
+        $answer .= "<p><b>You are playing</b> in " . $results->session->season->name . " " 
                     . $results->session->name 
                     . " at " . $results->session->location->name
                     . ".</p>";
@@ -67,7 +67,7 @@ class Player extends User {
         $next_session = Session::find()->where(['status' => 0])->orderBy(['date' => SORT_ASC])->one();
         if ($next_session != null) {
           $answer .= "<p>";
-          $answer .= "The next session is ".$next_session->name.".  ";
+          $answer .= "The next session is ".$next_session->name." (".$next_session->season->name."). ";
           if ($next_session->currentPlayerIn) {
             $answer .= "You have signed up to play.";
           } else {
@@ -99,21 +99,24 @@ class Player extends User {
         }
       } else {
         Yii::warning($results);
-        $answer .= "Something is wrong.";
+        $answer .= "Something is wrong about your regular results.";
       }
-//      return $answer;
     }
+    return $answer;
+  }
 
+  public function getPlayoffStatusHtml() {
+    $answer = "";
     $results = Playoffresults::find()
                  ->where(["user_id" => $this->id])->one();
     if ($results != NULL) {
       if ($results->session->status == 2) {
-        $answer .= "<p>You last played in " . $results->session->season->name . " " 
+        $answer .= "<p>Your last <b>playoffs</b> was " . $results->session->season->name . " " 
                     . $results->session->name 
                     . " at " . $results->session->location->name
                     . ".</p>";
       } else {
-        $answer .= "<p>You are playing in " . $results->session->season->name . " " 
+        $answer .= "<p><b>You are playing</b> in " . $results->session->season->name . " " 
                     . $results->session->name 
                     . " at " . $results->session->location->name
                     . ".</p>";
@@ -156,7 +159,30 @@ class Player extends User {
       }
       return $answer;
     }
-    return "You are currently not in any sessions!";
+    return "You are currently not in any playoffs!";
   }
+
+  public function getProfileStatusHtml() {
+    $answer = "";
+    if (ctype_space($this->profile->name) || $this->profile->name == '') {
+      $answer .= '<p class="text-danger">Your display name is blank!  Please go to your <a href="/user/settings">profile</a> and update it so we can identify you on the listings.</p>';
+    }
+    if (ctype_space($this->profile->initials) || $this->profile->initials == '') {
+      $answer .= '<p class="text-danger">Your high score initials are blank!  Please go to your <a href="/user/settings">profile</a> and update them so we won\'t delete your account.</p>';
+    }
+    if (ctype_space($this->profile->phone_number) || $this->profile->phone_number == '') {
+      $answer .= '<p class="text-danger">Your phone number is blank!  Please go to your <a href="/user/settings">profile</a> and update it so we can contact you.</p>';
+    }
+    return $answer;
+  }
+
+  public function getStatusHtml() {
+    $answer = "";
+    $answer .= $this->profileStatusHtml;
+    $answer .= $this->regularStatusHtml;
+    $answer .= $this->playoffStatusHtml;
+    return $answer;
+  }
+
 
 }

@@ -11,6 +11,8 @@ class Profile extends BaseProfile
         $rules = parent::rules();
         // add some rules
         $rules['ifpaLength']   = ['ifpa', 'integer'];
+        $rules['initials']   = ['initials', 'string'];
+        $rules['phone_number']   = ['phone_number', 'string'];
         
         return $rules;
     }
@@ -18,8 +20,10 @@ class Profile extends BaseProfile
     public function attributeLabels() {
         $labels = parent::attributeLabels();
    
-        $labels['public_email'] = \Yii::t('user', 'Email');
+        $labels['public_email'] = \Yii::t('user', 'Public Email (not used)');
         $labels['ifpa'] = \Yii::t('user', 'IFPA number');
+        $labels['initials'] = \Yii::t('user', 'High Score Initials');
+        $labels['phone_number'] = \Yii::t('user', 'Phone Number');
 
         return $labels;
     }
