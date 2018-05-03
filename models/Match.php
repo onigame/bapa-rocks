@@ -636,9 +636,11 @@ class Match extends \yii\db\ActiveRecord
       $matchuser->user_id = $user_id;
       $matchuser->match_id = $this->id;
       $matchuser->opponent_count = 0;
+      $matchuser->forfeit_opponent_count = 0;
       if (!$matchuser->save()) {
         Yii::error($matchuser->errors);
-        throw new \yii\base\UserException("Error saving matchuser when seed = " . $seed);
+        throw new \yii\base\UserException("Error saving matchuser when seed = " . $seed . " userid = " . $user_id . " code = " . $code 
+                . " id = " . $this->id);
       }
     }
 
@@ -651,9 +653,10 @@ class Match extends \yii\db\ActiveRecord
       $matchuser->user_id = $user_id;
       $matchuser->match_id = $this->id;
       $matchuser->opponent_count = 0;
+      $matchuser->forfeit_opponent_count = 0;
       if (!$matchuser->save()) {
         Yii::error($matchuser->errors);
-        throw new \yii\base\UserException("Error saving matchuser when seed = " . $seed);
+        throw new \yii\base\UserException("Error saving matchuser when user_id = " . $user_id . "(" . Player::findOne($user_id)->name . ")");
       }
     }
 

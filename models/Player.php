@@ -101,7 +101,7 @@ class Player extends User {
         Yii::warning($results);
         $answer .= "Something is wrong.";
       }
-      return $answer;
+//      return $answer;
     }
 
     $results = Playoffresults::find()

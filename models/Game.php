@@ -169,7 +169,12 @@ class Game extends \yii\db\ActiveRecord
       if ($this->status == 0) return ("Awaiting<br>Master Selection");
       if ($this->status == 1) return ("Awaiting<br>Machine/Player-Order Selection");
       if ($this->status == 2) return ("Awaiting<br>Machine: ".$this->machine->abbreviation);
-      if ($this->status == 3) return ("In Progress:<br>".$this->machine->name);
+      if ($this->status == 3) {
+        if ($this->machine == null) {
+          return ("In Progress:<br> [ERROR NO MACHINE]");
+        }
+        return ("In Progress:<br>".$this->machine->name);
+      }
       if ($this->status == 4) return ("Completed");
       if ($this->status == 5) return ("Disqualified");
       if ($this->status == 6) return ("Awaiting Available<br>Machine since ".date("g:i:sa", $this->created_at));

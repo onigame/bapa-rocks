@@ -118,7 +118,7 @@ class Eliminationgraph extends \yii\db\ActiveRecord
     public function getOpponentSeed($seed) {
       if ($this->seed_p1 == $seed) return $this->seed_p2;
       if ($this->seed_p2 == $seed) return $this->seed_p1;
-      throw new \yii\base\UserException($seed . " is not in " . $this->code);
+      throw new \yii\base\Exception($seed . " is not in " . $this->code);
     }
 
     public function getPlayerSeed($playernum) {
