@@ -39,6 +39,10 @@ AppAsset::register($this);
         ['label' => 'Home', 'url' => ['/site/index']],
         ['label' => 'Status', 'url' => ['/status/index']],
         ['label' => 'About', 'url' => ['/site/about']],
+        ['label' => 'Rules', 'url' => null,
+                    'linkOptions' => ['target' => '_blank',
+                                      'href' => 'https://docs.google.com/document/d/1DdaCtYqLbNSkym_TIn4lrRld6scwP5uvyGoT0ES44k0/view',
+                                     ]],
         ['label' => 'Contact', 'url' => ['/site/contact']]
       ];
       if (Yii::$app->user->isGuest) {

@@ -39,7 +39,7 @@ class Player extends User {
       if ($seasonuser->dues == 0) {
         $answer .= "<p>You have NOT paid your dues for " 
                    . $results->session->season->name
-                   . ".  Please do so at your first opportunity, via Paypal to lebrachick@gmail.com .</p>";
+                   . ".  Please do so at your first opportunity, via Paypal to mbirsching@earthlink.net .</p>";
       } else {
         $answer .= "<p>You have paid your dues for " 
                    . $results->session->season->name
@@ -159,7 +159,7 @@ class Player extends User {
       }
       return $answer;
     }
-    return "You are currently not in any playoffs!";
+    return "<p>You are currently not in any playoffs!</p>";
   }
 
   public function getProfileStatusHtml() {
@@ -180,6 +180,7 @@ class Player extends User {
     $answer = "";
     $answer .= $this->profileStatusHtml;
     $answer .= $this->regularStatusHtml;
+    $answer .= "<p></p>";
     $answer .= $this->playoffStatusHtml;
     return $answer;
   }
