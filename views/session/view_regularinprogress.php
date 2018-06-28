@@ -15,6 +15,11 @@ $this->params['breadcrumbs'][] = $model->name;
 
 <?= $this->render('@app/views/session/_regularcontent', [ 'model' => $model ]) ?>
 
+<?php
+  if (Yii::$app->user->can('GenericManagerPermission')) {
+?>
+   <h2>Management Tools</h2>
+
 <?php if ($model->closeable) { ?>
     <?= Html::a('Finish This Session', ['finish', 'id' => $model->id], ['class' => 'btn btn-success',
        'data' => [
@@ -30,5 +35,6 @@ $this->params['breadcrumbs'][] = $model->name;
     ]) ?>
 <?php } ?>
 
+<?php } ?>
 
 </div>

@@ -19,7 +19,6 @@ use Yii;
  * @property string $updated_at
  * @property integer $min
  * @property integer $max
- * @property double $median
  */
 class Machinerecentstatus extends \yii\db\ActiveRecord
 {
@@ -39,7 +38,6 @@ class Machinerecentstatus extends \yii\db\ActiveRecord
         return [
             [['id', 'ipdb_id', 'location_id', 'machinestatus_id', 
               'status', 'game_id', 'recorder_id', 'min', 'max'], 'integer'],
-            [['median'], 'double'],
             [['name', 'abbreviation', 'location_id'], 'required'],
             [['updated_at'], 'safe'],
             [['name'], 'string', 'max' => 255],

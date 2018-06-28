@@ -26,7 +26,7 @@ use kartik\grid\GridView;
             } ],
 //            ['attribute' => 'ipdb_link', 'label' => 'IPDB'],
             ['attribute' => 'min', 'label' => 'Lowest', 'format' => 'decimal'],
-            ['attribute' => 'median', 'label' => 'Median', 'format' => 'decimal'],
+//            ['attribute' => 'median', 'label' => 'Median', 'format' => 'decimal'],
             ['attribute' => 'max', 'label' => 'Highest', 'format' => 'decimal'],
             ['attribute' => 'string', 'label' => 'Status'],
             ['attribute' => 'machine.queueLength', 'header' => '# Groups<br>Waiting', 'format' => 'html'],
@@ -36,12 +36,10 @@ use kartik\grid\GridView;
     ]); ?>
 
 <?php
-$this->registerJs('
-    setInterval(function(){
-         $.pjax.reload({container:"#machineview-pjax", timeout:false});
-    }, 10000);', \yii\web\VIEW::POS_HEAD);
+//$this->registerJs('
+//    setInterval(function(){
+//         $.pjax.reload({container:"#machineview-pjax", timeout:false});
+//    }, 10000);', \yii\web\VIEW::POS_HEAD);
 ?>
-
-
 
 </div>

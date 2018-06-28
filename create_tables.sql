@@ -208,6 +208,42 @@ CREATE TABLE seasonuser (
     updated_at int(11)
 );
 
+-- for stats.  It's a separate table because otherwise calculating is too slow.
+
+CREATE TABLE statsevent (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    eventtype INT NOT NULL, -- 1 = "updated all playermachinestats"
+   
+    created_at int(11),
+    updated_at int(11)
+);
+
+CREATE TABLE playermachinestats (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    FOREIGN KEY user_key (user_id) REFERENCES user(id),
+    machine_id INT NOT NULL,
+    FOREIGN KEY machine_key (machine_id) REFERENCES machine(id),
+    scoremax BIGINT, -- Max Score
+    scorethirdquartile BIGINT, -- 3rd Quartile
+    scoremedian BIGINT, -- Median
+    scorefirstquartile BIGINT, -- 1st Quartile
+    scoremin BIGINT, -- Min Score
+
+    scoremaxgame_id INT, -- Best Game
+    FOREIGN KEY (scoremaxgame_id) REFERENCES game(id),
+    scoremingame_id INT, -- Worst Score
+    FOREIGN KEY (scoremingame_id) REFERENCES game(id),
+
+    nonforfeitcount INT, -- Non-Forfeit Count
+    totalmatchpoints INT, -- Total MP
+    averagematchpoints DOUBLE as (totalmatchpoints / nonforfeitcount), -- Average MP
+    forfeitcount INT, -- Forfeit Count
+
+    created_at int(11),
+    updated_at int(11)
+);
+
 -- maybe this should be a view because we can deduce it from
 -- other tables
 /*
@@ -419,8 +455,7 @@ SELECT
   ms1.recorder_id,
   ms1.updated_at,
   mmx.min,
-  mmx.max,
-  mmn.median
+  mmx.max
 FROM machine m
 LEFT OUTER JOIN machinestatus ms1
   ON (m.id = ms1.machine_id)
@@ -430,8 +465,6 @@ LEFT OUTER JOIN machinestatus ms2
            OR ms1.id IS NULL AND ms2.id IS NULL))
 LEFT OUTER JOIN machinescoreminmax mmx
   ON (m.id = mmx.id)
-LEFT OUTER JOIN machinescoremedian mmn
-  ON (m.id = mmn.id)
 WHERE ms2.id IS NULL
 );
 
