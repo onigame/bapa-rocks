@@ -124,4 +124,17 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
+    public function actionPrivacypolicy()
+    {
+        return $this->render('privacypolicy');
+    }
+    public function actionCookiepolicy()
+    {
+        return $this->render('cookiepolicy');
+    }
+    public function actionTos()
+    {
+        return $this->render('tos');
+    }
+
 }
