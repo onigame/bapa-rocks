@@ -208,16 +208,6 @@ CREATE TABLE seasonuser (
     updated_at int(11)
 );
 
--- for stats.  It's a separate table because otherwise calculating is too slow.
-
-CREATE TABLE statsevent (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    eventtype INT NOT NULL, -- 1 = "updated all playermachinestats"
-   
-    created_at int(11),
-    updated_at int(11)
-);
-
 CREATE TABLE playermachinestats (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,

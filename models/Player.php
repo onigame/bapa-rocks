@@ -9,8 +9,18 @@ use dektrium\user\models\User as BaseUser;
 
 class Player extends User {
 
+  public function attributeLabels() {
+    return [
+      'initials' => Yii::t('app', 'HSI'),
+    ];
+  }
+
   public function getName() {
     return $this->profile->name;
+  }
+
+  public function getInitials() {
+    return $this->profile->initials;
   }
 
   public function getMatches() {

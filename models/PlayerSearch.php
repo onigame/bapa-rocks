@@ -14,6 +14,7 @@ class PlayerSearch extends Player
 {
 
     public $name;
+    public $initials;
 
     /**
      * @inheritdoc
@@ -21,8 +22,8 @@ class PlayerSearch extends Player
     public function rules()
     {
         return [
-            [['id', 'created_at', 'updated_at'], 'integer'],
-//            [['name'], 'string'],
+            [['id', 'confirmed_at', 'blocked_at', 'created_at', 'updated_at', 'flags', 'last_login_at'], 'integer'],
+            [['name', 'initials', 'username', 'email', 'password_hash', 'auth_key', 'unconfirmed_email', 'registration_ip'], 'safe'],
         ];
     }
 
@@ -50,16 +51,21 @@ class PlayerSearch extends Player
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-        ]);
-
-        $dataProvider->setSort([
-           'attributes' => [
-              'id',
-              'name' => [
-                 'asc' => ['profile.name' => SORT_ASC],
-                 'desc' => ['profile.name' => SORT_DESC],
+            'sort' => [
+              'defaultOrder' => ['name' => SORT_ASC],
+              'attributes' => [
+                'name' => [
+                  'asc' => ['profile.name' => SORT_ASC],
+                  'desc' => ['profile.name' => SORT_DESC],
+                  'label' => 'Name',
+                ],
+                'initials' => [
+                  'asc' => ['profile.initials' => SORT_ASC],
+                  'desc' => ['profile.initials' => SORT_DESC],
+                  'label' => 'Name',
+                ],
               ],
-           ]
+            ],
         ]);
 
         $this->load($params);
@@ -71,46 +77,23 @@ class PlayerSearch extends Player
             return $dataProvider;
         }
 
-        $this->addCondition($query, 'id');
-        $this->addCondition($query, 'name');
-
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'confirmed_at' => $this->confirmed_at,
+            'flags' => $this->flags,
+            'last_login_at' => $this->last_login_at,
         ]);
 
-        $query->joinWith(['profile' => function ($q) {
+        $query->andFilterWhere(['like', 'username', $this->username])
+            ->andFilterWhere(['like', 'auth_key', $this->auth_key])
+            ->andFilterWhere(['like', 'registration_ip', $this->registration_ip]);
+
+        $query->joinWith(['profile' => function($q) {
           $q->where('profile.name LIKE "%' . $this->name . '%"');
+          $q->where('profile.initials LIKE "%' . $this->initials . '%"');
         }]);
 
         return $dataProvider;
-    }
-
-    protected function addCondition($query, $attribute, $partialMatch = false)
-    {
-        if (($pos = strrpos($attribute, '.')) !== false) {
-            $modelAttribute = substr($attribute, $pos + 1);
-        } else {
-            $modelAttribute = $attribute;
-        }
-     
-        $value = $this->$modelAttribute;
-        if (trim($value) === '') {
-            return;
-        }
-     
-        /* 
-         * The following line is additionally added for right aliasing
-         * of columns so filtering happen correctly in the self join
-         */
-        $attribute = "user.$attribute";
-     
-        if ($partialMatch) {
-            $query->andWhere(['like', $attribute, $value]);
-        } else {
-            $query->andWhere([$attribute => $value]);
-        }
     }
 }
