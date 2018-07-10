@@ -18,7 +18,7 @@ class PlayermachinestatsSearch extends Playermachinestats
     public function rules()
     {
         return [
-            [['id', 'user_id', 'machine_id', 'scoremax', 'scorethirdquartile', 'scoremedian', 'scorefirstquartile', 'scoremin', 'scoremaxgame_id', 'scoremingame_id', 'nonforfeitcount', 'totalmatchpoints', 'forfeitcount', 'created_at', 'updated_at'], 'integer'],
+            [['user_id', 'machine_id', 'scoremax', 'scorethirdquartile', 'scoremedian', 'scorefirstquartile', 'scoremin', 'scoremaxgame_id', 'scoremingame_id', 'nonforfeitcount', 'totalmatchpoints', 'forfeitcount', 'created_at', 'updated_at'], 'integer'],
             [['averagematchpoints'], 'number'],
         ];
     }
@@ -59,7 +59,6 @@ class PlayermachinestatsSearch extends Playermachinestats
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
             'user_id' => $this->user_id,
             'machine_id' => $this->machine_id,
             'scoremax' => $this->scoremax,

@@ -54,3 +54,12 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
 <?php Pjax::end(); ?></div>
+
+<?php if (Yii::$app->user->can('GenericManagerPermission')) { ?>
+    <?= Html::a('Recompute Stats', ['recomputestats'], ['class' => 'btn btn-success',
+       'data' => [
+         'confirm' => ('Are you sure you want to recompute stats?'),
+       ],
+    ]) ?>
+<?php } ?>
+

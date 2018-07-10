@@ -10,9 +10,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * PlayermachinestatsController implements the CRUD actions for Playermachinestats model.
+ * AdminPlayermachinestatsController implements the CRUD actions for Playermachinestats model.
  */
-class PlayermachinestatsController extends Controller
+class AdminPlayermachinestatsController extends Controller
 {
     /**
      * @inheritdoc

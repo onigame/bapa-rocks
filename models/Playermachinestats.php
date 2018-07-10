@@ -7,7 +7,6 @@ use Yii;
 /**
  * This is the model class for table "playermachinestats".
  *
- * @property integer $id
  * @property integer $user_id
  * @property integer $machine_id
  * @property string $scoremax
@@ -61,7 +60,6 @@ class Playermachinestats extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
             'user_id' => 'User ID',
             'machine_id' => 'Machine ID',
             'scoremax' => 'Scoremax',

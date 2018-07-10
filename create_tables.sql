@@ -113,6 +113,7 @@ CREATE TABLE machinestatus (
 -- a list of games that are waiting for a specific machine
 -- used for playoffs only, as regular weeks don't have that.
 -- items should be deleted as they free up.
+
 CREATE TABLE queuegame (
     id INT AUTO_INCREMENT PRIMARY KEY,
     machine_id INT NOT NULL,
@@ -209,11 +210,12 @@ CREATE TABLE seasonuser (
 );
 
 CREATE TABLE playermachinestats (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+--    id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     FOREIGN KEY user_key (user_id) REFERENCES user(id),
     machine_id INT NOT NULL,
     FOREIGN KEY machine_key (machine_id) REFERENCES machine(id),
+    PRIMARY KEY (user_id, machine_id),
     scoremax BIGINT, -- Max Score
     scorethirdquartile BIGINT, -- 3rd Quartile
     scoremedian BIGINT, -- Median
@@ -227,7 +229,7 @@ CREATE TABLE playermachinestats (
 
     nonforfeitcount INT, -- Non-Forfeit Count
     totalmatchpoints INT, -- Total MP
-    averagematchpoints DOUBLE as (totalmatchpoints / nonforfeitcount), -- Average MP
+    averagematchpoints DOUBLE as (IF(nonforfeitcount=0, -1, totalmatchpoints / nonforfeitcount)), -- Average MP
     forfeitcount INT, -- Forfeit Count
 
     created_at int(11),
