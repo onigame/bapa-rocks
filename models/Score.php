@@ -201,6 +201,10 @@ class Score extends \yii\db\ActiveRecord
       }
     }
 
+    public function recomputeStats() {
+      Playermachinestats::recomputeStatsSingle($this->user_id, $this->game->machine_id);
+    }
+
     public function behaviors()
     {
         return [

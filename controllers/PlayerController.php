@@ -144,81 +144,11 @@ class PlayerController extends Controller
         foreach ($players as $player) {
           $machines = Machine::find()->all();
           foreach ($machines as $machine) {
-            $this->actionRecomputesingle($player->id, $machine->id);
+            Playermachinestats::recomputeStatsSingle($player->id, $machine->id);
           }
         }
 
         return $this->redirect(['index']);
-    }
-
-    /**
-     * Recomputes stats for one player / machine
-     */
-    public function actionRecomputesingle($id, $machine_id) {
-
-      $playermachinestats = new Playermachinestats();
-      $playermachinestats->user_id = $id;
-      $playermachinestats->machine_id = $machine_id;
-      
-      $playermachinestats->forfeitcount = Score::find()
-                ->leftJoin('game', 'game.id = score.game_id')
-                ->where(['user_id' => $id,
-                         'game.machine_id' => $machine_id,
-                         'forfeit' => 1,
-                         'game.status' => 4, // only completed games count.
-                        ])
-                ->orderBy('forfeit DESC, value')
-                ->count();
-
-      $scores = Score::find()
-                ->leftJoin('game', 'game.id = score.game_id')
-                ->where(['user_id' => $id,
-                         'game.machine_id' => $machine_id,
-                         'forfeit' => 0,
-                         'game.status' => 4, // only completed games count.
-                        ])
-                ->orderBy('forfeit DESC, value')
-                ->all();
-
-      $playermachinestats->nonforfeitcount = 0;
-      $playermachinestats->totalmatchpoints = 0;
-      $scorelist = [];
-
-      $has_score = false;
-      foreach ($scores as $score) {
-        $playermachinestats->nonforfeitcount++;
-        $scorelist[] = $score->value;
-        if ($has_score) {
-          if ($score->value > $playermachinestats->scoremax) {
-            $playermachinestats->scoremax = $score->value;
-            $playermachinestats->scoremaxgame_id = $score->game_id;
-          } else if ($score->value < $playermachinestats->scoremin) {
-            $playermachinestats->scoremin = $score->value;
-            $playermachinestats->scoremingame_id = $score->game_id;
-          }
-        } else {
-          $has_score = true;
-          $playermachinestats->scoremax = $score->value;
-          $playermachinestats->scoremaxgame_id = $score->game_id;
-          $playermachinestats->scoremin = $score->value;
-          $playermachinestats->scoremingame_id = $score->game_id;
-        }
-        $playermachinestats->totalmatchpoints += $score->matchpoints;
-      }
-
-      if ($has_score) {
-        if ($playermachinestats->nonforfeitcount % 2 == 1) {
-          $playermachinestats->scoremedian = $scorelist[($playermachinestats->nonforfeitcount - 1) / 2];
-        } else {
-          $s1 = $scorelist[($playermachinestats->nonforfeitcount - 2) / 2];
-          $s2 = $scorelist[($playermachinestats->nonforfeitcount) / 2];
-          $playermachinestats->scoremedian = floor(($s1 + $s2)/2);
-        }
-      }
-
-      if ($has_score || $playermachinestats->forfeitcount > 0) {
-        $playermachinestats->save();
-      }
     }
 
     /**

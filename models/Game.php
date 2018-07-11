@@ -614,6 +614,13 @@ class Game extends \yii\db\ActiveRecord
       return join(', ', $list);
     }
 
+    public function recomputeStats() {
+      foreach ($this->scores as $score) {
+        $score->recomputeStats();
+      }
+    }
+
+
     /**
      * @inheritdoc
      * @return GameQuery the active query used by this AR class.

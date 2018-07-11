@@ -260,6 +260,15 @@ class SessionController extends Controller
       return $this->redirect(Yii::$app->request->referrer);
     }
 
+    public function actionRecomputeStats($id) {
+      $session = Session::findOne($id);
+      if ($session != null) {
+        foreach ($session->matches as $match) {
+          MatchController::actionRecomputeStats($match->id);
+        }
+      }
+    }
+
     public function actionFinish($id) {
       $session = $this->findModel($id);
       if ($session->type == 1) {
@@ -290,6 +299,9 @@ class SessionController extends Controller
             Yii::error($session->errors);
             throw new \yii\base\UserException("Error saving session in actionFinish");
           }
+
+          $session->recomputeStats();
+
         });
 
       } else if ($session->type == 2) {

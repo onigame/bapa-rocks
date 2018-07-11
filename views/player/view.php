@@ -48,31 +48,30 @@ $this->params['breadcrumbs'][] = $this->title;
             //['class' => 'yii\grid\SerialColumn'],
 
             //'user_id',
-            'machine.location.name:text:Location',
-            'machine.name:text:Machine',
+            'machine_id',
+            'locationname:text',
+            'machinename:text',
             [
               'attribute' => 'scoremax',
               'format' => 'raw',
-              'label' => 'Best Game',
               'value' => function ($data) {
                 return Html::a(Yii::$app->formatter->asDecimal($data['scoremax'], 0), '/game/view?id=' . $data['scoremaxgame_id']);
               },
             ],
-            // 'scorethirdquartile',
-            'scoremedian:decimal:median',
-            // 'scorefirstquartile',
+            'scorethirdquartile:decimal',
+            'scoremedian:decimal',
+            'scorefirstquartile:decimal',
             [
-              'attribute' => 'scoremax',
+              'attribute' => 'scoremin',
               'format' => 'raw',
-              'label' => 'Worst Game',
               'value' => function ($data) {
                 return Html::a(Yii::$app->formatter->asDecimal($data['scoremin'], 0), '/game/view?id=' . $data['scoremingame_id']);
               },
             ],
-            'nonforfeitcount:decimal:Games',
+            'nonforfeitcount:decimal',
             //'totalmatchpoints',
-            'averagematchpoints:decimal:Avg. MP',
-            'forfeitcount:decimal:Forfeits',
+            'averagematchpoints:decimal',
+            'forfeitcount:decimal',
             // 'created_at',
             // 'updated_at',
 

@@ -260,6 +260,12 @@ class Session extends \yii\db\ActiveRecord
       }
     }
 
+    public function recomputeStats() {
+      foreach ($this->matches as $match) {
+        $match->recomputeStats();
+      }
+    }
+
     /**
      * @inheritdoc
      * @return SessionQuery the active query used by this AR class.

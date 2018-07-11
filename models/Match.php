@@ -660,6 +660,12 @@ class Match extends \yii\db\ActiveRecord
       }
     }
 
+    public function recomputeStats() {
+      foreach ($this->games as $game) {
+        $game->recomputeStats();
+      }
+    }
+
     public function behaviors()
     {
         return [

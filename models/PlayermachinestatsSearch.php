@@ -20,6 +20,7 @@ class PlayermachinestatsSearch extends Playermachinestats
         return [
             [['user_id', 'machine_id', 'scoremax', 'scorethirdquartile', 'scoremedian', 'scorefirstquartile', 'scoremin', 'scoremaxgame_id', 'scoremingame_id', 'nonforfeitcount', 'totalmatchpoints', 'forfeitcount', 'created_at', 'updated_at'], 'integer'],
             [['averagematchpoints'], 'number'],
+            [['machine', 'location', 'machinename', 'locationname'], 'safe'],
         ];
     }
 
@@ -47,6 +48,22 @@ class PlayermachinestatsSearch extends Playermachinestats
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+              'defaultOrder' => ['locationname' => SORT_ASC, 'machinename' => SORT_ASC],
+              'attributes' => [
+                'locationname' => [
+                  'asc' => ['location.name' => SORT_ASC],
+                  'desc' => ['location.name' => SORT_DESC],
+                  'label' => 'Location',
+                ],
+                'machinename' => [
+                  'asc' => ['machine.name' => SORT_ASC],
+                  'desc' => ['machine.name' => SORT_DESC],
+                  'label' => 'Machine',
+                ],
+              ],
+            ],
+
         ]);
 
         $this->load($params);
@@ -75,6 +92,14 @@ class PlayermachinestatsSearch extends Playermachinestats
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
+
+        $query->joinWith(['machine' => function($q) {
+          $q->where('machine.name LIKE "%' . $this->machinename . '%"');
+        }]);
+
+        $query->joinWith(['location' => function($q) {
+          $q->where('location.name LIKE "%' . $this->locationname . '%"');
+        }]);
 
         return $dataProvider;
     }

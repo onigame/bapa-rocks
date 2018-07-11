@@ -62,19 +62,21 @@ class Playermachinestats extends \yii\db\ActiveRecord
         return [
             'user_id' => 'User ID',
             'machine_id' => 'Machine ID',
-            'scoremax' => 'Scoremax',
-            'scorethirdquartile' => 'Scorethirdquartile',
-            'scoremedian' => 'Scoremedian',
-            'scorefirstquartile' => 'Scorefirstquartile',
-            'scoremin' => 'Scoremin',
+            'scoremax' => 'Best Score',
+            'scorethirdquartile' => '75% Score',
+            'scoremedian' => 'Median Score',
+            'scorefirstquartile' => '25% Score',
+            'scoremin' => 'Worst Score',
             'scoremaxgame_id' => 'Scoremaxgame ID',
             'scoremingame_id' => 'Scoremingame ID',
-            'nonforfeitcount' => 'Nonforfeitcount',
-            'totalmatchpoints' => 'Totalmatchpoints',
-            'averagematchpoints' => 'Averagematchpoints',
-            'forfeitcount' => 'Forfeitcount',
+            'nonforfeitcount' => 'Games',
+            'totalmatchpoints' => 'Total MP',
+            'averagematchpoints' => 'Avg. MP',
+            'forfeitcount' => 'Forfeits',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+            'machinename' => 'Machine',
+            'locationname' => 'Location',
         ];
     }
 
@@ -91,7 +93,35 @@ class Playermachinestats extends \yii\db\ActiveRecord
      */
     public function getMachine()
     {
+//        return Machine::find()->where(['id' => $this->machine_id]);
         return $this->hasOne(Machine::className(), ['id' => 'machine_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMachinename()
+    {
+       if ($this->machine == null) return null;
+       return $this->machine->name;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocation()
+    {
+//      return Location::find()->with('machine');
+      return $this->hasOne(Location::className(), ['id' => 'location_id'])->via('machine');
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocationname()
+    {
+       if ($this->location == null) return null;
+       return $this->location->name;
     }
 
     /**
@@ -109,4 +139,96 @@ class Playermachinestats extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Game::className(), ['id' => 'scoremingame_id']);
     }
+
+    private static function quantile_pos($maxindex, $ratio) {
+        return floor($maxindex * $ratio);
+    }
+
+    private static function quantile_sawtooth($maxindex, $ratio) {
+        return $maxindex * $ratio - floor($maxindex * $ratio);
+    }
+
+    /**
+     * Recomputes stats for one player / machine
+     */
+    public static function recomputeStatsSingle($id, $machine_id) {
+      $playermachinestats = Playermachinestats::find()->where(['user_id' => $id, 'machine_id' => $machine_id])->one();
+      if ($playermachinestats == null) { 
+        $playermachinestats = new Playermachinestats();
+      }
+
+      $playermachinestats->user_id = $id;
+      $playermachinestats->machine_id = $machine_id;
+
+      $playermachinestats->forfeitcount = Score::find()
+                ->leftJoin('game', 'game.id = score.game_id')
+                ->where(['user_id' => $id,
+                         'game.machine_id' => $machine_id,
+                         'forfeit' => 1,
+                         'game.status' => 4, // only completed games count.
+                        ])
+                ->orderBy('forfeit DESC, value')
+                ->count();
+
+      $scores = Score::find()
+                ->leftJoin('game', 'game.id = score.game_id')
+                ->where(['user_id' => $id,
+                         'game.machine_id' => $machine_id,
+                         'forfeit' => 0,
+                         'game.status' => 4, // only completed games count.
+                        ])
+                ->orderBy('forfeit DESC, value')
+                ->all();
+
+      $playermachinestats->nonforfeitcount = 0;
+      $playermachinestats->totalmatchpoints = 0;
+      $scorelist = [];
+
+      $has_score = false;
+      foreach ($scores as $score) {
+        $playermachinestats->nonforfeitcount++;
+        $scorelist[] = $score->value;
+        if ($has_score) {
+          if ($score->value > $playermachinestats->scoremax) {
+            $playermachinestats->scoremax = $score->value;
+            $playermachinestats->scoremaxgame_id = $score->game_id;
+          } else if ($score->value < $playermachinestats->scoremin) {
+            $playermachinestats->scoremin = $score->value;
+            $playermachinestats->scoremingame_id = $score->game_id;
+          }
+        } else {
+          $has_score = true;
+          $playermachinestats->scoremax = $score->value;
+          $playermachinestats->scoremaxgame_id = $score->game_id;
+          $playermachinestats->scoremin = $score->value;
+          $playermachinestats->scoremingame_id = $score->game_id;
+        }
+        $playermachinestats->totalmatchpoints += $score->matchpoints;
+      }
+
+      if ($has_score) {
+        $mi = ($playermachinestats->nonforfeitcount - 1);  // maximum index
+        $qp = Playermachinestats::quantile_pos($mi, 0.5);
+        $st = Playermachinestats::quantile_sawtooth($mi, 0.5);
+        $playermachinestats->scoremedian = $scorelist[$qp];
+        if ($st > 0) $playermachinestats->scoremedian += floor($st * ($scorelist[$qp+1] - $scorelist[$qp]));
+        $qp = Playermachinestats::quantile_pos($mi, 0.25);
+        $st = Playermachinestats::quantile_sawtooth($mi, 0.25);
+        $playermachinestats->scorefirstquartile = $scorelist[$qp];
+        if ($st > 0) $playermachinestats->scorefirstquartile += floor($st * ($scorelist[$qp+1] - $scorelist[$qp]));
+        $qp = Playermachinestats::quantile_pos($mi, 0.75);
+        $st = Playermachinestats::quantile_sawtooth($mi, 0.75);
+        $playermachinestats->scorethirdquartile = $scorelist[$qp];
+        if ($st > 0) $playermachinestats->scorethirdquartile += floor($st * ($scorelist[$qp+1] - $scorelist[$qp]));
+      }
+
+      if ($has_score || $playermachinestats->forfeitcount > 0) {
+        if (!$playermachinestats->save()) {
+          Yii::error($playermachinestats->errors);
+          throw new \yii\base\UserException("Error saving playermachinestats");
+        }
+      }
+    }
+
+
 }
