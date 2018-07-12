@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\Html;
+
 
 /**
  * This is the model class for table "machinerecentstatus".
@@ -124,6 +126,20 @@ class Machinerecentstatus extends \yii\db\ActiveRecord
       $this->initBlankStatus();
       if ($this->status != 2) return "<span class='not-set'>(N/A)</span>";
       return $this->game->match->session->name . " : " . $this->game->match->code ." Game ".$this->game->number;
+    }
+
+    public function getIpdblink() {
+      if ($this->ipdb_id == null) {
+        return "(N/A)";
+      }
+      return Html::a( "View",
+                      "https://www.ipdb.org/machine.cgi?id=" . $this->ipdb_id,
+                      [
+                        'title' => 'IPDB',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
     }
 
     public function getPotentialGoButton() {

@@ -101,6 +101,7 @@ $this->registerJs('
     <h2>Other Players in Season</h2>
 <?= GridView::widget([
         'dataProvider' => $outdataProvider,
+        'responsiveWrap' => false,
         'id' => 'outplayergrid',
 //        'pjax' => true,
         'columns' => [
@@ -152,6 +153,7 @@ $this->registerJs('
 
 <?= GridView::widget([
         'dataProvider' => $otherdataProvider,
+        'responsiveWrap' => false,
         'id' => 'playergrid',
         'columns' => [
             'id',

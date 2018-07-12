@@ -19,9 +19,26 @@ use kartik\grid\GridView;
           ],
         ],
         'columns' => [
+            'name',
+            ['attribute' => 'string', 'label' => 'Status'],
+            [ 'label' => 'Broken', 'attribute' => 'BrokenButton', 'format' => 'html'],
+            [ 'label' => 'Gone', 'attribute' => 'GoneButton', 'format' => 'html'],
+        ],
+    ]); ?>
+
+    <?= GridView::widget([
+        'dataProvider' => $machineData,
+        'responsiveWrap' => false,
+        'pjax' => true,
+        'pjaxSettings' => [
+          'options' => [
+            'enablePushState' => false,
+          ],
+        ],
+        'columns' => [
             'id',
             'name',
-//            ['attribute' => 'ipdb_link', 'label' => 'IPDB'],
+            ['attribute' => 'ipdblink', 'label' => 'IPDB', 'format' => 'html'],
             ['attribute' => 'string', 'label' => 'Status'],
             ['attribute' => 'machine.queueLength', 'header' => '# Groups<br>Waiting', 'format' => 'html'],
             ['attribute' => 'currentMatchInfo', 'label' => 'Current Match', 'format' => 'html'],

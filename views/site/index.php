@@ -92,6 +92,7 @@ $this->title = 'BAPA Manager';
           ]);
           echo GridView::widget([
             'dataProvider' => $sessionData,
+            'responsiveWrap' => false,
             'columns' => [
               ['class' => 'yii\grid\SerialColumn'],
               [ 'label' => 'Season', 'attribute' => 'seasonName', 'format' => 'html'],

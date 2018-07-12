@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 use app\models\MachineStatus;
 
 /**
@@ -141,6 +142,18 @@ class Location extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Session::className(), ['location_id' => 'id']);
     }
+
+    public function getViewButton() {
+      return Html::a( "View",
+                      ["/location/view", 'id' => $this->id],
+                      [
+                        'title' => 'View',
+                        'data-pjax' => '0',
+                        'class' => 'btn-sm btn-success',
+                      ]
+                    );
+    }
+
 
     /**
      * @inheritdoc

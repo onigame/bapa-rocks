@@ -434,6 +434,33 @@ WHERE
 GROUP BY id
 );
 
+-- old version, not as efficient.
+--CREATE OR REPLACE VIEW machinerecentstatus AS ( 
+--SELECT
+--  m.id,
+--  m.name,
+--  m.abbreviation,
+--  m.ipdb_id,
+--  m.location_id,
+--  mmx.min,
+--  mmx.max,
+--  ms1.id as machinestatus_id,
+--  ms1.status,
+--  ms1.game_id,
+--  ms1.recorder_id,
+--  ms1.updated_at
+--FROM machine m
+--LEFT OUTER JOIN machinestatus ms1
+--  ON (m.id = ms1.machine_id)
+--LEFT OUTER JOIN machinestatus ms2
+--  ON (m.id = ms2.machine_id
+--      AND (ms1.updated_at < ms2.updated_at
+--           OR ms1.id IS NULL AND ms2.id IS NULL))
+--LEFT OUTER JOIN machinescoreminmax mmx
+--  ON (m.id = mmx.id)
+--WHERE ms2.id IS NULL
+--);
+
 CREATE OR REPLACE VIEW machinerecentstatus AS (
 SELECT
   m.id,
@@ -441,23 +468,20 @@ SELECT
   m.abbreviation,
   m.ipdb_id,
   m.location_id,
+  mmx.min,
+  mmx.max,
   ms1.id as machinestatus_id,
   ms1.status,
   ms1.game_id,
   ms1.recorder_id,
-  ms1.updated_at,
-  mmx.min,
-  mmx.max
-FROM machine m
-LEFT OUTER JOIN machinestatus ms1
+  ms1.updated_at
+FROM ( SELECT machine_id, MAX(updated_at) AS updated_at FROM machinestatus GROUP BY machine_id ) mso
+INNER JOIN machinestatus ms1
+  ON (ms1.updated_at = mso.updated_at)
+LEFT OUTER JOIN machine m
   ON (m.id = ms1.machine_id)
-LEFT OUTER JOIN machinestatus ms2
-  ON (m.id = ms2.machine_id
-      AND (ms1.updated_at < ms2.updated_at
-           OR ms1.id IS NULL AND ms2.id IS NULL))
 LEFT OUTER JOIN machinescoreminmax mmx
   ON (m.id = mmx.id)
-WHERE ms2.id IS NULL
 );
 
 CREATE OR REPLACE VIEW pvp AS (
