@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h3>Sessions</h3>
 
         <?php
-          if (Yii::$app->user->can('GenericManagerPermission')) {
+          if (Yii::$app->user->can('GenericManagerPermission') && $model->status < 2) {
             echo "<p>";
             echo Html::a('Create Regular Session', ['create-session', 'season_id' => $model->id], ['class' => 'btn btn-success']);
             echo " ";
