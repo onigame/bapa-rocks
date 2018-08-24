@@ -45,7 +45,15 @@ $this->params['breadcrumbs'][] = $model->code;
         'responsiveWrap' => false,
         'columns' => [
 //            'id',
-            [ 'label' => 'Name', 'attribute' => 'user.name', ],
+            [
+              'attribute' => 'user.name',
+              'label' => 'Name',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['user']->name, '/player/view?id=' . $data['user_id']);
+              },
+            ],
+
             [ 'label' => 'Matchpoints', 'attribute' => 'matchpoints', ],
             [ 'label' => 'Breakdown', 'attribute' => 'matchpointsbreakdown', ],
         ],

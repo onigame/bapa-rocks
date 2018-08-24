@@ -68,7 +68,14 @@ $this->params['breadcrumbs'][] = $model->code;
 //        'options' => ['style' => 'font-size:10px'],
         'responsiveWrap' => false,
         'columns' => [
-            [ 'label' => 'Name', 'attribute' => 'user.name', ],
+            [
+              'attribute' => 'user.name',
+              'label' => 'Name',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['user']->name, '/player/view?id=' . $data['user_id']);
+              },
+            ],
             [ 'label' => 'Matchpoints', 'attribute' => 'matchpoints', ],
             [ 'label' => 'Breakdown', 'attribute' => 'matchpointsbreakdown', ],
             [ 'label' => '', 'attribute' => 'admincolumn', 'format' => 'html'],
