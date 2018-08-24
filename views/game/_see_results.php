@@ -31,6 +31,11 @@ use yii\widgets\ActiveForm;
         [ 'attribute' => 'username', 'label' => 'Player Name',
           'contentOptions' => ['style' => 'text-align:left'],
           'headerOptions' => ['style' => 'text-align:left'],
+
+          'format' => 'raw',
+          'value' => function ($data) {
+             return Html::a($data['username'], '/playermachinestats/view?user_id=' . $data['user_id'] . '&machine_id=' . $data['game']->machine_id);
+          },
         ],
         [ 'attribute' => 'scoreDisplay', 'format' => 'html', 'label' => 'Recorded Score',
           'contentOptions' => ['style' => 'text-align:right'],

@@ -24,6 +24,14 @@ use kartik\grid\GridView;
                  ]
                );
             } ],
+            [
+              'attribute' => 'name',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['name'], '/machine/view?id=' . $data['id']);
+              },
+            ],
+
 //            ['attribute' => 'ipdb_link', 'label' => 'IPDB'],
             ['attribute' => 'min', 'label' => 'Lowest', 'format' => 'decimal'],
 //            ['attribute' => 'median', 'label' => 'Median', 'format' => 'decimal'],

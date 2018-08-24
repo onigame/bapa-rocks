@@ -24,9 +24,20 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'user_id',
-            'machine_id',
+            [
+              'attribute' => 'playername',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['playername'], '/player/view?id=' . $data['user_id']);
+              },
+            ],
+            [
+              'attribute' => 'machinename',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['machineName'], '/machine/view?id=' . $data['machine_id']);
+              },
+            ],
             'scoremax',
             'scorethirdquartile',
             'scoremedian',

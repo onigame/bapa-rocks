@@ -75,6 +75,7 @@ class Playermachinestats extends \yii\db\ActiveRecord
             'forfeitcount' => 'Forfeits',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+            'playername' => 'Player',
             'machinename' => 'Machine',
             'locationname' => 'Location',
         ];
@@ -86,6 +87,23 @@ class Playermachinestats extends \yii\db\ActiveRecord
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPlayer()
+    {
+        return $this->hasOne(Player::className(), ['id' => 'user_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPlayerName()
+    {
+        if ($this->player == null) return null;
+        return $this->player->name;
     }
 
     /**

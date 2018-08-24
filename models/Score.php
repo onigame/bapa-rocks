@@ -60,6 +60,7 @@ class Score extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'playernumber' => 'Playernumber',
+            'playerName' => 'Player Name',
             'value' => 'Value',
             'matchpoints' => 'Matchpoints',
             'forfeit' => 'Forfeit',
@@ -91,6 +92,36 @@ class Score extends \yii\db\ActiveRecord
         return $this->hasOne(Game::className(), ['id' => 'game_id']);
     }
 
+    public function getMatch()
+    {
+        return $this->hasOne(Match::className(), ['id' => 'match_id'])->via('game');
+    }
+
+    public function getMatch_id()
+    {
+        return $this->game->match_id;
+    }
+
+    public function getSession()
+    {
+        return $this->hasOne(Session::className(), ['id' => 'session_id'])->via('match');
+    }
+
+    public function getSession_id()
+    {
+        return $this->match->session_id;
+    }
+
+    public function getSeason()
+    {
+        return $this->hasOne(Season::className(), ['id' => 'season_id'])->via('session');
+    }
+
+    public function getProfile()
+    {
+        return $this->hasOne(Profile::className(), ['user_id' => 'user_id']);
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -99,8 +130,20 @@ class Score extends \yii\db\ActiveRecord
         return $this->hasOne(Player::className(), ['id' => 'user_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPlayer()
+    {
+        return $this->hasOne(Player::className(), ['id' => 'user_id']);
+    }
+
     public function getUsername() {
       return $this->user->name;
+    }
+
+    public function getPlayerName() {
+      return $this->player->name;
     }
 
     public function getEntered() {

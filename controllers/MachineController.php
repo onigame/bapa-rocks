@@ -6,6 +6,7 @@ use Yii;
 use app\models\Machine;
 use app\models\MachineSearch;
 use app\models\MachineStatus;
+use app\models\ScoreSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -70,8 +71,15 @@ class MachineController extends Controller
      */
     public function actionView($id)
     {
+        $scoreSearchModel = new ScoreSearch();
+        $scoreDataProvider = $scoreSearchModel->search(Yii::$app->request->queryParams);
+        $scoreDataProvider->query->joinWith('game');
+        $scoreDataProvider->query->andWhere(['machine_id' => $id]);
+
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'scoreSearchModel' => $scoreSearchModel,
+            'scoreDataProvider' => $scoreDataProvider,
         ]);
     }
 

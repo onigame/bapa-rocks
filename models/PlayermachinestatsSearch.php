@@ -61,6 +61,11 @@ class PlayermachinestatsSearch extends Playermachinestats
                   'desc' => ['machine.name' => SORT_DESC],
                   'label' => 'Machine',
                 ],
+                'playername' => [
+                  'asc' => ['player.name' => SORT_ASC],
+                  'desc' => ['player.name' => SORT_DESC],
+                  'label' => 'Player',
+                ],
               ],
             ],
 

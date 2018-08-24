@@ -305,6 +305,7 @@ class SessionController extends Controller
         });
 
       } else if ($session->type == 2) {
+        $session->recomputeStats();
         $session->status = 2;
         $session->save();
       } else {

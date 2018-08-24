@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Playermachinestats;
 use app\models\PlayermachinestatsSearch;
+use app\models\ScoreSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -52,9 +53,18 @@ class PlayermachinestatsController extends Controller
      */
     public function actionView($user_id, $machine_id)
     {
+        $scoreSearchModel = new ScoreSearch();
+        $scoreDataProvider = $scoreSearchModel->search(Yii::$app->request->queryParams);
+        $scoreDataProvider->query->andWhere(['score.user_id' => $user_id]);
+        $scoreDataProvider->query->joinWith('game');
+        $scoreDataProvider->query->andWhere(['machine_id' => $machine_id]);
+
         return $this->render('view', [
             'model' => $this->findModel($user_id, $machine_id),
+            'scoreSearchModel' => $scoreSearchModel,
+            'scoreDataProvider' => $scoreDataProvider,
         ]);
+
     }
 
     /**
