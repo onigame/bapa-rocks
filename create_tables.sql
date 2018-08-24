@@ -673,3 +673,14 @@ INSERT INTO seasonuser (id, notes, matchpoints, game_count, opponent_count, matc
 (31, "", 72, 20, 15, 5, 1, 30, 1);
 
 
+ CREATE TABLE audit_data (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `entry_id` int(11) NOT NULL,
+  `created` datetime NOT NULL,
+  `type` CHAR(255) NOT NULL,
+  `data` longblob,
+  PRIMARY KEY (`id`),
+  KEY `fk_audit_data_entry_id` (`entry_id`)
+ )
+  CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB;
+

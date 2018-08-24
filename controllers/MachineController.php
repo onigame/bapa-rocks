@@ -82,10 +82,20 @@ class MachineController extends Controller
      */
     public function actionCreate()
     {
+        throw new \yii\base\UserException("waaaah machinee");
         $model = new Machine();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            $ms = new MachineStatus();
+            $ms->machine_id = $model->id;
+            $ms->status = 1;  // available
+            $ms->recorder_id = Yii::$app->user->id;
+            if ($ms->save()) {
+              return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+              Yii::error($ms->errors);
+              throw new \yii\base\UserException("Error saving machinestatus at create Machine");
+            }
         } else {
             return $this->render('create', [
                 'model' => $model,

@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Location;
 use app\models\Machine;
+use app\models\MachineStatus;
 use app\models\LocationSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -24,7 +25,7 @@ class LocationController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete', 'add-machine'],
+                'only' => ['index', 'view', 'update', 'create', 'delete', 'add-machine'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -34,6 +35,11 @@ class LocationController extends Controller
                     [
                         'allow' => false,
                         'actions' => ['update', 'create', 'delete', 'add-machine'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view'],
                         'roles' => ['@'],
                     ],
                 ],
@@ -97,7 +103,16 @@ class LocationController extends Controller
       if ($location_id != null) $model->location_id = $location_id;
 
       if ($model->load(Yii::$app->request->post()) && $model->save()) {
-          return $this->redirect(['view', 'id' => $location_id]);
+          $ms = new MachineStatus();
+          $ms->machine_id = $model->id;
+          $ms->status = 1;  // available
+          $ms->recorder_id = Yii::$app->user->id;
+          if ($ms->save()) {
+            return $this->redirect(['view', 'id' => $location_id]);
+          } else {
+            Yii::error($ms->errors);
+            throw new \yii\base\UserException("Error saving machinestatus at create Machine");
+          }
       } else {
           return $this->render('add-machine', [
               'model' => $model,
