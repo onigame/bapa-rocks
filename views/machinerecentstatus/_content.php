@@ -16,14 +16,6 @@ use kartik\grid\GridView;
         'pjax' => 'true',
         'responsiveWrap' => false,
         'columns' => [
-            ['attribute' => 'name', 'format' => 'raw', 'value' => function ($model, $key, $index, $column) { 
-               return Html::a($model->name,
-                 "http://www.ipdb.org/machine.cgi?id=" . $model->ipdb_id,
-                 [
-                   "target" => "_blank",
-                 ]
-               );
-            } ],
             [
               'attribute' => 'name',
               'format' => 'raw',

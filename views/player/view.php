@@ -41,6 +41,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
+<h2>By-Machine Stats</h2>
+
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $statsDataProvider,
         'filterModel' => $statsSearchModel,

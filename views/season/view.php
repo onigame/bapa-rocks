@@ -107,7 +107,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 //            ['class' => 'yii\grid\SerialColumn'],
 //            'id',
-            'Name',
+            [
+              'attribute' => 'Name',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['Name'], '/player/view?id=' . $data['id']);
+              },
+            ],
+
 //            ['attribute' => 'session_name', 'label' => 'Week',],
 //            ['attribute' => 'code', 'label' => 'Group',],
 //            'matchpoints',
@@ -134,7 +141,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 //            ['class' => 'yii\grid\SerialColumn'],
 //            'id',
-            'Name',
+            [
+              'attribute' => 'Name',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['Name'], '/player/view?id=' . $data['id']);
+              },
+            ],
 //            ['attribute' => 'session_name', 'label' => 'Week',],
 //            ['attribute' => 'code', 'label' => 'Group',],
 //            'matchpoints',
