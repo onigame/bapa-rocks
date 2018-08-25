@@ -317,7 +317,7 @@ class Match extends \yii\db\ActiveRecord
       $result = [];
       foreach ($players as $player) {
         $result[] = SeasonUser::find()->where(['user_id' => $player->id,
-                                               'season_id' => $this->season])->one();
+                                               'season_id' => $this->season->id])->one();
       }
       return $result;
     }

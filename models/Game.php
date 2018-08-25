@@ -541,8 +541,8 @@ class Game extends \yii\db\ActiveRecord
         throw new \yii\base\UserException("higherplayer called when not 2 players :" . count($seasonusers) );
       }
       // Players with more MPs in the season is higher.
-      if ($seasonusers[0]->matchpoints > $seasonusers[1]->matchpoints) return $seasonusers[0]->user_id;
-      if ($seasonusers[0]->matchpoints < $seasonusers[1]->matchpoints) return $seasonusers[1]->user_id;
+      if ($seasonusers[0]->playoff_matchpoints > $seasonusers[1]->playoff_matchpoints) return $seasonusers[0]->user_id;
+      if ($seasonusers[0]->playoff_matchpoints < $seasonusers[1]->playoff_matchpoints) return $seasonusers[1]->user_id;
 
       // In case of tie, player with better current seed is higher.
       $matchusers = $this->matchUsers;

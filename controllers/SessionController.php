@@ -500,6 +500,7 @@ class SessionController extends Controller
           return $this->redirect(['view', 'id' => $id]);
         }
         $this->makePlayoffMatches($id);
+throw new \yii\base\UserException("Wheee");
         return $this->redirect(['view', 'id' => $id]);
       }
       Yii::$app->session->setFlash('error', "Unrecognized Session Type: " . $session->type);
