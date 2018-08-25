@@ -19,7 +19,10 @@ $this->title = 'BAPA Manager';
          you use on other sites.
        </p>
 
-        <p>Did you sign in but miss the confirmation window?  Request another one 
+        <p>Note: If you have already signed up, you can sign in even if your email has not
+         been confirmed.  Email confirmation is needed to prove you are not a spammer.</p>
+
+        <p>Did you sign in but miss the confirmation email or window?  Request another one 
           <a class="btn btn-success" href="/user/registration/resend">here</a>.
         </p>
    

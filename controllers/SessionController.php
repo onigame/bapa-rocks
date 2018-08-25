@@ -500,7 +500,6 @@ class SessionController extends Controller
           return $this->redirect(['view', 'id' => $id]);
         }
         $this->makePlayoffMatches($id);
-throw new \yii\base\UserException("Wheee");
         return $this->redirect(['view', 'id' => $id]);
       }
       Yii::$app->session->setFlash('error', "Unrecognized Session Type: " . $session->type);
@@ -516,6 +515,7 @@ throw new \yii\base\UserException("Wheee");
     public static function groupSize($numplayers, $groupnum) {
       if ($groupnum == 1 && $numplayers == 8) return 4;
       if ($groupnum == 1) return 3;
+      if ($groupnum == 2 && $numplayers == 6) return 3;
       if ($groupnum == 2 && $numplayers <= 8) return 4;
       if ($groupnum == 2 && $numplayers == 11) return 4;
       if ($groupnum == 2) return 3;
