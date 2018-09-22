@@ -15,7 +15,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=5.4.0",
-        "yiisoft/yii2": "~2.0.5",
+        "yiisoft/yii2": "~2.0.13",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0",
         "yiisoft/yii2-authclient": "*",
@@ -23,14 +23,19 @@
         "dektrium/yii2-user": "^0.9.6",
         "dektrium/yii2-rbac": "1.0.0-alpha@dev",
         "boundstate/yii2-mailgun": "*",
-        "bedezign/yii2-audit": "^1.0",
         "kartik-v/yii2-widget-datepicker": "@dev",
         "kartik-v/yii2-datecontrol": "dev-master",
         "kartik-v/yii2-grid": "@dev",
+        "kartik-v/yii2-krajee-base": "*",
         "kartik-v/yii2-widgets": "*",
         "kartik-v/yii2-editable": "@dev",
-        "extead/yii2-autonumeric": "*",
-        "yii2mod/yii2-sweet-alert": "*"
+
+        "kartik-v/bootstrap-popover-x": "<=1.4.3",
+        "bower-asset/jquery": "<3",
+        "extead/yii2-autonumeric": "0.1",
+
+        "yii2mod/yii2-sweet-alert": "*",
+        "bedezign/yii2-audit": "^1.1.1"
     },
     "require-dev": {
         "yiisoft/yii2-gii": "~2.0.0",
