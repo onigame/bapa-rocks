@@ -74,17 +74,20 @@ class Player extends User {
         $answer .= $results->match->code;
         $answer .= ".</p>";
         // Is there an upcoming session?
-        $next_session = Session::find()->where(['status' => 0])->orderBy(['date' => SORT_ASC])->one();
-        if ($next_session != null) {
-          $answer .= "<p>";
-          $answer .= "The next session is ".$next_session->name." (".$next_session->season->name."). ";
-          if ($next_session->currentPlayerIn) {
-            $answer .= "You have signed up to play.";
-          } else {
-            $answer .= "You have NOT signed up to play.";
+        $next_sessions = Session::find()->where(['status' => 0])->orderBy(['date' => SORT_ASC])->all();
+        $answer .= "<p>Upcoming Sessions:";
+        foreach ($next_sessions as $next_session) {
+          if ($next_session != null) {
+            $answer .= "<LI>";
+            $answer .= $next_session->name." (".$next_session->season->name.") @ ".$next_session->location->name.". ";
+            if ($next_session->currentPlayerIn) {
+              $answer .= "You have signed up to play.";
+            } else {
+              $answer .= "You have NOT signed up to play.";
+            }
           }
-          $answer .= "</p>";
         }
+        $answer .= "</p>";
       } else if ($results->match_status == 2) {
         $answer .= "<p>";
         $answer .= "You are currently in ".$results->match->code." vs. ".$results->match->opponentNames;
