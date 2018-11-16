@@ -76,4 +76,30 @@ $this->registerJs('
 ?>
    <?= $this->render('@app/views/machinerecentstatus/_content', [ 'machineData' => $machineData ]) ?>
 
+    <h2>Finished Matches</h2>
+<?php
+    $finMatchData = new yii\data\ActiveDataProvider([
+          'query' => app\models\Match::find()
+                   ->where(['session_id' => $model->id, 'status' => 3])
+                // ->orderBy(['code' => SORT_ASC]),
+        ]);
+?>
+    <?= GridView::widget([
+        'dataProvider' => $finMatchData,
+        'responsiveWrap' => false,
+        'id' => 'currentmatches',
+        'pjax' => true,
+        'columns' => [
+ //           'id',
+ //           'session_id',
+            'code',
+            [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
+            ['attribute' => 'statusString', 'format' => 'html'],
+            'matchusersScoresString',
+            'formatString',
+            [ 'label' => '', 'attribute' => 'admincolumn', 'format' => 'html'],
+//            'statusDetailCode',
+        ],
+    ]); ?>
+
 </div>
