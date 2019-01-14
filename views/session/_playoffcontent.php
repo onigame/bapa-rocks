@@ -50,6 +50,7 @@ use kartik\grid\GridView;
 ?>
     <?= GridView::widget([
         'dataProvider' => $curMatchData,
+        'responsiveWrap' => false,
         'columns' => [
  //           'id',
  //           'session_id',
@@ -89,6 +90,7 @@ use kartik\grid\GridView;
 ?>
     <?= GridView::widget([
         'dataProvider' => $curMatchData,
+        'responsiveWrap' => false,
         'columns' => [
  //           'id',
  //           'session_id',
@@ -112,6 +114,7 @@ use kartik\grid\GridView;
 ?>
     <?= GridView::widget([
         'dataProvider' => $curMatchData,
+        'responsiveWrap' => false,
         'columns' => [
  //           'id',
  //           'session_id',
