@@ -271,6 +271,7 @@ GROUP BY
   machine_id, machine_selector, session_id
 );
 
+-- note: This version doesn't work.
 CREATE OR REPLACE VIEW playoffresults AS (
 SELECT
   su.session_id,
@@ -317,6 +318,54 @@ JOIN seasonuser seau
   ON (seas.id = seau.season_id AND su.user_id = seau.user_id)
 WHERE mu2.id IS NULL
 );
+
+-- note: this version works
+CREATE OR REPLACE VIEW playoffresults AS (
+SELECT
+  q.session_id,
+  q.user_id,
+  sess.season_id as season_id,
+  seau.id as seasonuser_id,
+  su.id as sessionuser_id,
+  q.matchuser_id,
+  q.match_id,
+  m.code as code,
+  m.status as match_status,
+  if (m.status = 3,
+      if (mu.matchrank = 1, eg.seed_p1 + 1, eg.seed_p2 + 1),
+      eg.seed_min) as seed_min,
+  if (m.status = 3,
+      if (mu.matchrank = 1, eg.seed_p1 + 1, eg.seed_p2 + 1),
+      eg.seed_max) as seed_max,
+  if (m.status = 3,
+      if (mu.matchrank = 1, eg.seed_p1 + 1, eg.seed_p2 + 1),
+      if (mu.starting_playernum = 1, eg.seed_p1 + 1, eg.seed_p2 + 1) )
+     as seed
+FROM (
+  SELECT
+    m.session_id as session_id,
+    mu.user_id as user_id,
+    MAX(mu.id) as matchuser_id,
+    substring_index(group_concat(mu.match_id ORDER BY mu.created_at DESC), ',', 1) as match_id
+  FROM `match` m
+  JOIN matchuser mu 
+    ON m.id = mu.match_id
+  GROUP BY m.session_id, mu.user_id
+  ) q
+JOIN `match` m
+  ON q.match_id = m.id
+JOIN matchuser mu
+  ON mu.id = q.matchuser_id
+JOIN session sess
+  ON m.session_id = sess.id
+JOIN sessionuser su
+  ON (su.session_id = q.session_id AND su.user_id = q.user_id)
+JOIN seasonuser seau
+  ON (seau.season_id = sess.season_id AND su.user_id = seau.user_id)
+JOIN eliminationgraph eg
+  ON (m.code = eg.code)
+);
+
 
 CREATE OR REPLACE VIEW regularresults AS (
 SELECT
