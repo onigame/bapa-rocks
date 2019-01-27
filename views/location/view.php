@@ -15,32 +15,41 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+    <?php
+       if (Yii::$app->user->can('GenericManagerPermission')) {
+
+        echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ;
+        echo " ";
+        echo Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
-        ]) ?>
+        ]);
+       }
+    ?>
     </p>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
+            ['attribute' => 'id', 'visible' => Yii::$app->user->can('GenericManagerPermission')],
             'name',
             'address',
             'contact',
             'notes',
-            'created_at',
-            'updated_at',
+            ['attribute' => 'created_at', 'visible' => Yii::$app->user->can('GenericManagerPermission')],
+            ['attribute' => 'updated_at', 'visible' => Yii::$app->user->can('GenericManagerPermission')],
         ],
     ]) ?>
 
     <h2>Machines</h2>
     <p>
-      <?= Html::a( "Add Machine",
+    <?php
+       if (Yii::$app->user->can('GenericManagerPermission')) {
+
+         echo Html::a( "Add Machine",
                       ["add-machine", "location_id" => $model->id],
                       [
                         'title' => 'Add Machine',
@@ -48,7 +57,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'btn-sm btn-success',
                       ]
                     );
-      ?>
+       }
+    ?>
+   
 <?php
 
     $machineData = new yii\data\ActiveDataProvider([
@@ -63,7 +74,14 @@ $this->params['breadcrumbs'][] = $this->title;
           ],
         ]);
 ?>
-  <?= $this->render('@app/views/machinerecentstatus/_content_admin', [ 'machineData' => $machineData ]) ?>
+    <?php
+       if (Yii::$app->user->can('GenericManagerPermission')) {
+
+         echo $this->render('@app/views/machinerecentstatus/_content_admin', [ 'machineData' => $machineData ]);
+       } else {
+         echo $this->render('@app/views/machinerecentstatus/_content', [ 'machineData' => $machineData ]);
+       }
+    ?>
 
 
 </div>

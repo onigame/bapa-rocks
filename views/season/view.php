@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 //            'seasonName',
             'name',
-            'locationName',
+            ['attribute' => 'locationName', 'format' => 'html'],
             'typeName',
             'statusString',
             ['attribute' => 'date', 'format' => 'date',],

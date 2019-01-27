@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\Html;
 use app\models\Session;
 use app\models\StatusHtml;
 use dektrium\user\models\User as BaseUser;
@@ -58,12 +59,12 @@ class Player extends User {
       if ($results->session->status == 2) {
         $answer .= "<p>Your last <b>regular session</b> was " . $results->session->season->name . " " 
                     . $results->session->name 
-                    . " at " . $results->session->location->name
+                    . " at " . Html::a($results->session->location->name, ['/location/view', 'id' => $results->session->location->id])
                     . ".</p>";
       } else {
         $answer .= "<p><b>You are playing</b> in " . $results->session->season->name . " " 
                     . $results->session->name 
-                    . " at " . $results->session->location->name
+                    . " at " . Html::a($results->session->location->name, ['/location/view', 'id' => $results->session->location->id])
                     . ".</p>";
       }
       if ($results->match_status == 3) {
@@ -79,7 +80,9 @@ class Player extends User {
         foreach ($next_sessions as $next_session) {
           if ($next_session != null) {
             $answer .= "<LI>";
-            $answer .= $next_session->name." (".$next_session->season->name.") @ ".$next_session->location->name.". ";
+            $answer .= $next_session->name." (".$next_session->season->name.") @ "
+                        . Html::a($next_session->location->name, ['/location/view', 'id' => $next_session->location->id])
+                        . ". ";
             if ($next_session->currentPlayerIn) {
               $answer .= "You have signed up to play.";
             } else {
@@ -126,12 +129,12 @@ class Player extends User {
       if ($results->session->status == 2) {
         $answer .= "<p>Your last <b>playoffs</b> was " . $results->session->season->name . " " 
                     . $results->session->name 
-                    . " at " . $results->session->location->name
+                    . " at " . Html::a($results->session->location->name, ['/location/view', 'id' => $results->session->location->id])
                     . ".</p>";
       } else {
         $answer .= "<p><b>You are playing</b> in " . $results->session->season->name . " " 
                     . $results->session->name 
-                    . " at " . $results->session->location->name
+                    . " at " . Html::a($results->session->location->name, ['/location/view', 'id' => $results->session->location->id])
                     . ".</p>";
       }
       if ($results->match_status == 3) {

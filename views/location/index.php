@@ -16,7 +16,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Location', ['create'], ['class' => 'btn btn-success']) ?>
+    <?php
+       if (Yii::$app->user->can('GenericManagerPermission')) {
+          echo Html::a('Create Location', ['create'], ['class' => 'btn btn-success']); 
+       }
+    ?>
     </p>
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -33,7 +37,13 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'created_at',
             // 'updated_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+               'class' => 'yii\grid\ActionColumn',
+               'visibleButtons' => [
+                 'update' => Yii::$app->user->can('GenericManagerPermission'),
+                 'delete' => Yii::$app->user->can('GenericManagerPermission'),
+               ],
+            ],
         ],
     ]); ?>
 <?php Pjax::end(); ?></div>

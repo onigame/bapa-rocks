@@ -168,7 +168,13 @@ class Session extends \yii\db\ActiveRecord
     }
 
     public function getLocationName() {
-        return $this->location->name;
+        return Html::a( $this->location->name,
+                      ["/location/view", 'id' => $this->location->id],
+                      [
+                        'title' => 'View Location',
+                        'data-pjax' => '0',
+                      ]
+                    );
     }
 
     /**
