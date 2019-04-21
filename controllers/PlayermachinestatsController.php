@@ -8,6 +8,7 @@ use app\models\PlayermachinestatsSearch;
 use app\models\ScoreSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
@@ -21,6 +22,23 @@ class PlayermachinestatsController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['index', 'view', 'create', 'update', 'recomputestats'],
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['recomputestats', 'create', 'update'],
+                        'roles' => ['Manager'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view'],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -117,6 +135,15 @@ class PlayermachinestatsController extends Controller
         $this->findModel($user_id, $machine_id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Recomputes stats for this player/machine combo.
+     */
+    public function actionRecomputestats($user_id, $machine_id) {
+        Playermachinestats::recomputeStatsSingle($user_id, $machine_id);
+
+        return $this->redirect(['view', 'user_id' => $user_id, 'machine_id' => $machine_id]);
     }
 
     /**

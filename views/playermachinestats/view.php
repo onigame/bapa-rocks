@@ -16,6 +16,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
+<?php
+      echo "<p>";
+      echo Html::a( "Recompute",
+                      ["recomputestats",
+                        'user_id' => $model->player->id,
+                        'machine_id' => $model->machine->id,
+                      ],
+                      [
+                        'title' => 'Recompute',
+                        'data-pjax' => '0',
+                        'class' => 'btn btn-primary',
+                      ]
+                    );
+      echo "</p>";
+?>
+
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
