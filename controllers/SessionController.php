@@ -642,9 +642,14 @@ class SessionController extends Controller
           // add playoff division to season user
           $seasonuser = $sessionuser->publicSeasonUser;
           $seasonuser->playoff_division = $session->playoff_division;
+          if ($seasonuser->mpg == null) {
+            $seasonuser->game_count = 2;
+            $seasonuser->matchpoints = 5;
+            $seasonuser->opponent_count = 8;
+          }
           if (!$seasonuser->save()) {
             Yii::error($seasonuser->errors);
-            throw new \yii\base\UserException("Error saving seasonuser when seed = " . $seed);
+            throw new \yii\base\UserException("Error saving seasonuser when seed = " . $seed . json_encode($seasonuser->errors));
           }
           $seed++;
         }

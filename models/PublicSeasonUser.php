@@ -52,7 +52,7 @@ class PublicSeasonUser extends SeasonUser
     {
         return [
             [['id', 'matchpoints', 'game_count', 'opponent_count', 
-              'match_count', 'dues', 'mpg',
+              'match_count', 'dues',
               'user_id', 'season_id'], 'required'],
             [['matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id', 
               'season_id', 'created_at', 'updated_at', 'row_number'], 'integer'],
