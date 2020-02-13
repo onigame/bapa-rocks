@@ -20,6 +20,21 @@ $this->params['breadcrumbs'][] = $model->code;
 
     <h1>Match <?= Html::encode($this->title) ?></h1>
 
+<?php
+     if (Yii::$app->user->can('GenericAdminPermission')) {
+        echo "<p>";
+        echo Html::a('Deleterecurse', ['deleterecurse', 'id' => $model->id], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Are you sure you want to recursively delete this item?',
+                'method' => 'post',
+            ],
+        ]);
+        echo "</p>";
+     }
+?>
+
+
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [

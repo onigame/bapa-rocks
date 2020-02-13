@@ -16,6 +16,21 @@ $this->params['breadcrumbs'][] = $model->name;
 <?= $this->render('@app/views/session/_regularcontent', [ 'model' => $model ]) ?>
 
 <?php
+  if (Yii::$app->user->can('GenericAdminPermission')) {
+        echo "<h2>Admin Tools</h2>";
+        echo "<p>";
+        echo Html::a('Deleterecurse', ['deleterecurse', 'id' => $model->id], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Are you sure you want to recursively delete this item?',
+                'method' => 'post',
+            ],
+        ]);
+        echo "</p>";
+  }
+?>
+
+<?php
   if (Yii::$app->user->can('GenericManagerPermission')) {
 ?>
    <h2>Management Tools</h2>

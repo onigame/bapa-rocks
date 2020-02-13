@@ -666,6 +666,16 @@ class Match extends \yii\db\ActiveRecord
       }
     }
 
+    public function deleteChildren() {
+      foreach (Matchuser::find()->where(['match_id' => $this->id])->all() as $mu) {
+        $mu->delete();
+      }
+      foreach (Game::find()->where(['match_id' => $this->id])->all() as $game) {
+        $game->deleteChildren();
+        $game->delete();
+      }
+    }
+
     public function behaviors()
     {
         return [

@@ -37,12 +37,17 @@ class SessionController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete', 'start', 'removeplayer', 'addplayer', 'finish', 'leave', 'join', 'addlate'],
+                'only' => ['update', 'create', 'delete', 'start', 'removeplayer', 'addplayer', 'finish', 'leave', 'join', 'addlate', 'deleterecurse'],
                 'rules' => [
                     [
                         'allow' => true,
                         'actions' => ['update', 'create', 'start', 'removeplayer', 'addplayer', 'finish', 'addlate'],
                         'roles' => ['Manager'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['deleterecurse'],
+                        'roles' => ['GenericAdminPermission'],
                     ],
                     [
                         'allow' => true,
@@ -477,6 +482,19 @@ class SessionController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public function actionDeleterecurse($id)
+    {
+      $session = $this->findModel($id);
+      $season = $session->season;
+      $session::getDb()->transaction(function($db) use ($session) {
+        $session->deleteChildren();
+        $session->delete();
+      });
+
+      return $this->redirect(['/season/view', 'id' => $season->id]);
+    }
+
 
     public function actionStart($id) {
       $session = $this->findModel($id);

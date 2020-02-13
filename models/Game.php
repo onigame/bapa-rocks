@@ -620,6 +620,16 @@ class Game extends \yii\db\ActiveRecord
       }
     }
 
+    public function deleteChildren() {
+      foreach (Score::find()->where(['game_id' => $this->id])->all() as $score) {
+        $score->delete();
+      }
+      foreach (MachineStatus::find()->where(['game_id' => $this->id])->all() as $ms) {
+        $ms->delete();
+      }
+    }
+
+
 
     /**
      * @inheritdoc

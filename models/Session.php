@@ -272,6 +272,16 @@ class Session extends \yii\db\ActiveRecord
       }
     }
 
+    public function deleteChildren() {
+      foreach (Sessionuser::find()->where(['session_id' => $this->id])->all() as $su) {
+        $su->delete();
+      }
+      foreach (Match::find()->where(['session_id' => $this->id])->all() as $match) {
+        $match->deleteChildren();
+        $match->delete();
+      }
+    }
+
     /**
      * @inheritdoc
      * @return SessionQuery the active query used by this AR class.

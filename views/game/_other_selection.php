@@ -16,6 +16,8 @@ use yii\widgets\Pjax;
     <h3>
 <?php if ($model->scores != null) { ?>
     <!-- no player order selection, order already done. -->
+<?php } else if ($model->playerOrderSelector == null) { ?>
+   error: NO PLAYER ORDER SELECTOR -- probably a 'do not use' week
 <?php } else if ($model->playerOrderSelector->id == Yii::$app->user->identity->id) { ?>
    You (<?= $model->playerOrderSelector->name ?>) will choose to be:
     <?= Html::a('Player 1', ['/game/playerorder', 'id' => $model->id, 'order' => 1], ['class' => 'btn btn-success']) ?>

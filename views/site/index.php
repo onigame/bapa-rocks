@@ -30,7 +30,7 @@ $this->title = 'BAPA Manager';
         } else {
 ?>
     <h2>Your Status</h2>
-        <?= \app\models\Player::findOne(Yii::$app->user->id)->statusHtml ?>
+        <?=  \app\models\Player::findOne(Yii::$app->user->id)->statusHtml  ?>
     <h2>Current Sessions</h2>
 <?php
           $sessionData = new yii\data\ActiveDataProvider([

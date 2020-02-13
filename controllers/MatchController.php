@@ -7,6 +7,7 @@ use app\models\Match;
 use app\models\MatchSearch;
 use app\models\Game;
 use app\models\GameSearch;
+use app\models\MatchUser;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -26,11 +27,16 @@ class MatchController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete'],
+                'only' => ['update', 'create', 'delete', 'deleterecurse'],
                 'rules' => [
                     [
+                        'allow' => true,
+                        'actions' => ['deleterecurse'],
+                        'roles' => ['GenericAdminPermission'],
+                    ],
+                    [
                         'allow' => false,
-                        'actions' => ['update', 'create', 'delete'],
+                        'actions' => ['update', 'create', 'delete', 'deleterecurse'],
                         'roles' => ['@'],
                     ],
                 ],
@@ -143,6 +149,19 @@ class MatchController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public function actionDeleterecurse($id)
+    {
+      $match = $this->findModel($id);
+      $session = $match->session;
+      $match::getDb()->transaction(function($db) use ($match) {
+        $match->deleteChildren();
+        $match->delete();
+      });
+
+      return $this->redirect(['/session/view', 'id' => $session->id]);
+    }
+
 
     /* Does the appropriate thing on the match,
      * for example, creates games if needed.

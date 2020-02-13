@@ -27,15 +27,18 @@ class GameController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['update', 'create', 'delete', 'view'],
+                'only' => ['update', 'create', 'delete', 'deleterecurse', 'view'],
                 'rules' => [
                     [
                         'allow' => true,
                         'actions' => ['kick'],
                         'roles' => ['GenericManagerPermission'],
                     ],
-                ],
-                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['deleterecurse'],
+                        'roles' => ['GenericAdminPermission'],
+                    ],
                     [
                         'allow' => true,
                         'actions' => ['view'],
@@ -73,15 +76,13 @@ class GameController extends Controller
     public function actionKick($id) {
       $game = $this->findModel($id); 
       $game::getDb()->transaction(function($db) use ($game) {
-        // remove all scores for this game.
-        foreach (Score::find()->where(['game_id' => $game->id])->all() as $score) {
-          $score->delete();
-        }
-        foreach (MachineStatus::find()->where(['game_id' => $game->id])->all() as $ms) {
-          $ms->delete();
-        }
+        $game->deleteChildren();
         $game->machine_id = null;
-        $game->status = 6;
+        if ($game->isPlayoffs) {
+          $game->status = 0;
+        } else {
+          $game->status = 6;
+        }
         if (!$game->save()) {
           Yii::error($game->errors);
           throw new \yii\base\UserException("Error saving game direction actionKick" . $game->id);
@@ -191,6 +192,18 @@ class GameController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionDeleterecurse($id)
+    {
+      $game = $this->findModel($id); 
+      $match = $game->match;
+      $game::getDb()->transaction(function($db) use ($game) {
+        $game->deleteChildren();
+        $game->delete();
+      });
+
+      return $this->redirect(['/match/view', 'id' => $match->id]);
     }
 
     /* 
