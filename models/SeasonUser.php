@@ -262,9 +262,6 @@ class SeasonUser extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            [
-                'class' => 'bedezign\yii2\audit\AuditTrailBehavior',
-            ],
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
                 'attributes' => [

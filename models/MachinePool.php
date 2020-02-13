@@ -95,12 +95,4 @@ class MachinePool extends \yii\db\ActiveRecord
       return $pool->pick_count;
     }
 
-    public function behaviors()
-    {
-        return [
-            [
-                'class' => 'bedezign\yii2\audit\AuditTrailBehavior',
-            ],
-        ];
-    }
 }

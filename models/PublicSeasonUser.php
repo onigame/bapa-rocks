@@ -110,9 +110,6 @@ class PublicSeasonUser extends SeasonUser
     public function behaviors()
     {
         return [
-            [
-                'class' => 'bedezign\yii2\audit\AuditTrailBehavior',
-            ],
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
                 'attributes' => [

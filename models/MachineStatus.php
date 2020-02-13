@@ -115,9 +115,6 @@ class MachineStatus extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            [
-                'class' => 'bedezign\yii2\audit\AuditTrailBehavior',
-            ],
 /*
 // we use MYSQL's timestamp internal behavior, so no yii2 timestamp code.
             'timestamp' => [

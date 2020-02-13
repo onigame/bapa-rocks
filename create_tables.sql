@@ -2,6 +2,10 @@
 # password: wizzzzzard
 use baparocks;
 
+DROP TABLE vote;
+DROP TABLE pollchoice;
+DROP TABLE polleligibility;
+DROP TABLE poll;
 -- DROP TABLE machinepool;
 DROP TABLE sessionuser;
 DROP TABLE seasonuser;
@@ -15,6 +19,10 @@ DROP TABLE session;
 DROP TABLE season;
 DROP TABLE machine;
 DROP TABLE location;
+
+
+
+
 
 CREATE TABLE location (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -236,6 +244,47 @@ CREATE TABLE playermachinestats (
     updated_at int(11)
 );
 
+CREATE TABLE poll (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  status INT NOT NULL, -- 0 = CLOSED
+                       -- 1 = OPEN (for voting)
+  name VARCHAR(255) NOT NULL,
+  created_at int(11),
+  updated_at int(11)  
+);
+
+CREATE TABLE polleligibility (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  season_id INT NOT NULL,
+  FOREIGN KEY season_key (season_id) REFERENCES season(id),
+  poll_id INT NOT NULL,
+  FOREIGN KEY poll_key (poll_id) REFERENCES poll(id),
+  created_at int(11),
+  updated_at int(11)  
+);
+
+CREATE TABLE pollchoice (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  poll_id INT NOT NULL,
+  FOREIGN KEY poll_key (poll_id) REFERENCES poll(id),
+  created_at int(11),
+  updated_at int(11)
+);
+
+CREATE TABLE vote (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  value INT NOT NULL DEFAULT 0, -- 0 ("can't make it")
+                                -- 1 ("prefer not")
+                                -- 2 ("is OK")
+                                -- 3 ("works great")
+  user_id INT NOT NULL,
+  FOREIGN KEY user_key (user_id) REFERENCES user(id),
+  pollchoice_id INT NOT NULL,
+  FOREIGN KEY pollchoice_key (pollchoice_id) REFERENCES pollchoice(id),
+  created_at int(11),
+  updated_at int(11)
+);
 -- maybe this should be a view because we can deduce it from
 -- other tables
 /*
