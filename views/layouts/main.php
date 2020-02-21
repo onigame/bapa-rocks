@@ -43,6 +43,7 @@ AppAsset::register($this);
                     'linkOptions' => ['target' => '_blank',
                                       'href' => 'https://docs.google.com/document/d/1DdaCtYqLbNSkym_TIn4lrRld6scwP5uvyGoT0ES44k0/view',
                                      ]],
+        ['label' => 'Vote', 'url' => ['/vote']],
         ['label' => 'Contact', 'url' => ['/site/contact']]
       ];
       if (Yii::$app->user->isGuest) {

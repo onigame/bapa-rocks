@@ -5,6 +5,8 @@ namespace app\controllers;
 use Yii;
 use app\models\Poll;
 use app\models\PollSearch;
+use app\models\PollEligibility;
+use app\models\PollChoice;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -66,8 +68,39 @@ class PollController extends Controller
     {
         $model = new Poll();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $postdata = Yii::$app->request->post();
+        
+        if (array_key_exists('Poll', $postdata) && array_key_exists('pollEligibilities', $postdata['Poll'])) {
+          $pollEligibilities = $postdata['Poll']['pollEligibilities'];
+#          if ($pollEligibilities != null) {
+#            throw new \yii\base\UserException(json_encode($pollEligibilities));
+#          }
+          unset($postdata['Poll']['pollEligibilities']);
+#          throw new \yii\base\UserException(json_encode($postdata));
+        } else {
+          $pollEligibilities = array();
+        }
+
+
+        if ($model->load($postdata) && $model->save()) {
+
+          foreach ($pollEligibilities as $season_id) {
+            $pe = new Polleligibility();
+            $pe->season_id = $season_id;
+            $pe->poll_id = $model->id;
+            $pe->save();
+          }
+
+          $dates = explode(",", $model->dates);
+#          throw new \yii\base\UserException($model->dates);
+          foreach ($dates as $date) {
+            $pc = new Pollchoice();
+            $pc->name = $date;
+            $pc->poll_id = $model->id;
+            $pc->save();
+          }
+
+          return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [

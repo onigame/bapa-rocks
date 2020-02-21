@@ -18,7 +18,7 @@ class PollSearch extends Poll
     {
         return [
             [['id', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['name'], 'safe'],
+            [['name', 'description'], 'safe'],
         ];
     }
 
@@ -64,7 +64,8 @@ class PollSearch extends Poll
             'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }

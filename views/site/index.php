@@ -29,6 +29,8 @@ $this->title = 'BAPA Manager';
 <?php      
         } else {
 ?>
+    <h2>Playoff Date Vote!</h2>
+        Please <a href="/vote">vote</a> to help us choose a playoff date.
     <h2>Your Status</h2>
         <?=  \app\models\Player::findOne(Yii::$app->user->id)->statusHtml  ?>
     <h2>Current Sessions</h2>

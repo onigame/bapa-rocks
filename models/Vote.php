@@ -35,7 +35,7 @@ class Vote extends \yii\db\ActiveRecord
         return [
             [['value', 'user_id', 'pollchoice_id', 'created_at', 'updated_at'], 'integer'],
             [['user_id', 'pollchoice_id'], 'required'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['pollchoice_id'], 'exist', 'skipOnError' => true, 'targetClass' => PollChoice::className(), 'targetAttribute' => ['pollchoice_id' => 'id']],
         ];
     }
@@ -62,7 +62,7 @@ class Vote extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(Player::className(), ['id' => 'user_id']);
     }
 
     /**

@@ -95,6 +95,16 @@ class VoteController extends Controller
         ]);
     }
 
+    public function actionModifyVote() {
+      $req = Yii::$app->request;
+      $id = $req->getBodyParam('id');
+      $model = $this->findModel($id);
+      $model->value = $req->getBodyParam('value');
+      $model->save();
+
+      return $this->actionIndex();
+    }
+
     /**
      * Deletes an existing Vote model.
      * If deletion is successful, the browser will be redirected to the 'index' page.

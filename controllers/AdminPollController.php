@@ -4,7 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Poll;
-use app\models\PollSearch;
+use app\models\PollChoiceSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -35,7 +35,7 @@ class AdminPollController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new PollSearch();
+        $searchModel = new PollChoiceSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

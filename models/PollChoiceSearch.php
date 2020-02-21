@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\PollChoice;
+use app\models\Poll;
 
 /**
- * PollChoiceSearch represents the model behind the search form of `app\models\PollChoice`.
+ * PollChoiceSearch represents the model behind the search form of `app\models\Poll`.
  */
-class PollChoiceSearch extends PollChoice
+class PollChoiceSearch extends Poll
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class PollChoiceSearch extends PollChoice
     public function rules()
     {
         return [
-            [['id', 'poll_id', 'created_at', 'updated_at'], 'integer'],
-            [['name'], 'safe'],
+            [['id', 'status', 'created_at', 'updated_at'], 'integer'],
+            [['name', 'description'], 'safe'],
         ];
     }
 
@@ -40,7 +40,7 @@ class PollChoiceSearch extends PollChoice
      */
     public function search($params)
     {
-        $query = PollChoice::find();
+        $query = Poll::find();
 
         // add conditions that should always apply here
 
@@ -59,12 +59,13 @@ class PollChoiceSearch extends PollChoice
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'poll_id' => $this->poll_id,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'description', $this->description]);
 
         return $dataProvider;
     }

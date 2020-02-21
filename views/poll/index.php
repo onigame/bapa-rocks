@@ -9,7 +9,11 @@ use yii\widgets\Pjax;
 
 $this->title = 'Polls';
 $this->params['breadcrumbs'][] = $this->title;
+
+if (Yii::$app->user->can('GenericManagerPermission')) {
+
 ?>
+
 <div class="poll-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -30,8 +34,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'status',
             'name',
+            'description',
             'created_at',
-            'updated_at',
+            //'updated_at',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
@@ -40,3 +45,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php Pjax::end(); ?>
 
 </div>
+
+<?php
+  } else {
+?>
+
+   Sorry, managers only.
+
+<?php
+  }
+?>

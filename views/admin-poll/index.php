@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\PollSearch */
+/* @var $searchModel app\models\PollChoiceSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Polls';
@@ -30,8 +30,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'status',
             'name',
+            'description',
             'created_at',
-            'updated_at',
+            //'updated_at',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

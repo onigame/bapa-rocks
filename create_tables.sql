@@ -249,6 +249,7 @@ CREATE TABLE poll (
   status INT NOT NULL, -- 0 = CLOSED
                        -- 1 = OPEN (for voting)
   name VARCHAR(255) NOT NULL,
+  description VARCHAR(255) NOT NULL,
   created_at int(11),
   updated_at int(11)  
 );
