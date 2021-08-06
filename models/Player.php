@@ -142,6 +142,7 @@ class Player extends User {
         $answer .= "You are done with playoffs.  Your final ranking was ";
         $nf = new \NumberFormatter('en_US', \NumberFormatter::ORDINAL);
         $answer .= $nf->format($results->seed);
+//        $answer .= $results->seed.'th';
         $answer .= " in Division ";
         $answer .= $results->session->playoff_division;
         $answer .= ".</p>";
@@ -189,6 +190,17 @@ class Player extends User {
     if (ctype_space($this->profile->phone_number) || $this->profile->phone_number == '') {
       $answer .= '<p class="text-danger">Your phone number is blank!  Please go to your <a href="/user/settings">profile</a> and update it so we can contact you.</p>';
     }
+
+    if ($this->profile->vaccination == 2) {
+      $answer .= '<p>Your vaccination card has been verified. Thank you!</p>';
+    }
+    if ($this->profile->vaccination == 1) {
+      $answer .= '<p>Your vaccination card has been seen by a manager but not verified. It may help to <a href="/vaccination.html">upload</a> the image of your card yourself. Thank you!</p>';
+    }
+    if ($this->profile->vaccination == 0) {
+      $answer .= '<p class="text-danger">You have not provided a vaccination card and may not play at Pinhouse. Please <a href="/vaccination.html">upload</a> an image of your card as soon as possible.</p>';
+    }
+
     return $answer;
   }
 
@@ -199,6 +211,26 @@ class Player extends User {
     $answer .= "<p></p>";
     $answer .= $this->playoffStatusHtml;
     return $answer;
+  }
+
+  public function getVaccToggleButton() {
+    if ($this->profile->vaccination == 0) return $this->buttonHtml("Seen", 1, "btn-success");
+    if ($this->profile->vaccination == 1) return $this->buttonHtml("Unseen", 0, "btn-success");
+    return "<span class='not-set'>Verified</span>";
+  }
+
+  public function buttonHtml($text, $newstatus, $color) {
+    return Html::a( $text,
+                    ["/player/vaccstatuschange",
+                     'id' => $this->id,
+                     'vaccstatus' => $newstatus,
+                    ],
+                    [
+                     'title' => 'Go',
+                     'data-pjax' => '1',
+                     'class' => 'btn-sm '.$color,
+                    ]
+                  );
   }
 
 

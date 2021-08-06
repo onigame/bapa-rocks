@@ -62,6 +62,7 @@ class Season extends \yii\db\ActiveRecord
       if ($this->status == 0) return 'Not Started';
       if ($this->status == 1) return 'In Progress';
       if ($this->status == 2) return 'Completed';
+      if ($this->status == 3) return 'Aborted';
       return '<UNKNOWN>';
     }
 

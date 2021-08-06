@@ -24,6 +24,7 @@ class Profile extends BaseProfile
         $labels['ifpa'] = \Yii::t('user', 'IFPA number');
         $labels['initials'] = \Yii::t('user', 'High Score Initials');
         $labels['phone_number'] = \Yii::t('user', 'Phone Number');
+        $labels['vaccination'] = \Yii::t('user', 'Vacc. Card Status');
 
         return $labels;
     }

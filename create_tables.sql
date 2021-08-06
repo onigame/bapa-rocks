@@ -20,8 +20,26 @@ DROP TABLE season;
 DROP TABLE machine;
 DROP TABLE location;
 
-
-
+CREATE TABLE `profile` (
+  `user_id` int(11) NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `public_email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `gravatar_email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `gravatar_id` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `website` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `bio` text COLLATE utf8_unicode_ci,
+  `timezone` varchar(40) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ifpa` int(11) DEFAULT NULL,
+  `phone_number` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `initials` varchar(4) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `vaccination` int(11) DEFAULT 0,
+        -- 0 = NO CARD ON FILE
+        -- 1 = CARD SEEN, NOT VERIFIED by WH
+        -- 2 = VERIFIED by WH
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `fk_user_profile` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE location (
@@ -50,6 +68,7 @@ CREATE TABLE season (
     status INT NOT NULL, -- 0 = NOT_STARTED, 
              -- 1 = STARTED, 2 = REGULAR WEEKS COMPLETED
              -- 3 = PLAYOFFS COMPLETED
+             -- 4 = SEASON ABORTED
     name VARCHAR(255) NOT NULL,
     previous_season_id INT,
     FOREIGN KEY previous_season_key (previous_season_id) REFERENCES season(id),

@@ -34,10 +34,14 @@
         "bower-asset/jquery": "<3",
         "extead/yii2-autonumeric": "0.1",
 
-        "yii2mod/yii2-sweet-alert": "*"
+        "yii2mod/yii2-sweet-alert": "*",
+        "bedezign/yii2-audit": "^1.1.1"
+    },
+    "platform": {
+        "php": "7.0.33"
     },
     "require-dev": {
-        "yiisoft/yii2-gii": "~2.1.0",
+        "yiisoft/yii2-gii": "~2.0.0",
         "yiisoft/yii2-faker": "~2.0.0",
 
         "codeception/base": "^2.2.3",

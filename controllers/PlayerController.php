@@ -27,16 +27,21 @@ class PlayerController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index', 'view', 'recomputestats'],
+                'only' => ['index', 'view', 'recomputestats', 'vaccstatuschange'],
                 'rules' => [
                     [
                         'allow' => true,
-                        'actions' => ['recomputestats'],
+                        'actions' => ['recomputestats', 'vaccstatuschange'],
                         'roles' => ['Manager'],
                     ],
                     [
                         'allow' => true,
                         'actions' => ['index', 'view'],
+                        'roles' => ['@'],
+                    ],
+                    [
+                        'allow' => false,
+                        'actions' => ['vaccstatuschange'],
                         'roles' => ['@'],
                     ],
                 ],
@@ -132,6 +137,20 @@ class PlayerController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Changes Vaccine status
+     */
+    public function actionVaccstatuschange($id, $vaccstatus) {
+      $player = $this->findModel($id);
+      $model = $player->profile;
+      $model->vaccination = $vaccstatus;
+      if (!$model->save()) {
+        Yii::error($model->errors);
+        throw new \yii\base\UserException("Error saving model at actionVaccstatuschange");
+      }
+      return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

@@ -59,11 +59,13 @@ $this->params['breadcrumbs'][] = $model->name;
             'user_id',
             'name',
             ['class' => 'yii\grid\ActionColumn',
+              // only managers can see the remove player button.  Thank you Joel Edelman.
+              'visible' => Yii::$app->user->can('GenericManagerPermission'), 
               'template' => '{removeplayer}',
               'buttons' => [
                 'removeplayer' => function ($url, $mdl, $key) use ($model) {
                   return Html::a(
-                    'Remove Player',
+                    'Rmv. Player',
                     [ 'removeplayer',
                       'session_id' => $model->id,
                       'seasonuser_id' => $key,
@@ -80,13 +82,16 @@ $this->params['breadcrumbs'][] = $model->name;
             'matchpoints',
             ['attribute' => 'playoff_matchpoints', 'label' => 'Qual. MP'],
             //'game_count',
-            'opponent_count',
+            ['attribute' => 'opponent_count', 'label' => 'Opps'],
             //'match_count',
             'mpo',
             'previousperformance',
-            'previous_season_rank',
+            ['attribute' => 'previous_season_rank', 'format'=>['decimal',2], 
+                        'label'=>'P.S.Rank'],
             'five_weeks_string',
             ['attribute' => 'dues_string', 'format' => 'html'],
+            ['attribute' => 'profile.vaccination', 'format'=>'vaccstatus',
+                        'label'=>'Vacc.'],
         ],
     ]); ?>
 <?php 
@@ -178,6 +183,8 @@ $this->registerJs('
               ],
             ],
             'profile.user.username',
+            'profile.vaccination:vaccStatus',
+            ['label' => 'Toggle', 'attribute' => 'VaccToggleButton', 'format' => 'html'],
 /*
             'notes',
             'matchpoints',
