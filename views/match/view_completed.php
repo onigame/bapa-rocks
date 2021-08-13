@@ -48,10 +48,10 @@ $this->params['breadcrumbs'][] = $model->code;
         ],
     ]) ?>
 
-    <h2>Players</h2>
+    <h2>Players (by matchpoints)</h2>
 <?php
    $playerData = new yii\data\ActiveDataProvider([
-          'query' => app\models\Matchuser::find()->where(['match_id' => $model->id]),
+          'query' => app\models\Matchuser::find()->where(['match_id' => $model->id])->orderBy(['matchrank' => SORT_ASC]),
        ]);
 ?>
     <?= GridView::widget([
