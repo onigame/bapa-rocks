@@ -19,8 +19,8 @@ use kartik\grid\GridView;
           'query' => app\models\Playoffresults::find()->where(['session_id' => $model->id]),
           'sort' => [
              'attributes' => [
-                'seed_max',
-                'seed',
+                'seed_max' => [ 'label' => 'Max Rank' ],
+                'seed' => [ 'label' => 'Rank' ],
                 'user.name' => [
                   'asc' => ['user.name' => SORT_ASC],
                   'desc' => ['user.name' => SORT_DESC],

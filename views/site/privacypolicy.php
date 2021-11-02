@@ -3,7 +3,7 @@
 <span style="font-size: 26px;">
 <span data-custom-class="title">PRIVACY POLICY</span></span></strong></p><p style="font-size:15px;">
 <span style="color: rgb(127, 127, 127);"><strong>
-<span data-custom-class="subtitle">Last updated 2018-06-29&nbsp;</span></strong>&nbsp;</span></p><p style="font-size:15px;"><br></p><p style="font-size:15px;"><br></p><p style="font-size:15px;"><br></p><p style="font-size:15px;text-align:justify;">
+<span data-custom-class="subtitle">Last updated 2021-08-16&nbsp;</span></strong>&nbsp;</span></p><p style="font-size:15px;"><br></p><p style="font-size:15px;"><br></p><p style="font-size:15px;"><br></p><p style="font-size:15px;text-align:justify;">
 <span style="color: rgb(89, 89, 89);">
 <span data-custom-class="body_text">Thank you for choosing to be a user of bapa.rocks. We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about our policy, or our practices with regards to your personal information, please contact us at onigame at gmail dot com.</span></span></p><p style="font-size:15px;text-align:justify;">
 <span style="color: rgb(89, 89, 89);">
@@ -104,7 +104,7 @@
 <span data-custom-class="heading_2">Information automatically collected</span></strong>&nbsp;</span></p><p style="font-size:15px;text-align:justify;">
 <span style="color: rgb(89, 89, 89);"><strong><em>
 <span data-custom-class="body_text">In Short:</span></em>&nbsp;</strong><em>
-<span data-custom-class="body_text">Some information . such as IP address and/or browser and device characteristics . is collected automatically when you visit our <bdt class="block-component"></bdt><bdt class="block-component"></bdt><bdt class="block-component"></bdt>.</span></em></span></p><p style="font-size:15px;text-align:justify;">
+<span data-custom-class="body_text">Some information . such as IP address and/or browser and device characteristics . is collected automatically when you visit our website<bdt class="block-component"></bdt><bdt class="block-component"></bdt><bdt class="block-component"></bdt>.</span></em></span></p><p style="font-size:15px;text-align:justify;">
 <span style="color: rgb(89, 89, 89);">
 <span data-custom-class="body_text">We automatically collect certain information when you visit, use or navigate the bapa.rocks website. This information does not reveal your specific identity (like your name or contact information) but may include device and usage information, such as your IP address, browser and device characteristics, operating system, language preferences, referring URLs, device name, country, location, information about how and 
 when you use our website and other technical information. This information is primarily 
@@ -336,6 +336,7 @@ the USA, please be aware that your information may be transferred to, stored, an
 <span data-custom-class="body_text">When we have no ongoing legitimate business need to process your personal information, we will either delete or anonymize it, or, if this is not possible (for example, because your personal information has been stored in backup archives), then we will securely store your personal information and isolate it from any further processing until deletion is possible.</span></span></p><p style="font-size:15px;">
 <span style="color: rgb(89, 89, 89); font-size: 15px;">
 <span data-custom-class="body_text">Your pinball scores will be kept in perpetuity, but without your other personal information we consider it to be sufficiently anonymous.</span></span></p><p style="font-size:15px;">
+<span data-custom-class="body_text">If you no longer plan to use our site and would like us to delete your personal information, we are quite willing to do so; please send us a request at the email address at the bottom of the document.</span></span></p><p style="font-size:15px;">
 <span style="color: rgb(89, 89, 89);"><br></span></p><p id="infosafe" style="font-size:15px;">
 <span style="color: rgb(0, 0, 0);"><strong>
 <span style="font-size: 19px;">
