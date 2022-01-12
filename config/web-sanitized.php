@@ -28,10 +28,6 @@ $config = [
       'rbac' => [
         'class' => 'dektrium\rbac\RbacWebModule',
       ],
-      'audit' => [
-        'class' => 'bedezign\yii2\audit\Audit',
-        'accessUsers' => [1],
-      ],
       'gridview' => [
         'class' => '\kartik\grid\Module',
       ],
@@ -81,10 +77,6 @@ $config = [
 #            'identityClass' => 'app\models\User',
 #            'enableAutoLogin' => true,
 #        ],
-        'errorHandler' => [
-            'errorAction' => 'site/error',
-            'class' => '\bedezign\yii2\audit\components\web\ErrorHandler',
-        ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             // send all mails to a file by default. You have to set
