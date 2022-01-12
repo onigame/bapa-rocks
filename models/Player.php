@@ -8,7 +8,7 @@ use app\models\Session;
 use app\models\StatusHtml;
 use dektrium\user\models\User as BaseUser;
 
-class Player extends User {
+class Player extends BaseUser {
 
   public function attributeLabels() {
     return [
@@ -233,5 +233,20 @@ class Player extends User {
                   );
   }
 
+  public function scenarios() {
+    $scenarios = parent::scenarios();
+    $scenarios['create'][] = 'check';
+    $scenarios['update'][] = 'check';
+    $scenarios['register'][] = 'check';
+    return $scenarios;
+  }
+
+  public function rules() {
+    $rules = parent::rules();
+    $rules['checkRequired'] = ['check', 'required'];
+    $rules['checkLength'] = ['check', 'string', 'max' => 7];
+
+    return $rules;
+  }
 
 }

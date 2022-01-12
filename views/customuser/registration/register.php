@@ -43,6 +43,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php endif ?>
 
                 <label class="control-label" for="register-form-check">What P in BAPA stands for (all-lower case)</label>
+                <?= $form->field($model, 'check') ?>
+
+<!--
                 <input type="text" id="check" class="form-control" oninput="bapaCheck()">
 
                 <script>
@@ -52,6 +55,16 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                   }
                 </script>
+-->
+
+                <label class="control-label" for="register-form-contact">Contact Address</label>
+                <input type="text" id="register-form-contact" class="form-control" 
+                       name="register-form[contact]" aria-required="true"
+                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                       placeholder="example@domain.com"
+                >
+
+                <label class="control-label" for="extra">Humans, don't change the field above</label>
 
                 <br>
                 
@@ -62,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
                   <?= Html::submitButton(Yii::t('user', 'Sign up'), 
                        ['class' => 'btn btn-success btn-block',
                         'id' => 'regSubmit',
-                        'disabled' => 'true']) 
+                       ])
                   ?>
                 <?php endif ?>
 
