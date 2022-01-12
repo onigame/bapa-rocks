@@ -19,7 +19,13 @@ use kartik\grid\GridView;
           ],
         ],
         'columns' => [
-            'name',
+            [
+              'attribute' => 'name',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['name'], '/machine/view?id=' . $data['id']);
+              },
+            ],
             ['attribute' => 'string', 'label' => 'Status'],
             [ 'label' => 'Broken', 'attribute' => 'BrokenButton', 'format' => 'html'],
             [ 'label' => 'Gone', 'attribute' => 'GoneButton', 'format' => 'html'],
@@ -37,7 +43,13 @@ use kartik\grid\GridView;
         ],
         'columns' => [
             'id',
-            'name',
+            [
+              'attribute' => 'name',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['name'], '/machine/view?id=' . $data['id']);
+              },
+            ],
             ['attribute' => 'ipdblink', 'label' => 'IPDB', 'format' => 'html'],
             ['attribute' => 'string', 'label' => 'Status'],
             ['attribute' => 'machine.queueLength', 'header' => '# Groups<br>Waiting', 'format' => 'html'],

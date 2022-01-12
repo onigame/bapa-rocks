@@ -114,6 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'class' => 'yii\grid\ActionColumn',
             'template' => '{switch} {resend_password} {update} {delete}',
+     //       'template' => '{switch} {resend_password} {update} {delete} {sdelete}',
             'buttons' => [
                 'resend_password' => function ($url, $model, $key) {
                     if (!$model->isAdmin) {
@@ -131,6 +132,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             'data-method' => 'POST',
                         ]);
                     }
+                },
+                'sdelete' => function ($url, $model) {
+                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', 
+                          ['delete', 'id' => $model->id], 
+                          ['data' => ['method' => 'post',],]);
                 }
             ]
         ],

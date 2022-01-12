@@ -55,6 +55,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'mpo',
             'adjusted_mpo',
             'five_weeks_string',
+            ['attribute' => 'profile.vaccination', 'format'=>'vaccstatus',
+                        'label'=>'Vacc.'],
             ['attribute' => 'dues_string', 'format' => 'html'],
 
         ],

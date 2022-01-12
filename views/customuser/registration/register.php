@@ -42,10 +42,28 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $form->field($model, 'password')->passwordInput() ?>
                 <?php endif ?>
 
+                <label class="control-label" for="register-form-check">What P in BAPA stands for (all-lower case)</label>
+                <input type="text" id="check" class="form-control" oninput="bapaCheck()">
+
+                <script>
+                  function bapaCheck() {
+                    if (document.getElementById("check").value == 'pinball') {
+                      document.getElementById("regSubmit").disabled = false;
+                    }
+                  }
+                </script>
+
+                <br>
+                
+
                 <?php if (Yii::$app->getRequest()->getUserIP() == '188.138.188.34'): ?>
                   Go Away Asshole
                 <?php else: ?>
-                  <?= Html::submitButton(Yii::t('user', 'Sign up'), ['class' => 'btn btn-success btn-block']) ?>
+                  <?= Html::submitButton(Yii::t('user', 'Sign up'), 
+                       ['class' => 'btn btn-success btn-block',
+                        'id' => 'regSubmit',
+                        'disabled' => 'true']) 
+                  ?>
                 <?php endif ?>
 
                 <?php ActiveForm::end(); ?>
