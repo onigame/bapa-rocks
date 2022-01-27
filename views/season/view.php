@@ -52,9 +52,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
           if (Yii::$app->user->can('GenericManagerPermission') && $model->status < 2) {
             echo "<p>";
-            echo Html::a('Create Regular Session', ['create-session', 'season_id' => $model->id], ['class' => 'btn btn-success']);
+            echo $model->createRegularSessionButton; 
             echo " ";
-            echo Html::a('Create Playoffs', ['create-playoffs', 'season_id' => $model->id], ['class' => 'btn btn-success']);
+            echo $model->createPlayoffsButton; 
             echo "</p>";
           }
         ?>

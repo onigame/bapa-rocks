@@ -131,17 +131,45 @@ class Season extends \yii\db\ActiveRecord
                     );
     }
 
+    public function getAllRegularSessionsCompleted() {
+      foreach ($this->sessions as $session) {
+        if ($session->type == 1 /* Regular */ && $session->status != 2 /* Completed */) return false;
+      }
+      return true;
+    }
+
+    public function getCreateRegularSessionButton() {
+      if ($this->allRegularSessionsCompleted) {
+        return Html::a('Create Regular Session', ['create-session', 'season_id' => $this->id], ['class' => 'btn btn-success']);
+      } else {
+        return Html::a('Create Regular Session (!)', ['create-session', 'season_id' => $this->id], [
+          'class' => 'btn btn-warning',
+          'data' => [
+             'confirm' => ('Not all regular sessions are completed! This will affect PP calculation!  Are you sure??'),
+          ],
+        ]);
+      }
+    }
+
     public function getCreatePlayoffsButton() {
-      return Html::a( 'Create Playoffs',
-                      ["/season/create-playoffs",
-                       'season_id' => $this->id,
-                      ],
-                      [
+      if ($this->allRegularSessionsCompleted) {
+        return Html::a( 'Create Playoffs', ["/season/create-playoffs", 'season_id' => $this->id, ], [
                         'title' => 'Create Playoffs',
                         'data' => ['pjax' => 0],
-                        'class' => 'btn-sm btn-success',
+                        'class' => 'btn btn-success',
                       ]
-                    );
+        );
+      } else {
+        return Html::a( 'Create Playoffs (!)', ["/season/create-playoffs", 'season_id' => $this->id, ], [
+                        'title' => 'Create Playoffs',
+                        'class' => 'btn btn-warning',
+                        'data' => [
+                          'pjax' => 0,
+                          'confirm' => ('Not all regular sessions are completed! This will affect seeding!  Are you sure??'),
+                        ],
+                      ]
+        );
+      }
     }
 
     public function addplayer($player_id) {
