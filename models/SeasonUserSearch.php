@@ -31,7 +31,7 @@ class SeasonUserSearch extends SeasonUser
             [['mpg', 'mpo', 'previous_season_rank', 'adjusted_mpo'], 'double'],
             [['notes'], 'string', 'max' => 255],
             [['playoff_division'], 'string', 'max' => 20],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['season_id'], 'exist', 'skipOnError' => true, 'targetClass' => Season::className(), 'targetAttribute' => ['season_id' => 'id']],
 
         ];

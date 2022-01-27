@@ -36,7 +36,7 @@ class MachinePool extends \yii\db\ActiveRecord
             [['pick_count', 'machine_id', 'user_id', 'session_id'], 'required'],
             [['pick_count', 'machine_id', 'user_id', 'session_id'], 'integer'],
             [['machine_id'], 'exist', 'skipOnError' => true, 'targetClass' => Machine::className(), 'targetAttribute' => ['machine_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['session_id'], 'exist', 'skipOnError' => true, 'targetClass' => Session::className(), 'targetAttribute' => ['session_id' => 'id']],
         ];
     }
@@ -67,7 +67,7 @@ class MachinePool extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(Player::className(), ['id' => 'user_id']);
     }
 
     /**

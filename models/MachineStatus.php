@@ -41,7 +41,7 @@ class MachineStatus extends \yii\db\ActiveRecord
 //            [['status', 'machine_id', 'recorder_id', 'created_at', 'updated_at'], 'integer'],
             [['status', 'game_id', 'machine_id', 'recorder_id'], 'integer'],
             [['machine_id'], 'exist', 'skipOnError' => true, 'targetClass' => Machine::className(), 'targetAttribute' => ['machine_id' => 'id']],
-            [['recorder_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['recorder_id' => 'id']],
+            [['recorder_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['recorder_id' => 'id']],
             [['game_id'], 'exist', 'skipOnError' => true, 'targetClass' => Game::className(), 'targetAttribute' => ['game_id' => 'id']],
         ];
     }
@@ -83,7 +83,7 @@ class MachineStatus extends \yii\db\ActiveRecord
      */
     public function getRecorder()
     {
-        return $this->hasOne(User::className(), ['id' => 'recorder_id']);
+        return $this->hasOne(Player::className(), ['id' => 'recorder_id']);
     }
 
     /**

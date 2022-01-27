@@ -47,7 +47,7 @@ class Playermachinestats extends \yii\db\ActiveRecord
             [['user_id', 'machine_id'], 'required'],
             [['user_id', 'machine_id', 'scoremax', 'scorethirdquartile', 'scoremedian', 'scorefirstquartile', 'scoremin', 'scoremaxgame_id', 'scoremingame_id', 'nonforfeitcount', 'totalmatchpoints', 'forfeitcount', 'created_at', 'updated_at'], 'integer'],
             [['averagematchpoints'], 'number'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['machine_id'], 'exist', 'skipOnError' => true, 'targetClass' => Machine::className(), 'targetAttribute' => ['machine_id' => 'id']],
             [['scoremaxgame_id'], 'exist', 'skipOnError' => true, 'targetClass' => Game::className(), 'targetAttribute' => ['scoremaxgame_id' => 'id']],
             [['scoremingame_id'], 'exist', 'skipOnError' => true, 'targetClass' => Game::className(), 'targetAttribute' => ['scoremingame_id' => 'id']],
@@ -86,7 +86,7 @@ class Playermachinestats extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(Player::className(), ['id' => 'user_id']);
     }
 
     /**
