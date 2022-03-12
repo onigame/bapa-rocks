@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = $model->name;
               'buttons' => [
                 'removeplayer' => function ($url, $mdl, $key) use ($model) {
                   return Html::a(
-                    'Rmv. Player',
+                    'Rmv. Plyr',
                     [ 'removeplayer',
                       'session_id' => $model->id,
                       'seasonuser_id' => $key,
@@ -88,7 +88,8 @@ $this->params['breadcrumbs'][] = $model->name;
             'previousperformance',
             ['attribute' => 'previous_season_rank', 'format'=>['decimal',2], 
                         'label'=>'P.S.Rank'],
-            'five_weeks_string',
+            ['attribute' => 'x_weeks_string',
+                 'label' => $model->season->playoff_qualification . ' Wks?'],
             ['attribute' => 'dues_string', 'format' => 'html'],
             ['attribute' => 'profile.vaccination', 'format'=>'vaccstatus',
                         'label'=>'Vacc.'],
@@ -138,7 +139,8 @@ $this->registerJs('
             'opponent_count',
             'match_count',
             'mpo',
-            'five_weeks_string',
+            ['attribute' => 'x_weeks_string',
+                 'label' => $model->season->playoff_qualification . ' Wks?'],
             ['attribute' => 'dues_string', 'format' => 'html'],
         ],
     ]); ?>

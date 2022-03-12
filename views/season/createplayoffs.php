@@ -34,13 +34,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'user_name',
 
+            'row_number',
             'recommended_division',
 
             ['class' => 'yii\grid\CheckboxColumn',
                // 'header' => 'A',
                'checkboxOptions' => function($model, $key, $index, $column) {
                   $options = ['value' => $model->id];
-                  if ($model->recommended_division === 'A') {
+                  if ($model->recommended_division === 'A8') {
                     $options['checked'] = 'true';
                   }
                   return $options;
@@ -54,7 +55,8 @@ $this->params['breadcrumbs'][] = $this->title;
 //            'opponent_count',
             'mpo',
             'adjusted_mpo',
-            'five_weeks_string',
+            ['attribute' => 'x_weeks_string',
+                        'label'=> $season->playoff_qualification . ' Weeks?'],
             ['attribute' => 'profile.vaccination', 'format'=>'vaccstatus',
                         'label'=>'Vacc.'],
             ['attribute' => 'dues_string', 'format' => 'html'],

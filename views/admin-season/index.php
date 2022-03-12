@@ -27,6 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'status',
             'name',
+            'previous_season_id',
+            'previousSeason.name',
+            'playoff_qualification',
+            'regular_season_length',
             'created_at',
             'updated_at',
 

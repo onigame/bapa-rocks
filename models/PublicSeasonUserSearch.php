@@ -22,7 +22,8 @@ class PublicSeasonUserSearch extends PublicSeasonUser
     public function rules()
     {
         return [
-            [['id', 'matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id',
+            [['id', 'matchpoints', 'game_count', 'opponent_count', 'match_count', 
+              'dues', 'playoff_rank', 'user_id', 'row_number',
               'surplus_matchpoints', 'surplus_mpo_matchpoints', 'surplus_mpo_opponent_count',
               'playoff_matchpoints', 'playoff_mpo_matchpoints', 'playoff_mpo_opponent_count',
               'season_id', 'created_at', 'updated_at'], 'integer'],
@@ -59,6 +60,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
             'sort' => [
                'defaultOrder' => ['matchpoints' => SORT_DESC, 'mpg' => SORT_DESC],
                'attributes' => [
+                                'row_number',
                                 'mpg',
                                 'mpo',
                                 'adjusted_mpo',
@@ -100,7 +102,7 @@ class PublicSeasonUserSearch extends PublicSeasonUser
           'playoff_division', 'playoff_rank',
           'surplus_matchpoints', 'surplus_mpo_matchpoints', 'surplus_mpo_opponent_count',
           'playoff_matchpoints', 'playoff_mpo_matchpoints', 'playoff_mpo_opponent_count',
-          new Expression('@ID := @ID + 1 AS row_number'),
+          new Expression('@ID := @ID+1 AS row_number'),
         ]);
 
         if (array_key_exists('session_id', $params)) {
@@ -109,10 +111,10 @@ class PublicSeasonUserSearch extends PublicSeasonUser
                                           ->where(['session_id' => $params['session_id']])
           ]);
         }
-
+ 
         $query->from([
-          //'(SELECT @ID := 0) tempr',
-          'seasonuser s',
+          '(SELECT @ID:=0) as t, seasonuser s',
+         // 'seasonuser s',
         ]);
 
         // grid filtering conditions

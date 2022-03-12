@@ -28,7 +28,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'statustext',
             'name',
             [ 'label' => 'View', 'attribute' => 'ViewButton', 'format' => 'html'],
-            [ 'label' => 'Playoffs', 'attribute' => 'CreatePlayoffsButton', 'format' => 'html'],
+            [ 'label' => 'Playoffs', 'attribute' => 'MaybeCreatePlayoffsButton', 'format' => 'raw'],
+            [ 'label' => 'Finish', 'attribute' => 'FinishSeasonButton', 'format' => 'raw'],
 
 /*
             ['class' => 'yii\grid\ActionColumn',

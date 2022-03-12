@@ -121,7 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'Total',
         ],
       ]; 
-      for ($wn = 1; $wn <= 12; ++$wn) {
+      for ($wn = 1; $wn <= $model->regular_season_length; ++$wn) {
 //        $gvdata['columns'][] = [ 'attribute' => "Week $wn group", 'label' => 'Grp', 'format' => 'html' ];
         $gvdata['columns'][] = [ 'attribute' => "Week $wn", 'label' => "Wk$wn", 'format' => 'html' ];
       }
@@ -156,7 +156,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'Dues Paid?',
             'Weeks Played',
-            ['attribute' => '5 Weeks?', 'label' => '5 Wks?'],
+            ['attribute' => $model->playoff_qualification . ' Weeks?', 
+                 'label' => $model->playoff_qualification . ' Wks?'],
             ['attribute' => 'Total', 'label' => 'Total MP'],
             ['attribute' => 'Opponent Count', 'label' => 'Opp. Ct.'],
             ['attribute' => 'Forfeit Opponent Count', 'label' => 'Forf. Opp.'],

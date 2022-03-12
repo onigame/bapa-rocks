@@ -21,6 +21,16 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name') ?>
 
+    <?= $form->field($model, 'previous_season_id') ?>
+
+    <?= $form->field($model, 'previous_season_key') ?>
+
+    <?= $form->field($model, 'previousSeason.name') ?>
+
+    <?= $form->field($model, 'playoff_qualification') ?>
+
+    <?= $form->field($model, 'regular_season_length') ?>
+
     <?= $form->field($model, 'created_at') ?>
 
     <?= $form->field($model, 'updated_at') ?>

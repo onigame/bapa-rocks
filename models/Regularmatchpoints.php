@@ -188,19 +188,20 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
 
       $season = Season::find()->where(['id' => $season_id])->one();
       $weeksPlayed = $season->weeksPlayed;
-      $weeksLeft = 12 - $weeksPlayed;
+      $weeksLeft = $season->regular_season_length - $weeksPlayed;
       $future = $weeksLeft * 18;
 
       foreach ($data as $key => &$datum) {
         $datum['Effective Opponent Count'] = $datum['Opponent Count'] - $datum['Forfeit Opponent Count'];
         $datum['Effective Matchpoints'] = $datum['Total'] - $datum['Forfeit Opponent Count'];
         $datum['MPO'] = $datum['Effective Matchpoints'] / $datum['Effective Opponent Count'];
-        $datum['5 Weeks?'] = ($datum['Weeks Played'] >= 5) ? 'Yes' : 'No';
-        if ($datum['Weeks Played'] >= 12) {
+        $datum[$season->playoff_qualification . ' Weeks?'] 
+            = ($datum['Weeks Played'] >= $season->playoff_qualification) ? 'Yes' : 'No';
+        if ($datum['Weeks Played'] >= $season->regular_season_length) {
           $datum['Surplus MP'] = $datum['Lowest Wk'] + $datum['2nd Lowest Wk'];
           $datum['Surplus MPO EM'] = $datum['Lowest MPO EM'] + $datum['2nd Lowest MPO EM'];
           $datum['Surplus MPO EO'] = $datum['Lowest MPO EO'] + $datum['2nd Lowest MPO EO'];
-        } else if ($datum['Weeks Played'] == 11) {
+        } else if ($datum['Weeks Played'] == $season->regular_season_length - 1) {
           $datum['Surplus MP'] = $datum['Lowest Wk'];
           $datum['Surplus MPO EM'] = $datum['Lowest MPO EM'];
           $datum['Surplus MPO EO'] = $datum['Lowest MPO EO'];
@@ -228,6 +229,7 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
     }
 
     public static function seasonArrayDataProvider($season_id) {
+      $season = Season::find()->where(['id' => $season_id])->one();
 
       $arrayData = ArrayHelper::toArray(Regularmatchpoints::rawData($season_id));
 
@@ -261,7 +263,7 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
         ],
       ];
 
-      for ($wn = 1; $wn <= 12; ++$wn) {
+      for ($wn = 1; $wn <= $season->regular_season_length; ++$wn) {
         $adpinit['sort']['attributes']["Week $wn"] = ['asc' => ["Week $wn points" => SORT_DESC], 'desc' => ["Week $wn points" => SORT_ASC]];
         $adpinit['sort']['attributes']["Week $wn group"] = ['asc' => ["Week $wn groupnum" => SORT_ASC], 'desc' => ["Week $wn groupnum" => SORT_DESC]];
       }

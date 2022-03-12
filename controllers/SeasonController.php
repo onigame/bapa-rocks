@@ -142,6 +142,21 @@ class SeasonController extends Controller
         ]);
     }
 
+    public function actionFinish($id) {
+      $season = $this->findModel($id);
+      $season->status = 3;
+      $season->save();
+
+      $searchModel = new PublicSeasonSearch();
+      $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+      return $this->render('index', [
+          'searchModel' => $searchModel,
+          'dataProvider' => $dataProvider,
+      ]);
+    }
+
+
     /**
      * Displays a single Season model.
      * @param integer $id

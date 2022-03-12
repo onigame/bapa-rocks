@@ -83,10 +83,12 @@ class PublicSeasonUser extends SeasonUser
     }
 
     public function getRecommended_Division() {
-      if ($this->dues != 1 or $this->match_count < 5) {
+      if ($this->dues != 1 or $this->match_count < $this->season->playoff_qualification) {
         return "No";
       } else if ($this->row_number <= 8) {
         return "A8";
+      } else if ($this->row_number <= 12) {
+        return "A12";
       } else if ($this->row_number <= 16) {
         return "A16";
       } else {

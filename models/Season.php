@@ -14,6 +14,8 @@ use app\models\SeasonUser;
  * @property integer $status
  * @property string $name
  * @property integer $previous_season_id
+ * @property integer $playoff_qualification
+ * @property integer $regular_season_length
  * @property integer $created_at
  * @property integer $updated_at
  *
@@ -37,7 +39,8 @@ class Season extends \yii\db\ActiveRecord
     {
         return [
             [['status', 'name'], 'required'],
-            [['status', 'previous_season_id', 'created_at', 'updated_at'], 'integer'],
+            [['status', 'previous_season_id', 'created_at', 'updated_at', 
+              'playoff_qualification', 'regular_season_length'], 'integer'],
             [['name'], 'string', 'max' => 255],
         ];
     }
@@ -51,8 +54,10 @@ class Season extends \yii\db\ActiveRecord
             'id' => 'ID',
             'status' => 'Status',
             'name' => 'Name',
-            'previous_season_id' => 'Previous Season (used for PP calculations)',
-            'previousSeason.name' => 'Previous Season (used for PP calculations)',
+            'previous_season_id' => 'Prev. Season ID',
+            'previousSeason.name' => 'Prev. Season Name',
+            'playoff_qualification' => 'Weeks needed to Qualify',
+            'regular_season_length' => 'Weeks in season',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
@@ -61,8 +66,9 @@ class Season extends \yii\db\ActiveRecord
     public function getStatustext() {
       if ($this->status == 0) return 'Not Started';
       if ($this->status == 1) return 'In Progress';
-      if ($this->status == 2) return 'Completed';
-      if ($this->status == 3) return 'Aborted';
+      if ($this->status == 2) return 'Awaiting Playoffs';
+      if ($this->status == 3) return 'Playoffs Completed';
+      if ($this->status == 4) return 'Aborted';
       return '<UNKNOWN>';
     }
 
@@ -138,6 +144,13 @@ class Season extends \yii\db\ActiveRecord
       return true;
     }
 
+    public function getAllSessionsCompleted() {
+      foreach ($this->sessions as $session) {
+        if ($session->status != 2 /* Completed */) return false;
+      }
+      return true;
+    }
+
     public function getCreateRegularSessionButton() {
       if ($this->allRegularSessionsCompleted) {
         return Html::a('Create Regular Session', ['create-session', 'season_id' => $this->id], ['class' => 'btn btn-success']);
@@ -155,7 +168,6 @@ class Season extends \yii\db\ActiveRecord
       if ($this->allRegularSessionsCompleted) {
         return Html::a( 'Create Playoffs', ["/season/create-playoffs", 'season_id' => $this->id, ], [
                         'title' => 'Create Playoffs',
-                        'data' => ['pjax' => 0],
                         'class' => 'btn btn-success',
                       ]
         );
@@ -164,12 +176,40 @@ class Season extends \yii\db\ActiveRecord
                         'title' => 'Create Playoffs',
                         'class' => 'btn btn-warning',
                         'data' => [
-                          'pjax' => 0,
-                          'confirm' => ('Not all regular sessions are completed! This will affect seeding!  Are you sure??'),
+                          'confirm' => 'Not all regular sessions are completed! This will affect seeding!  Are you sure??',
+                          'method' => 'post',
                         ],
                       ]
         );
       }
+    }
+
+    public function getFinishSeasonButton() {
+      if ($this->status == 4) {
+        return '(aborted)';
+      } else if ($this->status == 3) {
+        return '(finished)';
+      } else if ($this->allSessionsCompleted) {
+        return Html::a( 'Finish This Season', ["/season/finish", 'id' => $this->id, ], [
+                        'class' => 'btn btn-success',
+                      ]
+        );
+      } else {
+        return Html::a( 'Finish This Season (!)', ["/season/finish", 'id' => $this->id, ], [
+                        'class' => 'btn btn-warning',
+                        'data' => [
+                          'confirm' => 'Not all sessions are completed! Are you sure??',
+                          'method' => 'post',
+                        ],
+                      ]
+        );
+      }
+    }
+
+    public function getMaybeCreatePlayoffsButton() {
+      if ($this->status == 3) return '(complete)';
+      if ($this->status == 4) return '(aborted)';
+      return $this->createPlayoffsButton;
     }
 
     public function addplayer($player_id) {

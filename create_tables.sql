@@ -72,6 +72,8 @@ CREATE TABLE season (
     name VARCHAR(255) NOT NULL,
     previous_season_id INT,
     FOREIGN KEY previous_season_key (previous_season_id) REFERENCES season(id),
+    playoff_qualification INT DEFAULT 4; -- number of sessions needed to qualify for playoffs
+    regular_season_length INT DEFAULT 10; -- number of session in the regular season (affects "drop 2" rule)
     created_at int(11),
     updated_at int(11)
 );

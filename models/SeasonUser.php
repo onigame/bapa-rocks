@@ -96,7 +96,8 @@ class SeasonUser extends \yii\db\ActiveRecord
 
             'user_name' => 'Full Name',
             'dues_string' => 'Paid?',
-            'five_weeks_string' => '5 Weeks?',
+            // 'x_weeks_string' => $this->season->playoff_qualification.' Weeks?',
+            'x_weeks_string' => 'X Weeks?',
             'row_number' => 'Row#',
             'recommended_division' => 'Rc.Dv',
         ];
@@ -189,8 +190,8 @@ class SeasonUser extends \yii\db\ActiveRecord
       return $result;
     }
 
-    public function getFive_Weeks_String() {
-      if ($this->match_count >= 5) {
+    public function getX_Weeks_String() {
+      if ($this->match_count >= $this->season->playoff_qualification) {
         return "Yes";
       } else {
         return "No";
