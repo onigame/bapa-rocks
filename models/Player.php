@@ -172,7 +172,80 @@ class Player extends BaseUser {
         $answer .= "</p>";
       } else {
         Yii::warning($results);
-        $answer .= "Something is wrong.";
+      }
+      if ($results->match_status == 2 or $results->match_status == 0) {
+
+        $BD = "style='border-bottom: 1px solid black'";
+        $BR = "style='border-right: 1px solid black'";
+        $BDR = "style='border-right: 1px solid black;border-bottom: 1px solid black'";
+
+        $pc = $results->session->playerCount;
+        $curmatch = $results->match;
+        //$opp = "opp" $result->match->getOppString($this->id);
+        $opp_playernum =(3-$curmatch->playerNum);
+        $elim_match = Eliminationgraph::findCode($curmatch->code);
+        $opp_seed = $elim_match->getPlayerSeed($opp_playernum);
+        $cur_seed = $elim_match->getPlayerSeed($curmatch->playerNum);
+        $win_seed = min($opp_seed, $cur_seed);
+        $lose_seed = max($opp_seed, $cur_seed);
+
+        $opp = $curmatch->getPlayerString($opp_playernum, 1);
+        $opp_prevmatch = $curmatch->getConnectedMatch($opp_playernum);
+        $opp_prev1 = "(n/a)"; $opp_prev2 = "(n/a)";
+        if ($opp_prevmatch != null) {
+          $opp_prev1 = $opp_prevmatch->getPlayerString(1, 2);
+          $opp_prev2 = $opp_prevmatch->getPlayerString(2, 2);
+        }
+        $win_text = "<b><i>Rank " . Eliminationgraph::seedString($win_seed) . " if you WIN...</i></b>";
+        $win = $curmatch->getConnectedMatch(-1);
+        $win_code = "(n/a)";
+        $win_opp_text = "(n/a)";
+        $win_opp_prev1 = "(n/a)";
+        $win_opp_prev2 = "(n/a)";
+
+        if ($win != null) {
+          $win_code = $win->code;
+          $win_prev_data = Eliminationgraph::prevDataFromOpponentSeed($win_code, $win_seed, $pc);
+
+          $win_opp_code = $win_prev_data['code'];
+          $win_opp = Match::find()->where(['session_id' => $curmatch->session->id,
+                                           'code' => $win_opp_code])->one();
+          $win_opp_text = $win_opp->getPlayerString(-1, 0);
+          $win_opp_prev1 = $win_opp->getPlayerString(1, 3);
+          $win_opp_prev2 = $win_opp->getPlayerString(2, 3);
+        }
+        $lose_text = "<b><i>Rank " . Eliminationgraph::seedString($lose_seed) . " if you LOSE...</i></b>";
+        $lose = $curmatch->getConnectedMatch(0);
+        $lose_code = "(n/a)";
+        $lose_opp_text = "lose_opp";
+        $lose_opp_prev1 = "lose_opp_prev1";
+        $lose_opp_prev2 = "lose_opp_prev2";
+        if ($lose != null) {
+          $lose_code = $lose->code;
+          $lose_prev_data = Eliminationgraph::prevDataFromOpponentSeed($lose_code, $lose_seed, $pc);
+
+          $lose_opp_code = $lose_prev_data['code'];
+          $lose_opp = Match::find()->where(['session_id' => $curmatch->session->id,
+                                           'code' => $lose_opp_code])->one();
+          $lose_opp_text = $lose_opp->getPlayerString(-1, 0);
+          $lose_opp_prev1 = $lose_opp->getPlayerString(1, 2);
+          $lose_opp_prev2 = $lose_opp->getPlayerString(2, 2);
+        }
+
+        $answer .= "<TABLE>";
+        $answer .= "<TR><TD></TD><TD $BD><b>You!</b></TD></TR>";
+        $answer .= "<TR><TD $BD>$opp_prev1</TD><TD $BR></TD><TD $BD>$win_text</TD></TR>";
+        $answer .= "<TR><TD $BR></TD><TD $BDR>$opp</TD><TD $BR></TD></TR>";
+        $answer .= "<TR><TD $BDR>$opp_prev2</TD><TD></TD><TD $BR align='right'>$win_code</TD></TR>";
+        $answer .= "<TR><TD></TD><TD $BD>$win_opp_prev1</TD><TD $BR></TD></TR>";
+        $answer .= "<TR><TD></TD><TD $BR></TD><TD $BDR>$win_opp_text</TD></TR>";
+        $answer .= "<TR><TD></TD><TD $BDR>$win_opp_prev2</TD><TD></TD></TR>";
+        $answer .= "<TR><TD $BD>$lose_opp_prev1</TD><TD></TD><TD></TD></TR>";
+        $answer .= "<TR><TD $BR></TD><TD $BD>$lose_opp_text</TD><TD></TD></TR>";
+        $answer .= "<TR><TD $BDR>$lose_opp_prev2</TD><TD $BR></TD><TD $BD>$lose_code</TD></TR>";
+        $answer .= "<TR><TD></TD><TD $BDR>$lose_text</TD><TD></TD></TR>";
+        $answer .= "</TABLE>";
+
       }
       return $answer;
     }

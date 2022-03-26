@@ -132,26 +132,45 @@ class Eliminationgraph extends \yii\db\ActiveRecord
       return $match->getPlayerSeed($playernum);
     }
 
-    public static function prevString($code, $playerseed, $playercount) {
+    public static function prevDataFromOpponentSeed($code, $opponentseed, $playercount) {
+      $match = Eliminationgraph::findCode($code);
+      return Eliminationgraph::prevDataFromSeed($code, $match->getOpponentSeed($opponentseed), $playercount);
+    }
+
+    public static function getOpponentCode($uppercode, $opponentcode, $playercount) {
+      throw new \yii\base\UserException(
+        "THIS DOESN'T WORK.  BYES are inserted so only seed is reliable, not codes");
+    }
+
+    public static function prevDataFromSeed($code, $playerseed, $playercount) {
       $match = Eliminationgraph::findCode($code);
       if ($match == null) {
         throw new \yii\base\UserException($code . " is invalid match code");
       }
-
       $prev_code = $match->prev_code_p1;
       $prev_win = $match->prev_win_p1;
       if ($match->seed_p2 == $playerseed) {
         $prev_code = $match->prev_code_p2;
         $prev_win = $match->prev_win_p2;
       }
-
       $prev_match = Eliminationgraph::findCode($prev_code);
       if ($prev_match != null && $prev_match->getOpponentSeed($playerseed) >= $playercount) {
         // previous round was a bye
-        return Eliminationgraph::prevString($prev_code, $playerseed, $playercount);
+        return Eliminationgraph::prevDataFromSeed($prev_code, $playerseed, $playercount);
       }
 
-      return "[" . ($prev_win ? "Winner of " : "Loser of ") . $prev_code . "]";
+      return ['is_win' => $prev_win, 'code' => $prev_code];
+    }
+
+    public static function prevDataFromNum($code, $playernum, $playercount) {
+      return Eliminationgraph::prevDataFromSeed($code,
+                                                Eliminationgraph::getPlayerSeedFor($code, $playernum),
+                                                $playercount);
+    }
+
+    public static function prevStringSeed($code, $playerseed, $playercount) {
+      $prev_data = Eliminationgraph::prevDataFromSeed($code, $playerseed, $playercount);
+      return "[" . ($prev_data['is_win'] ? "Winner of " : "Loser of ") . $prev_data['code'] . "]";
     }
 
     public static function seedString($seed) {

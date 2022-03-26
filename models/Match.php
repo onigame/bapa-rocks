@@ -290,6 +290,13 @@ class Match extends \yii\db\ActiveRecord
       return join(", ", $names);
     }
 
+    public function getPlayerNum() {
+      $matchuser = MatchUser::find()->where(['match_id' => $this->id, 'user_id' => Yii::$app->user->id])->one();
+      if ($matchuser == null)
+        throw new \yii\base\UserException("Viewing player is not in match!");
+      return ($matchuser->starting_playernum);
+    }
+
     public function getCurrentPlayerCount() {
         return count($this->matchusers);
     }
@@ -322,25 +329,75 @@ class Match extends \yii\db\ActiveRecord
       return $result;
     }
 
+    // if in a playoff, get the related match.
+    public function getConnectedMatch($playernum) {
+      $matchcode = "";
+      if ($playernum == -1) { // get winner's match
+        $matchcode = Eliminationgraph::nextWinnerMatch($this->code, $this->session->playerCount);
+      } else if ($playernum == 0) { // get loser's match
+        $matchcode = Eliminationgraph::nextLoserMatch($this->code, $this->session->playerCount);
+      } else {
+        $prev_data = Eliminationgraph::prevDataFromNum($this->code, $playernum, $this->session->playerCount);
+        $matchcode = $prev_data['code'];
+      }
+      return(Match::find()->where(['session_id' => $this->session->id, 
+                     'code' => $matchcode])->one());
+      
+    }
+
+    // Returns a string describing the player. 
+    // If the match is not playoffs or the match is completed, $recursionLevel is ignored.
+    // Otherwise, $recursionLevel determines how deep the string goes.
+    // $playernum is the player number. Usually 1-4.
+    // For playoffs, it can have the special value 0 = loser and -1 = winner.
+    public function getPlayerString($playernum, $recursionLevel) {
+      if (!$this->isPlayoffs and $playernum < 1 ) {
+        return "NOT PLAYOFFS, \$playernum cannot be < 1";
+      }
+      if ($playernum >= 1) {
+        $mu = MatchUser::find()->where(['match_id' => $this->id, 'starting_playernum' => $playernum])->one();
+        if ($mu != null) return $mu->name; // If we know who the player is, return their name.
+        if (!$this->isPlayoffs) return "NOT PLAYOFFS, missing player assignment!";
+
+        $prev_match = $this->getConnectedMatch($playernum);
+//        $seed = Eliminationgraph::getPlayerSeedFor($this->code, $playernum);
+        $prev_data = Eliminationgraph::prevDataFromNum($this->code, $playernum, $this->session->playerCount);
+        if ($recursionLevel == 0) {
+          return "[" . ($prev_data['is_win'] ? "Winner of " : "Loser of ") . $prev_data['code'] . "]";
+        }
+
+        if ($prev_match == null) {
+          return "(N/A)";
+        }
+
+        return $prev_match->getPlayerString(($prev_data['is_win'] ? -1 : 0), $recursionLevel - 1);
+      }
+      if ($this->status == 3) { // completed, we know who won and lost
+        $matchusers = MatchUser::find()->where(['match_id' => $this->id])->all();
+        usort($matchusers, ['app\models\MatchUser', 'compareMatchpoints']);
+        return($matchusers[1 + $playernum]->user->profile->name);
+        // winner is sorted first so has index 0, loser has index 1
+      }
+      if ($recursionLevel == 0) {
+        return "[" . (($playernum == -1) ? "Winner of " : "Loser of ") . $this->code . "]";
+      }
+
+      return "[" . (($playernum == -1) ? "Winner of " : "Loser of ") . "(" 
+        . $this->getPlayerString(1, $recursionLevel - 1)
+        . ", "
+        . $this->getPlayerString(2, $recursionLevel - 1)
+        . ")]";
+    }
+
     public function getMatchusersString() {
         if ($this->isPlayoffs) {
           if ($this->status == 3) {
             return $this->results;
           }
-          $mu = MatchUser::find()->where(['match_id' => $this->id, 'starting_playernum' => 1])->one();
           $p1_seed = Eliminationgraph::getPlayerSeedFor($this->code, 1);
-          if ($mu == null) {
-            $p1 = Eliminationgraph::prevString($this->code, $p1_seed, $this->session->playerCount);
-          } else {
-            $p1 = $mu->name;
-          }
-          $mu = MatchUser::find()->where(['match_id' => $this->id, 'starting_playernum' => 2])->one();
+          $p1 = $this->getPlayerString(1, 1);
           $p2_seed = Eliminationgraph::getPlayerSeedFor($this->code, 2);
-          if ($mu == null) {
-            $p2 = Eliminationgraph::prevString($this->code, $p2_seed, $this->session->playerCount);
-          } else {
-            $p2 = $mu->name;
-          }
+          $p2 = $this->getPlayerString(2, 1);
           $p1s = Eliminationgraph::seedString($p1_seed);
           $p2s = Eliminationgraph::seedString($p2_seed);
           return "($p1s)$p1, ($p2s)$p2";
@@ -374,14 +431,14 @@ class Match extends \yii\db\ActiveRecord
           $mu = MatchUser::find()->where(['match_id' => $this->id, 'starting_playernum' => 1])->one();
           $p1_seed = Eliminationgraph::getPlayerSeedFor($this->code, 1);
           if ($mu == null) {
-            $p1 = Eliminationgraph::prevString($this->code, $p1_seed, $this->session->playerCount);
+            $p1 = Eliminationgraph::prevStringSeed($this->code, $p1_seed, $this->session->playerCount);
           } else {
             $p1 = $mu->name;
           }
           $mu = MatchUser::find()->where(['match_id' => $this->id, 'starting_playernum' => 2])->one();
           $p2_seed = Eliminationgraph::getPlayerSeedFor($this->code, 2);
           if ($mu == null) {
-            $p2 = Eliminationgraph::prevString($this->code, $p2_seed, $this->session->playerCount);
+            $p2 = Eliminationgraph::prevStringSeed($this->code, $p2_seed, $this->session->playerCount);
           } else {
             $p2 = $mu->name;
           }
