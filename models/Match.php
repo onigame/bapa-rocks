@@ -345,6 +345,33 @@ class Match extends \yii\db\ActiveRecord
       
     }
 
+    public function getPlayoffSeedsToIds() {
+      if (!$this->isPlayoffs) {
+        return null;
+      }
+      $elim = Eliminationgraph::findCode($this->code);
+
+      $p1_id = null;
+      $mu = MatchUser::find()->where(['match_id' => $this->id, 'starting_playernum' => 1])->one();
+      if ($mu != null) $p1_id = $mu->user_id; 
+      $p2_id = null;
+      $mu = MatchUser::find()->where(['match_id' => $this->id, 'starting_playernum' => 2])->one();
+      if ($mu != null) $p2_id = $mu->user_id; 
+
+      $answer = [$elim->seed_p1 => $p1_id, $elim->seed_p2 => $p2_id];
+      return $answer;
+    }
+
+    public function getOppSeed($seed) {
+      if (!$this->isPlayoffs) {
+        return null;
+      }
+      $elim = Eliminationgraph::findCode($this->code);
+      if ($elim->seed_p1 == $seed) return $elim->seed_p2;
+      if ($elim->seed_p2 == $seed) return $elim->seed_p1;
+      return null;
+    }
+
     // Returns a string describing the player. 
     // If the match is not playoffs or the match is completed, $recursionLevel is ignored.
     // Otherwise, $recursionLevel determines how deep the string goes.

@@ -207,12 +207,21 @@ class Player extends BaseUser {
           $win_code = $win->code;
           $win_prev_data = Eliminationgraph::prevDataFromOpponentSeed($win_code, $win_seed, $pc);
 
-          $win_opp_code = $win_prev_data['code'];
-          $win_opp = Match::find()->where(['session_id' => $curmatch->session->id,
-                                           'code' => $win_opp_code])->one();
-          $win_opp_text = $win_opp->getPlayerString(-1, 0);
-          $win_opp_prev1 = $win_opp->getPlayerString(1, 3);
-          $win_opp_prev2 = $win_opp->getPlayerString(2, 3);
+          $seedmap = $win->playoffSeedsToIds;
+          $win_opp_seed = $win->getOppSeed($win_seed);
+          if ($seedmap[$win_opp_seed] == null) {
+            $win_opp_code = $win_prev_data['code'];
+            $win_opp = Match::find()->where(['session_id' => $curmatch->session->id,
+                                             'code' => $win_opp_code])->one();
+            if ($win_opp != null) {
+              $win_opp_text = $win_opp->getPlayerString(-1, 0);
+              $win_opp_prev1 = $win_opp->getPlayerString(1, 3);
+              $win_opp_prev2 = $win_opp->getPlayerString(2, 3);
+            }
+          } else {
+            $win_opp_player = Player::find()->where(['id' => $seedmap[$win_opp_seed]])->one();
+            $win_opp_text = $win_opp_player->name;
+          }
         }
         $lose_text = "<b><i>Rank " . Eliminationgraph::seedString($lose_seed) . " if you LOSE...</i></b>";
         $lose = $curmatch->getConnectedMatch(0);
@@ -224,12 +233,21 @@ class Player extends BaseUser {
           $lose_code = $lose->code;
           $lose_prev_data = Eliminationgraph::prevDataFromOpponentSeed($lose_code, $lose_seed, $pc);
 
-          $lose_opp_code = $lose_prev_data['code'];
-          $lose_opp = Match::find()->where(['session_id' => $curmatch->session->id,
-                                           'code' => $lose_opp_code])->one();
-          $lose_opp_text = $lose_opp->getPlayerString(-1, 0);
-          $lose_opp_prev1 = $lose_opp->getPlayerString(1, 2);
-          $lose_opp_prev2 = $lose_opp->getPlayerString(2, 2);
+          $seedmap = $lose->playoffSeedsToIds;
+          $lose_opp_seed = $lose->getOppSeed($lose_seed);
+          if ($seedmap[$lose_opp_seed] == null) {
+            $lose_opp_code = $lose_prev_data['code'];
+            $lose_opp = Match::find()->where(['session_id' => $curmatch->session->id,
+                                             'code' => $lose_opp_code])->one();
+            if ($lose_opp != null) {
+              $lose_opp_text = $lose_opp->getPlayerString(-1, 0);
+              $lose_opp_prev1 = $lose_opp->getPlayerString(1, 2);
+              $lose_opp_prev2 = $lose_opp->getPlayerString(2, 2);
+            }
+          } else {
+            $lose_opp_player = Player::find()->where(['id' => $seedmap[$lose_opp_seed]])->one();
+            $lose_opp_text = $lose_opp_player->name;
+          }
         }
 
         $answer .= "<TABLE>";
