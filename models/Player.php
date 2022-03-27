@@ -124,7 +124,7 @@ class Player extends BaseUser {
   public function getPlayoffStatusHtml() {
     $answer = "";
     $results = Playoffresults::find()
-                 ->where(["user_id" => $this->id])->one();
+                 ->where(["user_id" => $this->id])->orderBy(['session_id' => SORT_DESC])->one();
     if ($results != NULL) {
       if ($results->session->status == 2) {
         $answer .= "<p>Your last <b>playoffs</b> was " . $results->session->season->name . " " 
