@@ -13,7 +13,11 @@ $this->title = 'BAPA Manager';
 <?php      
         if (Yii::$app->user->isGuest) {
 ?>
-        <p> Please Sign In or Sign Up using the buttons above.  You can either sign up using 
+        <p> Please 
+         <a class="btn btn-success" href="/user/login">Sign In</a>
+         or 
+         <a class="btn btn-success" href="/user/register">Sign Up</a>
+         You can either sign up using 
          a Google or Facebook account, or create an account for use on this server only.
          If you do the account on this server only, do NOT use a sensitive password that
          you use on other sites.
