@@ -22,11 +22,11 @@ use app\models\Season;
     ) ?>
 
     <?= $form->field($model, 'playoff_qualification')->dropDownList(
-         [4, 5]
+         [4 => 4, 5 => 5]
     ) ?>
 
     <?= $form->field($model, 'regular_season_length')->dropDownList(
-         [10, 12]
+         [10 => 10, 12 => 12]
     ) ?>
 
     <div class="form-group">
