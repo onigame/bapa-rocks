@@ -38,8 +38,8 @@ $this->params['breadcrumbs'][] = $this->title;
 */
       $polls = Poll::find()
                ->joinWith('pollEligibilities')
-               ->where(['status' => 1])
                ->where(['in', 'season_id', $seasonusers])
+               ->where(['status' => 1])
                ->all();
 
       $foundone = 0;
@@ -74,5 +74,23 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <?php Pjax::end(); ?>
+
+    <h2>General Rules</h2>
+
+    <ol>
+
+       <li>Specific polls may override these rules as necessary.
+
+       <li>You may change your vote at any time until the poll closes.
+
+       <li>"Might Not Show Up" is the default value. A vote for anything else is a committment to come on that date if it wins.
+
+       <li>The winning date is the date with the fewest "Might Not Show Up" votes.
+
+       <li>Tiebreakers are score-based: "Rather Not" = 1 point, "Is OK" = 3 points, "Works Great" = 4 points.
+
+       <li>Managers and Admins can see who voted for what at any time. (Don't expect your vote to be super secret.)
+
+    </ol>
 
 </div>
