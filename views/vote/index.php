@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
         echo $poll->name;
         echo "</h2>";
         echo $poll->description;
-        $pcs = PollChoice::find()->where(['poll_id' => $poll->id])->all();
+        $pcs = PollChoice::find()->where(['poll_id' => $poll->id, 'status' => 0])->all();
 
         foreach ($pcs as $pc) {
           $vote = Vote::find()->where(['pollchoice_id' => $pc->id, 'user_id' => Yii::$app->user->id])->one();

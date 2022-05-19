@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             'poll_id',
+            'status',
             'created_at',
             'updated_at',
 

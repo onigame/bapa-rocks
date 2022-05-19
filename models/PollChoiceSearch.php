@@ -17,7 +17,7 @@ class PollChoiceSearch extends PollChoice
     public function rules()
     {
         return [
-            [['id', 'poll_id', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'poll_id', 'status', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'safe'],
         ];
     }
@@ -60,6 +60,7 @@ class PollChoiceSearch extends PollChoice
         $query->andFilterWhere([
             'id' => $this->id,
             'poll_id' => $this->poll_id,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
