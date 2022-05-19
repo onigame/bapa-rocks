@@ -83,6 +83,7 @@ if (Yii::$app->user->can('GenericManagerPermission')) {
 
     foreach ($pcs as $pc) {
       echo $pc->name . ": ";
+      if ($pc->status == 1) { echo "<b>(NOT visible to voters)</b>"; }
       echo "<ul>\n";
       for ($val = 0; $val <= 3; ++$val) {
         echo "<li><b>" . $names[$val] . "</b>: \n";
@@ -117,10 +118,11 @@ if (Yii::$app->user->can('GenericManagerPermission')) {
 
     echo "<h3>Scores</h3>";
     echo "<table border>\n";
-    echo "<tr><th>Choice</th><th>Points</th><th>Approve</th><th>(PITA)</th><th>Love</th><th>(PITA)</th></tr>";
+    echo "<tr><th>Choice</th><th>Eligible</th><th>Points</th><th>Approve</th><th>(PITA)</th><th>Love</th><th>(PITA)</th></tr>";
     foreach ($pcs as $pc) {
       echo "<tr>";
       echo "<td>$pc->name</td>";
+      echo "<td>"; if ($pc->status == 1) { echo "No"; } echo "</td>";
       echo "<td>".$points[$pc->id]."</td>";
       echo "<td>".$approve[$pc->id]."</td>";
       echo "<td>".$approve_pita[$pc->id]."</td>";
