@@ -80,7 +80,8 @@ $this->params['breadcrumbs'][] = $model->name;
             ],
             //'notes',
             'matchpoints',
-            ['attribute' => 'playoff_matchpoints', 'label' => 'Qual. MP'],
+            ['attribute' => 'playoff_matchpoints', 'label' => 'Q.MP',
+                        ],
             //'game_count',
             ['attribute' => 'opponent_count', 'label' => 'Opps'],
             //'match_count',
@@ -92,6 +93,7 @@ $this->params['breadcrumbs'][] = $model->name;
                  'label' => $model->season->playoff_qualification . ' Wks?'],
             ['attribute' => 'dues_string', 'format' => 'html'],
             ['attribute' => 'profile.vaccination', 'format'=>'vaccstatus',
+                        'options'=>['style'=>'word-wrap:break-word;width:100px'],
                         'label'=>'Vacc.'],
         ],
     ]); ?>
