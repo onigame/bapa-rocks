@@ -345,9 +345,12 @@ class Game extends \yii\db\ActiveRecord
         throw new \yii\base\UserException("createScores cannot be called for Playoffs");
       }
       $players = $this->match->sessionUsers;
+      $count = count($players);
       // remove latecomers if we're in game 1 or 2
       if ($this->number <= 2) {
         foreach ($players as $key => $player) {
+          if ($player == null)  throw new \yii\base\UserException("\$player is null, are they missing from the session?? (Game ID = $this->id, player count = $count)");
+//          if ($player->user == null)  throw new \yii\base\UserException("$player -> user is null!!");
           Yii::warning($player->user->name . "$player->status");
           if ($player->status == 2) unset($players[$key]);
         }

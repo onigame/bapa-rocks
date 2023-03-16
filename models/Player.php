@@ -50,7 +50,7 @@ class Player extends BaseUser {
       if ($seasonuser->dues == 0) {
         $answer .= "<p>You have NOT paid your dues for " 
                    . $results->session->season->name
-                   . ".  Please pay $30 via Paypal to mbirsching@earthlink.net .</p>";
+                   . ".  Please pay $30 via Paypal or Venmo to mbirsching@earthlink.net . Talk to Mark if you want to pay via Zelle.</p>";
       } else {
         $answer .= "<p>You have paid your dues for " 
                    . $results->session->season->name

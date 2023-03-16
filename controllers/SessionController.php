@@ -373,6 +373,12 @@ class SessionController extends Controller
     }
 
     public function actionLeave($id) {
+      $session = Session::findOne($id);
+
+      if ($session->status != 0) {
+        throw new \yii\base\UserException("You can only leave sessions that have not started yet!");
+      }
+
       $player_id = Yii::$app->user->id;
       $sessionUser = SessionUser::find()->where(['session_id' => $id,
                                                  'user_id' => $player_id])
@@ -382,7 +388,6 @@ class SessionController extends Controller
       }
       $sessionUser->delete();
 
-      $session = Session::findOne($id);
       $seasonUser = SeasonUser::find()->where(['season_id' => $session->season->id,
                                                 'user_id' => $player_id])
                                        ->one();

@@ -27,7 +27,7 @@ class SeasonController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['view', 'update', 'create', 'delete', 'create-playoffs', 'create-session'],
+                'only' => ['view', 'view2', 'update', 'create', 'delete', 'create-playoffs', 'create-session'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -36,7 +36,7 @@ class SeasonController extends Controller
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['view'],
+                        'actions' => ['view', 'view2'],
                         'roles' => ['@'],
                     ],
                 ],
@@ -166,6 +166,19 @@ class SeasonController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Displays a single Season model.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionView2($id, $id2)
+    {
+        return $this->render('view2', [
+            'model' => $this->findModel($id),
+            'model2' => $this->findModel($id2),
         ]);
     }
 

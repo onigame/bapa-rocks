@@ -271,4 +271,182 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
       $provider = new ArrayDataProvider($adpinit);
       return $provider;
     }
+
+    public static function rawData2($season_id, $season2_id) {
+      $data = [];
+      $items = Regularmatchpoints::find()->where(['season_id' => $season_id])->all();
+      foreach ($items as $item) {
+        if ($item->session->type != 1) continue;
+        $groupblah = explode(" ", $item->code);
+        if (count($groupblah) >= 2) {
+          $groupnum = $groupblah[1];
+        } else {
+          $groupnum = "?";
+        }
+        $data[$item->user_id]['id'] = $item->user_id;
+        $data[$item->user_id]['Name'] = $item->name;
+        $data[$item->user_id][($item->session_name).' points'] = $item->matchpoints;
+        //$data[$item->user_id][$item->session_name] = $item->matchpoints;
+        $data[$item->user_id][$item->session_name] = Html::a(
+                      $item->matchpoints,
+                      ["/match/view",
+                       'id' => $item->match_id,
+                      ],
+                      [
+                        'title' => $item->code,
+                        'data' => ['pjax' => 0],
+                        //'class' => 'btn-sm btn-success',
+                      ]
+                    );
+        $data[$item->user_id][($item->session_name).' group'] = Html::a(
+                      '['.$groupnum.']',
+                      ["/match/view",
+                       'id' => $item->match_id,
+                      ],
+                      [
+                        'title' => 'Go to Match',
+                        'data' => ['pjax' => 0],
+                        //'class' => 'btn-sm btn-success',
+                      ]
+                    );
+        $data[$item->user_id][($item->session_name).' groupnum'] = $groupnum;
+        if (!array_key_exists('Total', $data[$item->user_id])) {
+          $data[$item->user_id]['Total'] = 0;
+        }
+        $data[$item->user_id]['Total'] += $item->matchpoints;
+
+        if (!array_key_exists('Weeks Played', $data[$item->user_id])) {
+          $data[$item->user_id]['Weeks Played'] = 0;
+        }
+        $data[$item->user_id]['Weeks Played'] += 1;
+
+        if (!array_key_exists('Opponent Count', $data[$item->user_id])) {
+          $data[$item->user_id]['Opponent Count'] = 0;
+        }
+        $data[$item->user_id]['Opponent Count'] += $item->opponent_count;
+
+        if (!array_key_exists('Forfeit Opponent Count', $data[$item->user_id])) {
+          $data[$item->user_id]['Forfeit Opponent Count'] = 0;
+        }
+        $data[$item->user_id]['Forfeit Opponent Count'] += $item->forfeit_opponent_count;
+
+        if (!array_key_exists('Lowest Wk', $data[$item->user_id])) {
+          $data[$item->user_id]['Lowest Wk'] = $item->matchpoints;
+        } else if ($item->matchpoints <= $data[$item->user_id]['Lowest Wk']) {
+          $data[$item->user_id]['2nd Lowest Wk'] = $data[$item->user_id]['Lowest Wk'];
+          $data[$item->user_id]['Lowest Wk'] = $item->matchpoints;
+        } else if (!array_key_exists('2nd Lowest Wk', $data[$item->user_id]) 
+                   || ($item->matchpoints <= $data[$item->user_id]['2nd Lowest Wk'])) {
+          $data[$item->user_id]['2nd Lowest Wk'] = $item->matchpoints;
+        }
+
+        if ($item->opponent_count - $item->forfeit_opponent_count == 0) {
+          $mpo = 0;
+        } else {
+          $mpo = ($item->matchpoints - $item->forfeit_opponent_count) /
+                 ($item->opponent_count - $item->forfeit_opponent_count);
+        }
+        if (!array_key_exists('Lowest MPO float', $data[$item->user_id])) {
+          $data[$item->user_id]['Lowest MPO EM'] = $item->matchpoints - $item->forfeit_opponent_count;
+          $data[$item->user_id]['Lowest MPO EO'] = $item->opponent_count - $item->forfeit_opponent_count;
+          $data[$item->user_id]['Lowest MPO float'] = $mpo;
+          $data[$item->user_id]['Lowest MPO'] = $data[$item->user_id]['Lowest MPO EM']
+                                           .'/'.$data[$item->user_id]['Lowest MPO EO'];
+        } else if ($mpo <= $data[$item->user_id]['Lowest MPO float']) {
+          $data[$item->user_id]['2nd Lowest MPO EM'] = $data[$item->user_id]['Lowest MPO EM'];
+          $data[$item->user_id]['2nd Lowest MPO EO'] = $data[$item->user_id]['Lowest MPO EO'];
+          $data[$item->user_id]['2nd Lowest MPO float'] = $data[$item->user_id]['Lowest MPO float'];
+          $data[$item->user_id]['2nd Lowest MPO'] = $data[$item->user_id]['Lowest MPO'];
+          $data[$item->user_id]['Lowest MPO EM'] = $item->matchpoints - $item->forfeit_opponent_count;
+          $data[$item->user_id]['Lowest MPO EO'] = $item->opponent_count - $item->forfeit_opponent_count;
+          $data[$item->user_id]['Lowest MPO float'] = $mpo;
+          $data[$item->user_id]['Lowest MPO'] = $data[$item->user_id]['Lowest MPO EM']
+                                           .'/'.$data[$item->user_id]['Lowest MPO EO'];
+        } else if (!array_key_exists('2nd Lowest MPO float', $data[$item->user_id])
+                   || ($mpo <= $data[$item->user_id]['2nd Lowest MPO float'])) {
+          $data[$item->user_id]['2nd Lowest MPO EM'] = $item->matchpoints - $item->forfeit_opponent_count;
+          $data[$item->user_id]['2nd Lowest MPO EO'] = $item->opponent_count - $item->forfeit_opponent_count;
+          $data[$item->user_id]['2nd Lowest MPO float'] = $mpo;
+          $data[$item->user_id]['2nd Lowest MPO'] = $data[$item->user_id]['2nd Lowest MPO EM']
+                                               .'/'.$data[$item->user_id]['2nd Lowest MPO EO'];
+        }
+      }
+
+      $season = Season::find()->where(['id' => $season_id])->one();
+      $weeksPlayed = $season->weeksPlayed;
+      $weeksLeft = $season->regular_season_length - $weeksPlayed;
+      $future = $weeksLeft * 18;
+
+      foreach ($data as $key => &$datum) {
+        $datum['Effective Opponent Count'] = $datum['Opponent Count'] - $datum['Forfeit Opponent Count'];
+        $datum['Effective Matchpoints'] = $datum['Total'] - $datum['Forfeit Opponent Count'];
+        $datum['MPO'] = $datum['Effective Matchpoints'] / $datum['Effective Opponent Count'];
+        $datum[$season->playoff_qualification . ' Weeks?'] 
+            = ($datum['Weeks Played'] >= $season->playoff_qualification) ? 'Yes' : 'No';
+        if ($datum['Weeks Played'] >= $season->regular_season_length) {
+          $datum['Surplus MP'] = $datum['Lowest Wk'] + $datum['2nd Lowest Wk'];
+          $datum['Surplus MPO EM'] = $datum['Lowest MPO EM'] + $datum['2nd Lowest MPO EM'];
+          $datum['Surplus MPO EO'] = $datum['Lowest MPO EO'] + $datum['2nd Lowest MPO EO'];
+        } else if ($datum['Weeks Played'] == $season->regular_season_length - 1) {
+          $datum['Surplus MP'] = $datum['Lowest Wk'];
+          $datum['Surplus MPO EM'] = $datum['Lowest MPO EM'];
+          $datum['Surplus MPO EO'] = $datum['Lowest MPO EO'];
+        } else {
+          $datum['Surplus MP'] = 0;
+          $datum['Surplus MPO EM'] = 0;
+          $datum['Surplus MPO EO'] = 0;
+        }
+        $datum['Playoff Qual. Score'] = $datum['Total'] - $datum['Surplus MP'];
+        $datum['Adj. MPO'] = 
+              ($datum['Effective Matchpoints'] - $datum['Surplus MPO EM']) 
+             /($datum['Effective Opponent Count'] - $datum['Surplus MPO EO']);
+
+        $su = SeasonUser::find()->where(['user_id' => $key, 'season_id' => $season_id])->one();
+        if ($su == null) {
+          $datum['Dues Paid?'] = '(error)';
+        } else if ($su->dues == 0) {
+          $datum['Dues Paid?'] = 'No';
+        } else {
+          $datum['Dues Paid?'] = 'Yes';
+        }
+      }
+
+      return $data;
+    }
+
+    public static function seasonsArrayDataProvider($season_id, $season2_id) {
+      $season = Season::find()->where(['id' => $season_id])->one();
+
+      $arrayData = ArrayHelper::toArray(Regularmatchpoints::rawData2($season_id, $season2_id));
+
+      $adpinit = [
+        'allModels' => $arrayData,
+        'pagination' => [
+          'pageSize' => 0,
+        ],
+        'sort' => [
+          'attributes' => [
+            'id',
+            'Name',
+            // individual week columns are added in the for loop below.
+            'Playoff Qual. Score' => ['asc' => ['5 Weeks?' => SORT_DESC, 'Playoff Qual. Score' => SORT_DESC], 
+                                     'desc' => ['5 Weeks?' => SORT_DESC, 'Playoff Qual. Score' => SORT_ASC]],
+            'Total' => ['asc' => ['Total' => SORT_DESC], 'desc' => ['Total' => SORT_ASC]],
+            'Effective Opponent Count' => ['asc' => ['Effective Opponent Count' => SORT_DESC], 'desc' => ['Effective Opponent Count' => SORT_ASC]],
+            'Effective Matchpoints' => ['asc' => ['Effective Matchpoints' => SORT_DESC], 'desc' => ['Effective Matchpoints' => SORT_ASC]],
+            'Opponent Count' => ['asc' => ['Opponent Count' => SORT_DESC], 'desc' => ['Opponent Count' => SORT_ASC]],
+            'Forfeit Opponent Count' => ['asc' => ['Forfeit Opponent Count' => SORT_DESC], 'desc' => ['Forfeit Opponent Count' => SORT_ASC]],
+            //'MPO' => ['asc' => ['MPO' => SORT_DESC], 'desc' => ['MPO' => SORT_ASC]],
+            'Adj. MPO' => ['asc' => ['5 Weeks?' => SORT_DESC, 'Adj. MPO' => SORT_DESC], 
+                      'desc' => ['5 Weeks?' => SORT_DESC, 'Adj. MPO' => SORT_ASC]],
+            'MPO' => ['asc' => ['5 Weeks?' => SORT_DESC, 'MPO' => SORT_DESC], 
+                      'desc' => ['5 Weeks?' => SORT_DESC, 'MPO' => SORT_ASC]],
+          ],
+          'defaultOrder' => ['Playoff Qual. Score' => SORT_ASC],
+        ],
+      ];
+
+      $provider = new ArrayDataProvider($adpinit);
+      return $provider;
+    }
 }
