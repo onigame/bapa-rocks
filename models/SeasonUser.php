@@ -242,12 +242,12 @@ class SeasonUser extends \yii\db\ActiveRecord
 
     // for sorting
     public static function byPlayoffRank($a, $b) {
-      if ($a->playoff_division === 'A' && $b->playoff_division !== 'A') return -1;
-      if ($a->playoff_division !== 'A' && $b->playoff_division === 'A') return 1;
-      if ($a->playoff_division !== $b->playoff_division) {
-        throw new \yii\base\UserException("Cannot handle more than 2 divisions when comparing playoff ranks.");       
+      if ($a->playoff_division === $b->playoff_division) {
+        return ($a->playoff_rank - $b->playoff_rank);
+      } else {
+        // if divisions are different, alphabetically earlier divisions are ranked higher.
+        return (strcasecmp($a->playoff_division, $b->playoff_division));
       }
-      return ($a->playoff_rank - $b->playoff_rank);
     }
 
 
