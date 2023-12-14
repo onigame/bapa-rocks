@@ -33,7 +33,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php else: ?>
 
-        <p>
+
+      <p> For more information and details, please join <a href="https://www.facebook.com/groups/bapamembers">our Facebook group</a>.
+         You may also read our <a href="https://docs.google.com/document/d/1DdaCtYqLbNSkym_TIn4lrRld6scwP5uvyGoT0ES44k0/view">League Rules</a>
+         or send an email to onigame at sign gmail dot com.
+
+
+<!---
+				<p>
             If you have business inquiries or other questions, please fill out the following form to contact us.
             Thank you.
         </p>
@@ -63,6 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </div>
         </div>
+---->
 
     <?php endif; ?>
 </div>

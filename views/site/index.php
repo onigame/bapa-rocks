@@ -30,6 +30,23 @@ $this->title = 'BAPA Manager';
           <a class="btn btn-success" href="/user/registration/resend">here</a>.
         </p>
    
+   <h2>What is this?</h2>
+
+      <p> This is the website that manages scoring for the Bay Area Pinball Association. 
+         We have a pinball league that runs four seasons a year, with a big playoff party
+         to cap off the year.  Each season is 10 weeks, meeting Thursday evenings at a
+         location in the south San Francisco Bay Area.
+
+      <p> To attend the playoff party, you must play at least 4 of the 10 weeks and pay
+         membership dues (currently $15).
+
+      <p> The 10 weeks of season play is <a href="https://www.ifpapinball.com/">IFPA</a> 
+         sanctioned. To be eligible for IFPA points, you must play at least 5 of the 
+         10 weeks.
+
+      <p> For more information and details, please join <a href="https://www.facebook.com/groups/bapamembers">our Facebook group</a>.
+         You may also read our <a href="https://docs.google.com/document/d/1DdaCtYqLbNSkym_TIn4lrRld6scwP5uvyGoT0ES44k0/view">League Rules</a>
+         or send an email to onigame at sign gmail dot com.
 <?php      
         } else {
 ?>
