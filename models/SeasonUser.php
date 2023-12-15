@@ -217,12 +217,15 @@ class SeasonUser extends \yii\db\ActiveRecord
       $su = $this->mostRecentRegularSessionUser;
       if ($su == null) {
         // they haven't played this season yet, so how'd they do in the playoffs?
+/* OLD CODE FOR WHEN WE HAD SEPARATE A AND B DIVISIONS 
         $ps = $this->season->previousSeason;
         if ($ps != null) {
           $psu = Seasonuser::find()->where(['season_id' => $ps->id, 'user_id' => $this->user_id])->one();;
           if ($psu != null && $psu->playoff_division === 'A') return 12;
         }
         return mt_rand(7, 10);
+*/
+        return mt_rand(8, 12);
       } else if ($su->session->status == 2) {
         // the most recent session is finished, so what was their score?
         $mu = $su->matchUsers;

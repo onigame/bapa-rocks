@@ -231,7 +231,9 @@ class Season extends \yii\db\ActiveRecord
         $rank++;
       }
       if ($rank > count($prevranked)) {
-        $rank = $last_a_rank + 1 + mt_rand() / mt_getrandmax() * (count($prevranked) - $last_a_rank - 1);
+// OLD CODE for when we had A Division
+//        $rank = $last_a_rank + 1 + mt_rand() / mt_getrandmax() * (count($prevranked) - $last_a_rank - 1);
+        $rank = mt_rank() / mt_getrandmax() * $last_a_rank + 0.5;
       }
       $su->previous_season_rank = $rank;
       if (!$su->save()) {
