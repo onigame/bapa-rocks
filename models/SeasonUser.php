@@ -165,7 +165,7 @@ class SeasonUser extends \yii\db\ActiveRecord
     public function getDues_String() {
       $result = "";
       if ($this->dues == 0) {
-        $result .= "NOT Paid";
+        $result .= "NOT&nbsp;Paid";
       } else if ($this->dues == 1) {
         $result .= "Paid";
       } else {
@@ -177,7 +177,7 @@ class SeasonUser extends \yii\db\ActiveRecord
         } else {
           $color = 'btn-warning';
         }
-        $result .= " ";
+        $result .= "&nbsp;";
         $result .= Html::a( "Toggle",
                       ["/season-user/toggledues", 'id' => $this->id],
                       [

@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\db\ActiveRecord;
 use yii\helpers\Html;
 use app\models\SeasonUser;
@@ -204,6 +205,55 @@ class Season extends \yii\db\ActiveRecord
                       ]
         );
       }
+    }
+
+    public function previousSeasonsArrayData() {
+      $data = [];
+      $items = SeasonUser::find()->where(['season_id' => $this->id])->all();
+      foreach ($items as $item) {
+        $data[$item->user_id]['id'] = $item->user_id;
+        $data[$item->user_id]['Name'] = $item->user->name;
+        $data[$item->user_id]['Adj. MPO'] = $item->adjusted_mpo;
+
+        $lastseason = SeasonUser::find()
+            ->where(['and', ['user_id' => $item->user_id],
+                            ['not', ['season_id' => $this->id]]])
+            ->orderBy(['id' => SORT_DESC])
+            ->one();
+        if ($lastseason != null) {
+          $data[$item->user_id]['Last Season ID'] = $lastseason->season_id;
+          $data[$item->user_id]['Last Season'] = $lastseason->season->name;
+          $data[$item->user_id]['LS Adj. MPO'] = $lastseason->adjusted_mpo;
+          $data[$item->user_id]['Improvement'] = $item->adjusted_mpo - $lastseason->adjusted_mpo;
+        } else {
+          $data[$item->user_id]['Last Season'] = 'N/A';
+          $data[$item->user_id]['Last Season ID'] = 0;
+          $data[$item->user_id]['Improvement'] = -999;
+        }
+      }
+      return $data;
+    }
+
+    public function previousSeasonsArrayDataProvider() {
+      $arrayData = $this->previousSeasonsArrayData();
+
+      $adpinit = [
+        'allModels' => $arrayData,
+        'pagination' => [ 'pageSize' => 0 ],
+        'sort' => [
+          'attributes' => [
+            'id',
+            'Name',
+            'Adj. MPO',
+            'Last Season',
+            'LS Adj. MPO',
+            'Improvement',
+          ],
+        ],
+      ]; 
+
+      $provider = new ArrayDataProvider($adpinit);
+      return $provider;
     }
 
     public function getMaybeCreatePlayoffsButton() {

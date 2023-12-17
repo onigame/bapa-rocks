@@ -35,6 +35,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'profile.name',
             'season_id',
             'previousPerformance',
+            'mpo',
+            'adjusted_mpo',
             // 'created_at',
             // 'updated_at',
 

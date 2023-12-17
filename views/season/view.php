@@ -154,7 +154,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'Playoff Qual. Score',
             ['attribute' => 'MPO', 'label' => 'MPO', 'format' => ['decimal', 4]],
 
-            'Dues Paid?',
+            ['attribute' => 'Dues Paid?', 'format' => 'html', 'label' => 'Dues'],
             'Weeks Played',
             ['attribute' => $model->playoff_qualification . ' Weeks?', 
                  'label' => $model->playoff_qualification . ' Wks?'],
@@ -163,14 +163,14 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'Forfeit Opponent Count', 'label' => 'Forf. Opp.'],
             ['attribute' => 'Effective Opponent Count', 'label' => 'Eff. Opp.'],
             ['attribute' => 'Effective Matchpoints', 'label' => 'Eff. MP'],
-            'Lowest Wk',
-            '2nd Lowest Wk',
+//            'Lowest Wk',
+//            '2nd Lowest Wk',
 //            'Surplus MP',
-            'Lowest MPO',
+//            'Lowest MPO',
 //            'Lowest MPO float',
 //            'Lowest MPO EM',
 //            'Lowest MPO EO',
-            '2nd Lowest MPO',
+//            '2nd Lowest MPO',
 //            '2nd Lowest MPO float',
 //            '2nd Lowest MPO EM',
 //            '2nd Lowest MPO EO',
@@ -188,6 +188,41 @@ $this->params['breadcrumbs'][] = $this->title;
         $gvdata2['columns'][] = 'id';
       }
       echo GridView::widget($gvdata2);
+?>
+    <h3>Previous Season Comparison</h3>
+<?php
+      $prevSeasonData = $model->previousSeasonsArrayDataProvider();
+      $gridPrevSeasonData = [
+        'dataProvider' => $prevSeasonData,
+        'pjax' => true, 
+//        'filterModel' => $searchModel,
+        'formatter' => ['class' => 'yii\i18n\Formatter','nullDisplay' => ''],
+        'columns' => [
+            [
+              'attribute' => 'Name',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['Name'], '/player/view?id=' . $data['id']);
+              },
+            ],
+            ['attribute' => 'Adj. MPO', 'label' => 'Adj. MPO', 'format' => ['decimal', 4]],
+            ['attribute' => 'Last Season', 
+             'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['Last Season'], '/season/view?id=' . $data['Last Season ID']);
+              },
+            ],
+            ['attribute' => 'LS Adj. MPO', 'label' => 'LS Adj. MPO', 'format' => ['decimal', 4]],
+            ['attribute' => 'Improvement', 'label' => 'Improvement', 'format' => ['decimal', 4]],
+        ],
+        'options' => [
+          'style'=>'overflow: auto; word-wrap: break-word;'
+        ],
+      ]; 
+      if (Yii::$app->user->can('GenericManagerPermission')) {
+        $gridPrevSeasonData['columns'][] = 'id';
+      }
+      echo GridView::widget($gridPrevSeasonData);
 ?>
 
 </div>
