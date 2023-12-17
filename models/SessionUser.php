@@ -19,6 +19,7 @@ use yii\base\Security;
  * @property integer $status
  * @property integer $user_id
  * @property integer $session_id
+ * @property integer $starting_seed
  * @property integer $recorder_id
  * @property integer $created_at
  * @property integer $previous_performance
@@ -54,6 +55,7 @@ class SessionUser extends \yii\db\ActiveRecord
             [['notes'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['session_id'], 'exist', 'skipOnError' => true, 'targetClass' => Session::className(), 'targetAttribute' => ['session_id' => 'id']],
+            [['starting_seed'], 'integer'],
             [['recorder_id'], 'exist', 'skipOnError' => true, 'targetClass' => Player::className(), 'targetAttribute' => ['recorder_id' => 'id']],
         ];
     }
@@ -69,6 +71,7 @@ class SessionUser extends \yii\db\ActiveRecord
             'status' => 'Status',
             'user_id' => 'User ID',
             'session_id' => 'Session ID',
+            'starting_seed' => 'Starting Seed',
             'recorder_id' => 'Recorder ID',
             'previous_performance' => 'Prev. Perf.',
             'created_at' => 'Created At',

@@ -676,6 +676,13 @@ class SessionController extends Controller
             Yii::error($seasonuser->errors);
             throw new \yii\base\UserException("Error saving seasonuser when seed = " . $seed . json_encode($seasonuser->errors));
           }
+
+          $sessionuser->starting_seed = $seed+1;
+          if (!$sessionuser->save()) {
+            Yii::error($sessionuser->errors);
+            throw new \yii\base\UserException("Error saving sessionuser when seed = " . $seed . json_encode($sessionuser->errors));
+          }
+         
           $seed++;
         }
 

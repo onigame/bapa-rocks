@@ -82,6 +82,10 @@ class Playoffresults extends \yii\db\ActiveRecord
       return $this->sessionUser->infoButton;
     }
 
+    public function getStartingSeed() {
+      return $this->sessionUser->startingSeed;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
