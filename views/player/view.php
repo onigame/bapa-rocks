@@ -46,6 +46,10 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $statsDataProvider,
         'filterModel' => $statsSearchModel,
+        'toolbar' => [
+          '{export}',
+          '{toggleData}',
+        ],
         'columns' => [
             //['class' => 'yii\grid\SerialColumn'],
 

@@ -81,6 +81,7 @@ class PlayerController extends Controller
         $statsSearchModel = new PlayermachinestatsSearch();
         $statsDataProvider = $statsSearchModel->search(Yii::$app->request->queryParams);
         $statsDataProvider->query->andWhere(['user_id' => $id]);
+        $statsDataProvider->pagination->pageSize = 1000;
 
         return $this->render('view', [
             'model' => $this->findModel($id),

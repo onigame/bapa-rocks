@@ -20,7 +20,8 @@ class PlayermachinestatsSearch extends Playermachinestats
         return [
             [['user_id', 'machine_id', 'scoremax', 'scorethirdquartile', 'scoremedian', 'scorefirstquartile', 'scoremin', 'scoremaxgame_id', 'scoremingame_id', 'nonforfeitcount', 'totalmatchpoints', 'forfeitcount', 'created_at', 'updated_at'], 'integer'],
             [['averagematchpoints'], 'number'],
-            [['machine', 'location', 'machinename', 'locationname'], 'safe'],
+//            [['machine', 'location', 'machinename', 'locationname'], 'safe'],
+            [['machine', 'location'], 'safe'],
         ];
     }
 
