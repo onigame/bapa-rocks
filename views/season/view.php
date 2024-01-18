@@ -160,9 +160,9 @@ $this->params['breadcrumbs'][] = $this->title;
                  'label' => $model->playoff_qualification . ' Wks?'],
             ['attribute' => 'Total', 'label' => 'Total MP'],
             ['attribute' => 'Opponent Count', 'label' => 'Opp. Ct.'],
-            ['attribute' => 'Forfeit Opponent Count', 'label' => 'Forf. Opp.'],
-            ['attribute' => 'Effective Opponent Count', 'label' => 'Eff. Opp.'],
-            ['attribute' => 'Effective Matchpoints', 'label' => 'Eff. MP'],
+ //           ['attribute' => 'Forfeit Opponent Count', 'label' => 'Forf. Opp.'],
+//            ['attribute' => 'Effective Opponent Count', 'label' => 'Eff. Opp.'],
+//            ['attribute' => 'Effective Matchpoints', 'label' => 'Eff. MP'],
 //            'Lowest Wk',
 //            '2nd Lowest Wk',
 //            'Surplus MP',
@@ -174,7 +174,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //            '2nd Lowest MPO float',
 //            '2nd Lowest MPO EM',
 //            '2nd Lowest MPO EO',
-            ['attribute' => 'Adj. MPO', 'label' => 'Adj. MPO', 'format' => ['decimal', 4]],
+//            ['attribute' => 'Adj. MPO', 'label' => 'Adj. MPO', 'format' => ['decimal', 4]],
         ],
         'options' => [
           'style'=>'overflow: auto; word-wrap: break-word;'
@@ -185,6 +185,9 @@ $this->params['breadcrumbs'][] = $this->title;
 //        $gvdata2['columns'][] = [ 'attribute' => "Week $wn", 'label' => "Wk$wn", 'format' => 'html' ];
 //      }
       if (Yii::$app->user->can('GenericManagerPermission')) {
+        $gvdata2['columns'][] = 'Email';
+        $gvdata2['columns'][] = 'PEmail';
+        $gvdata2['columns'][] = 'Phone';
         $gvdata2['columns'][] = 'id';
       }
       echo GridView::widget($gvdata2);

@@ -197,6 +197,7 @@ CREATE TABLE sessionuser (
     FOREIGN KEY user_key (user_id) REFERENCES user(id),
     session_id INT NOT NULL,
     FOREIGN KEY session_key (session_id) REFERENCES session(id),
+    starting_seed INT, -- used for tracking playoffs
     recorder_id INT NOT NULL,
     FOREIGN KEY (recorder_id) REFERENCES user(id),
     previous_performance INT, -- in matchpoints.
@@ -289,6 +290,8 @@ CREATE TABLE pollchoice (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   poll_id INT NOT NULL,
+  status INT NOT NULL DEFAULT 0, -- 0 = visible
+                       -- 1 = not visible (don't show to user)
   FOREIGN KEY poll_key (poll_id) REFERENCES poll(id),
   created_at int(11),
   updated_at int(11)

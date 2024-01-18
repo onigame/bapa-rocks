@@ -50,7 +50,7 @@ class Player extends BaseUser {
       if ($seasonuser->dues == 0) {
         $answer .= "<p>You have NOT paid your dues for " 
                    . $results->session->season->name
-                   . ".  Please pay $30 via Paypal to Wei-Hwa at onigame@gmail.com (sorry, Venmo not available). Email Wei-Hwa if you want to pay via Zelle.</p>";
+                   . ".  Please pay $40 via Paypal to Wei-Hwa at onigame@gmail.com (sorry, Venmo not available). Email Wei-Hwa if you want to pay via Zelle.</p>";
       } else {
         $answer .= "<p>You have paid your dues for " 
                    . $results->session->season->name
@@ -279,6 +279,7 @@ class Player extends BaseUser {
       $answer .= '<p class="text-danger">Your phone number is blank!  Please go to your <a href="/user/settings">profile</a> and update it so we can contact you.</p>';
     }
 
+/*
     if ($this->profile->vaccination == 2) {
       $answer .= '<p>Your vaccination card has been verified. Thank you!</p>';
     }
@@ -288,6 +289,7 @@ class Player extends BaseUser {
     if ($this->profile->vaccination == 0) {
       $answer .= '<p class="text-danger">You have not provided a vaccination card and may not play at Pinhouse. Please <a href="/vaccination.html">upload</a> an image of your card as soon as possible.</p>';
     }
+*/
 
     return $answer;
   }

@@ -184,6 +184,22 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
           $data[$item->user_id]['2nd Lowest MPO'] = $data[$item->user_id]['2nd Lowest MPO EM']
                                                .'/'.$data[$item->user_id]['2nd Lowest MPO EO'];
         }
+
+        if (!array_key_exists('Email', $data[$item->user_id])) {
+          $data[$item->user_id]['Email'] = "no email on file";
+        }
+        $data[$item->user_id]['Email'] = $item->player->email;
+
+        if (!array_key_exists('PEmail', $data[$item->user_id])) {
+          $data[$item->user_id]['PEmail'] = "no email on file";
+        }
+        $data[$item->user_id]['PEmail'] = $item->player->profile->public_email;
+
+        if (!array_key_exists('Phone', $data[$item->user_id])) {
+          $data[$item->user_id]['Phone'] = "no phone on file";
+        }
+        $data[$item->user_id]['Phone'] = $item->player->profile->phone_number;
+
       }
 
       $season = Season::find()->where(['id' => $season_id])->one();
