@@ -49,12 +49,14 @@ $this->title = 'BAPA Manager';
          or send an email to onigame at sign gmail dot com.
 <?php      
         } else {
+
+          if (\app\models\Poll::findOne(['status'=>1]) != null) {
 ?>
-<!--
     <h2>Playoff Date Vote!</h2>
         If you are eligible, please <a class="btn btn-success" href="/vote">vote</a> to help us choose a playoff date.
--->
-
+<?php      
+          }
+?>
     <h2>Your Status</h2>
         <?=  \app\models\Player::findOne(Yii::$app->user->id)->statusHtml  ?>
     <h2>Current Sessions</h2>

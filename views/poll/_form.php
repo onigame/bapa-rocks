@@ -20,11 +20,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'pollEligibilities')->checkboxList($model->potentialEligibilities) ?>
 
-    <?= $form->field($model, 'dates')->textInput([
-      'maxlength' => true,
-      'id' => 'datesfield',
-    ]) ?>
-
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>

@@ -87,7 +87,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
        <li>The winning date is the date with the fewest "Might Not Show Up" votes.
 
-       <li>Tiebreakers are score-based: "Rather Not" = 1 point, "Is OK" = 3 points, "Works Great" = 4 points.
+       <li>In case of a tie, the winning date is the date with the most points.
+ 
+       <ul>
+
+       <li>How do we compute points? Well, we start out by figuring out your PITA, which is the proportion of dates that you said "Might Not Show Up" to. For example:
+          <ul>
+          <li>If you said "Might Not Show Up" to half of the dates, your PITA is 0.5.  
+          <li>If you said "Might Not Show Up" to a quarter of the dates, your PITA is 0.25.  
+          <li>If you didn't say "Might Not Show Up" at all, your PITA is 0.
+          </ul>
+
+       <li>Each "Rather Not" vote adds (one minus PITA) points to that date.  An "Is OK" vote adds 3 times (one minus PITA), and a "Works Great" adds 4 times (4 times PITA).
+
+       <li>In other words, people who are more PITA (can't attend much) don't get much of a say in what the final choice will be, and people who are less PITA (can attend everything) have a bigger voice.
+
+       </ul>
 
        <li>Managers and Admins can see who voted for what at any time. (Don't expect your vote to be super secret.)
 

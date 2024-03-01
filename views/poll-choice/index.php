@@ -30,8 +30,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'name',
             'poll_id',
-            'created_at',
-            'updated_at',
+            ['attribute'=>'poll.name', 'label'=>'Poll Name'],
+            ['label'=>'Status (0=visible)', 'attribute' => 'status'],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

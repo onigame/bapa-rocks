@@ -65,6 +65,11 @@ class PollChoice extends \yii\db\ActiveRecord
         return $this->hasOne(Poll::className(), ['id' => 'poll_id']);
     }
 
+    public function getPollName()
+    {
+        return $this->Poll->name;
+    }
+
     /**
      * Gets query for [[Votes]].
      *

@@ -20,6 +20,7 @@ if (Yii::$app->user->can('GenericManagerPermission')) {
 
     <p>
         <?= Html::a('Create Poll', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Edit/Add Poll Choices', ['/poll-choice/index?sort=-id'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php Pjax::begin(); ?>

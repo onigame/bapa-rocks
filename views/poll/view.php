@@ -26,6 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+
+        <?= Html::a('Edit/Add Poll Choices', ['/poll-choice/index?sort=-id'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= DetailView::widget([
@@ -59,6 +61,7 @@ if (Yii::$app->user->can('GenericManagerPermission')) {
     $points = array();
     $approve = array();
     $love = array();
+    $points_pita = array();
     $approve_pita = array();
     $love_pita = array();
 
@@ -75,6 +78,7 @@ if (Yii::$app->user->can('GenericManagerPermission')) {
       $points[$pc->id] = 0;
       $approve[$pc->id] = 0;
       $love[$pc->id] = 0;
+      $points_pita[$pc->id] = 0;
       $approve_pita[$pc->id] = 0;
       $love_pita[$pc->id] = 0;
     }
@@ -93,8 +97,10 @@ if (Yii::$app->user->can('GenericManagerPermission')) {
           $user = $vote->user;
           $people[] = $user->name;
           if ($val != 0) {
-            $points[$pc->id] += $val;
-            if ($val > 1) $points[$pc->id] ++;
+            $tpoints = $val;
+            if ($val > 1) $tpoints++;
+            $points[$pc->id] += $tpoints;
+            $points_pita[$pc->id] += $tpoints * $pita[$user->id] / $pc_count;
 
             $approve[$pc->id] += 1;
             $approve_pita[$pc->id] += 1 * $pita[$user->id] / $pc_count;
@@ -118,12 +124,13 @@ if (Yii::$app->user->can('GenericManagerPermission')) {
 
     echo "<h3>Scores</h3>";
     echo "<table border>\n";
-    echo "<tr><th>Choice</th><th>Eligible</th><th>Points</th><th>Approve</th><th>(PITA)</th><th>Love</th><th>(PITA)</th></tr>";
+    echo "<tr><th>Choice</th><th>Eligible</th><th>Points</th><th>(PITA) [2nd]</th><th>Approve [1st]</th><th>(PITA)</th><th>Love</th><th>(PITA)</th></tr>";
     foreach ($pcs as $pc) {
       echo "<tr>";
       echo "<td>$pc->name</td>";
       echo "<td>"; if ($pc->status == 1) { echo "No"; } echo "</td>";
       echo "<td>".$points[$pc->id]."</td>";
+      echo "<td>".$points_pita[$pc->id]."</td>";
       echo "<td>".$approve[$pc->id]."</td>";
       echo "<td>".$approve_pita[$pc->id]."</td>";
       echo "<td>".$love[$pc->id]."</td>";
