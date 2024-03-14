@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'previousSeason.name',
             'playoff_qualification',
             'regular_season_length',
+            'ifpa_weeks',
             'created_at',
             'updated_at',
 

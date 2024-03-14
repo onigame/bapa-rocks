@@ -31,6 +31,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'regular_season_length') ?>
 
+    <?= $form->field($model, 'ifpa_weeks') ?>
+
     <?= $form->field($model, 'created_at') ?>
 
     <?= $form->field($model, 'updated_at') ?>

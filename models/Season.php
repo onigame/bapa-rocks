@@ -17,6 +17,7 @@ use app\models\SeasonUser;
  * @property integer $previous_season_id
  * @property integer $playoff_qualification
  * @property integer $regular_season_length
+ * @property integer $ifpa_weeks
  * @property integer $created_at
  * @property integer $updated_at
  *
@@ -41,7 +42,7 @@ class Season extends \yii\db\ActiveRecord
         return [
             [['status', 'name'], 'required'],
             [['status', 'previous_season_id', 'created_at', 'updated_at', 
-              'playoff_qualification', 'regular_season_length'], 'integer'],
+              'playoff_qualification', 'ifpa_weeks', 'regular_season_length'], 'integer'],
             [['name'], 'string', 'max' => 255],
         ];
     }
@@ -59,6 +60,7 @@ class Season extends \yii\db\ActiveRecord
             'previousSeason.name' => 'Prev. Season Name',
             'playoff_qualification' => 'Weeks needed to Qualify',
             'regular_season_length' => 'Weeks in season',
+            'ifpa_weeks' => 'Weeks counting for IFPA',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];

@@ -74,6 +74,7 @@ CREATE TABLE season (
     FOREIGN KEY previous_season_key (previous_season_id) REFERENCES season(id),
     playoff_qualification INT DEFAULT 4; -- number of sessions needed to qualify for playoffs
     regular_season_length INT DEFAULT 10; -- number of session in the regular season (affects "drop 2" rule)
+    ifpa_weeks INT DEFAULT 7; -- number of weeks that count for IFPA
     created_at int(11),
     updated_at int(11)
 );
@@ -217,9 +218,9 @@ CREATE TABLE seasonuser (
     playoff_division VARCHAR(20), -- NULL = unassgned; 'A', 'B', 'DQ'
     playoff_rank INT, -- NULL = unassigned, otherwise within playoff
 
-    surplus_matchpoints INT NOT NULL DEFAULT 0, -- matchpoints that aren't counted "drop 2 worst weeks"
-    surplus_mpo_matchpoints INT NOT NULL DEFAULT 0, -- opponents that aren't counted "drop 2 worst weeks"
-    surplus_mpo_opponent_count INT NOT NULL DEFAULT 0, -- opponents that aren't counted "drop 2 worst weeks"
+    surplus_matchpoints INT NOT NULL DEFAULT 0, -- matchpoints that aren't counted "drop worst weeks"
+    surplus_mpo_matchpoints INT NOT NULL DEFAULT 0, -- opponents that aren't counted "drop worst weeks"
+    surplus_mpo_opponent_count INT NOT NULL DEFAULT 0, -- opponents that aren't counted "drop worst weeks"
 
     playoff_matchpoints INT AS (matchpoints - surplus_matchpoints) STORED,
     playoff_mpo_matchpoints INT AS (matchpoints - surplus_mpo_matchpoints - forfeit_opponent_count) STORED,
