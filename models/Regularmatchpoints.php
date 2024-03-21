@@ -270,7 +270,7 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
             'MPO' => ['asc' => ['5 Weeks?' => SORT_DESC, 'MPO' => SORT_DESC], 
                       'desc' => ['5 Weeks?' => SORT_DESC, 'MPO' => SORT_ASC]],
           ],
-          'defaultOrder' => ['Playoff Qual. Score' => SORT_ASC],
+          'defaultOrder' => ['MPO' => SORT_ASC],
         ],
       ];
 

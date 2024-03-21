@@ -81,7 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //            ['attribute' => 'session_name', 'label' => 'Week',],
 //            ['attribute' => 'code', 'label' => 'Group',],
 //            'matchpoints',
-            'Playoff Qual. Score',
+            'IFPA Points',
             ['attribute' => 'MPO', 'label' => 'MPO', 'format' => ['decimal', 4]],
 
             ['attribute' => 'Total', 'label' => 'Total MP'],
