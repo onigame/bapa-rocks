@@ -35,6 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'opponent_count',
             'match_count',
             'dues',
+            'attendance_bonus',
             'user_id',
             'season_id',
             'created_at',

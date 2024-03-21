@@ -222,7 +222,9 @@ CREATE TABLE seasonuser (
     surplus_mpo_matchpoints INT NOT NULL DEFAULT 0, -- opponents that aren't counted "drop worst weeks"
     surplus_mpo_opponent_count INT NOT NULL DEFAULT 0, -- opponents that aren't counted "drop worst weeks"
 
-    playoff_matchpoints INT AS (matchpoints - surplus_matchpoints) STORED,
+    attendance_bonus INT NOT NULL DEFAULT 0,
+
+    playoff_matchpoints INT AS (matchpoints - surplus_matchpoints + attendance_bonus) STORED,
     playoff_mpo_matchpoints INT AS (matchpoints - surplus_mpo_matchpoints - forfeit_opponent_count) STORED,
     playoff_mpo_opponent_count INT AS (opponent_count - surplus_mpo_opponent_count - forfeit_opponent_count) STORED,
 

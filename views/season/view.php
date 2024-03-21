@@ -150,31 +150,17 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
 //            ['attribute' => 'session_name', 'label' => 'Week',],
 //            ['attribute' => 'code', 'label' => 'Group',],
-//            'matchpoints',
-            'Playoff Qual. Score',
             ['attribute' => 'MPO', 'label' => 'MPO', 'format' => ['decimal', 4]],
-
             ['attribute' => 'Dues Paid?', 'format' => 'html', 'label' => 'Dues'],
-            'Weeks Played',
             ['attribute' => $model->playoff_qualification . ' Weeks?', 
                  'label' => $model->playoff_qualification . ' Wks?'],
+            'Weeks Played',
             ['attribute' => 'Total', 'label' => 'Total MP'],
+            ['attribute' => 'Forfeit Opponent Count', 'label' => 'Forf. Opp.'],
             ['attribute' => 'Opponent Count', 'label' => 'Opp. Ct.'],
- //           ['attribute' => 'Forfeit Opponent Count', 'label' => 'Forf. Opp.'],
-//            ['attribute' => 'Effective Opponent Count', 'label' => 'Eff. Opp.'],
-//            ['attribute' => 'Effective Matchpoints', 'label' => 'Eff. MP'],
-//            'Lowest Wk',
-//            '2nd Lowest Wk',
-//            'Surplus MP',
-//            'Lowest MPO',
-//            'Lowest MPO float',
-//            'Lowest MPO EM',
-//            'Lowest MPO EO',
-//            '2nd Lowest MPO',
-//            '2nd Lowest MPO float',
-//            '2nd Lowest MPO EM',
-//            '2nd Lowest MPO EO',
-//            ['attribute' => 'Adj. MPO', 'label' => 'Adj. MPO', 'format' => ['decimal', 4]],
+            ['attribute' => 'Effective Opponent Count', 'label' => 'Eff. Opp.'],
+            ['attribute' => 'Effective Matchpoints', 'label' => 'Eff. MP'],
+            'IFPA Points',
         ],
         'options' => [
           'style'=>'overflow: auto; word-wrap: break-word;'
@@ -186,10 +172,52 @@ $this->params['breadcrumbs'][] = $this->title;
 //      }
       if (Yii::$app->user->can('GenericManagerPermission')) {
         $gvdata2['columns'][] = 'Email';
-        $gvdata2['columns'][] = 'PEmail';
+//        $gvdata2['columns'][] = 'PEmail';
         $gvdata2['columns'][] = 'Phone';
         $gvdata2['columns'][] = 'id';
       }
+      echo GridView::widget($gvdata2);
+?>
+    <h3>IFPA Stats</h3>
+<?php
+      $gvdata2 = [
+        'dataProvider' => $scoresData,
+        'pjax' => true, 
+//        'filterModel' => $searchModel,
+        'formatter' => ['class' => 'yii\i18n\Formatter','nullDisplay' => ''],
+        'columns' => [
+//            ['class' => 'yii\grid\SerialColumn'],
+//            'id',
+            [
+              'attribute' => 'Name',
+              'format' => 'raw',
+              'value' => function ($data) {
+                return Html::a($data['Name'], '/player/view?id=' . $data['id']);
+              },
+            ],
+            ['attribute' => 'IFPA Points', 'label' => 'IFPA Points'],
+            ['attribute' => 'MPO', 'label' => 'MPO', 'format' => ['decimal', 4]],
+//            ['attribute' => 'session_name', 'label' => 'Week',],
+//            ['attribute' => 'code', 'label' => 'Group',],
+            ['attribute' => 'Dues Paid?', 'format' => 'html', 'label' => 'Dues'],
+            'Weeks Played',
+            'Weeks Absent',
+            ['attribute' => '5 Weeks?', 'label' => '5 Wks?'],
+            ['attribute' => 'Effective Matchpoints', 'label' => 'Eff. MP'],
+            'Lowest Wk',
+            '2nd Lowest Wk',
+            '3rd Lowest Wk',
+            'Surplus MP',
+            'Attendance Bonus',
+        ],
+        'options' => [
+          'style'=>'overflow: auto; word-wrap: break-word;'
+        ],
+      ]; 
+//      for ($wn = 1; $wn <= 12; ++$wn) {
+//        $gvdata['columns'][] = [ 'attribute' => "Week $wn group", 'label' => 'Grp', 'format' => 'html' ];
+//        $gvdata2['columns'][] = [ 'attribute' => "Week $wn", 'label' => "Wk$wn", 'format' => 'html' ];
+//      }
       echo GridView::widget($gvdata2);
 ?>
     <h3>Previous Season Comparison</h3>

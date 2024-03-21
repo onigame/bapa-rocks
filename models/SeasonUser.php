@@ -18,6 +18,7 @@ use yii\helpers\Html;
  * @property integer $dues
  * @property integer $user_id
  * @property integer $season_id
+ * @property integer $attendance_bonus
  * @property double $previous_season_rank
  * @property integer $created_at
  * @property integer $updated_at
@@ -51,6 +52,7 @@ class SeasonUser extends \yii\db\ActiveRecord
             [['matchpoints', 'game_count', 'opponent_count', 'match_count', 'dues', 'playoff_rank', 'user_id',
               'forfeit_opponent_count',
               'surplus_matchpoints', 'surplus_mpo_matchpoints', 'surplus_mpo_opponent_count',
+              'attendance_bonus',
               'playoff_matchpoints', 'playoff_mpo_matchpoints', 'playoff_mpo_opponent_count',
               'season_id', 'created_at', 'updated_at'], 'integer'],
             [['mpg', 'mpo', 'previous_season_rank', 'adjusted_mpo'], 'double'],
@@ -76,6 +78,8 @@ class SeasonUser extends \yii\db\ActiveRecord
             'surplus_matchpoints' => 'S-MP',
             'surplus_mpo_matchpoints' => 'S-MPO-EM',
             'surplus_mpo_opponent_count' => 'S-MPO-EO',
+
+            'attendance_bonus' => "AB",
 
             'playoff_matchpoints' => 'PQ Score',
             'playoff_mpo_matchpoints' => 'PQ-MPO-EM',

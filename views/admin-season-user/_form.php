@@ -24,6 +24,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'dues')->textInput() ?>
 
+    <?= $form->field($model, 'attendance_bonus')->textInput() ?>
+
     <?= $form->field($model, 'user_id')->textInput() ?>
 
     <?= $form->field($model, 'season_id')->textInput() ?>

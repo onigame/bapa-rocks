@@ -290,8 +290,10 @@ class SessionController extends Controller
             $su->match_count += 1;
 
             $su->surplus_matchpoints = $scoresData[$mu->user_id]['Surplus MP'];
-            $su->surplus_mpo_matchpoints = $scoresData[$mu->user_id]['Surplus MPO EM'];
-            $su->surplus_mpo_opponent_count = $scoresData[$mu->user_id]['Surplus MPO EO'];
+//            $su->surplus_mpo_matchpoints = $scoresData[$mu->user_id]['Surplus MPO EM'];
+//            $su->surplus_mpo_opponent_count = $scoresData[$mu->user_id]['Surplus MPO EO'];
+
+            $su->attendance_bonus = $scoresData[$mu->user_id]['Attendance Bonus'];
 
             if (!$su->save()) {
               Yii::error($su->errors);
