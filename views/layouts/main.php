@@ -37,7 +37,8 @@ AppAsset::register($this);
     ]);
     $navItems=[
         ['label' => 'Home', 'url' => ['/site/index']],
-        ['label' => 'Status', 'url' => ['/status/index']],
+        ['label' => 'Status', 'url' => null,
+                    'linkOptions' => ['target' => '_blank', 'href' => 'https://trello.com/b/DL8y7BeG/baparocks-bug-tracker']],
         ['label' => 'About', 'url' => ['/site/about']],
         ['label' => 'Rules', 'url' => null,
                     'linkOptions' => ['target' => '_blank',
