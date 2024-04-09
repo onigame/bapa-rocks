@@ -186,7 +186,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //        'filterModel' => $searchModel,
         'formatter' => ['class' => 'yii\i18n\Formatter','nullDisplay' => ''],
         'columns' => [
-//            ['class' => 'yii\grid\SerialColumn'],
+            ['class' => 'yii\grid\SerialColumn'],
 //            'id',
             [
               'attribute' => 'Name',
@@ -195,6 +195,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 return Html::a($data['Name'], '/player/view?id=' . $data['id']);
               },
             ],
+            'ifpa_id',
             ['attribute' => 'IFPA Points', 'label' => 'IFPA Points'],
             ['attribute' => 'MPO', 'label' => 'MPO', 'format' => ['decimal', 4]],
 //            ['attribute' => 'session_name', 'label' => 'Week',],

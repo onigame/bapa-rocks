@@ -103,8 +103,10 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
         } else {
           $groupnum = "?";
         }
+        $profile = Profile::find()->where(['user_id' => $item->user_id])->one();
         $data[$item->user_id]['id'] = $item->user_id;
         $data[$item->user_id]['Name'] = $item->name;
+        $data[$item->user_id]['ifpa_id'] = $profile->ifpa;
         $data[$item->user_id][($item->session_name).' points'] = $item->matchpoints;
         //$data[$item->user_id][$item->session_name] = $item->matchpoints;
         $data[$item->user_id][$item->session_name] = Html::a(

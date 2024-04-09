@@ -82,6 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //            ['attribute' => 'code', 'label' => 'Group',],
 //            'matchpoints',
             'IFPA Points',
+            'profile.ifpa',
             ['attribute' => 'MPO', 'label' => 'MPO', 'format' => ['decimal', 4]],
 
             ['attribute' => 'Total', 'label' => 'Total MP'],

@@ -41,6 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'profile.name',
         'profile.initials',
         'profile.phone_number',
+        'profile.ifpa',
         'email:email',
         [
             'attribute' => 'registration_ip',
