@@ -678,7 +678,11 @@ class Match extends \yii\db\ActiveRecord
         $seasonuser = SeasonUser::find()->where(['user_id' => $winner_id, 'season_id' => $this->session->season_id])->one();
         $matches = [];
         preg_match('/^ZZ0*(\d+)/', $winnercode, $matches);
-        $seasonuser->playoff_rank = $matches[1];
+#        try {
+          $seasonuser->playoff_rank = $matches[1];
+#        } catch (\yii\base\ErrorException $e) {
+#          throw new \yii\base\UserException(join(", ", [$winnercode, $this->code, $this->session->playerCount]));
+#        }
         $seasonuser->save();
       } else {
         if ($winnermatch->currentPlayerCount >= 2) {
