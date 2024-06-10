@@ -146,9 +146,9 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
                                                 - $data[$item->user_id]['Weeks Played'];
 
         $data[$item->user_id]['Attendance Bonus'] = 
-            ($data[$item->user_id]['Weeks Absent'] < 4)
-             ? (6 - 2 * $data[$item->user_id]['Weeks Absent'])
-             : (4 * $data[$item->user_id]['Weeks Absent'] - 13);
+            ($data[$item->user_id]['Weeks Absent'] < 3)
+             ? (2 - $data[$item->user_id]['Weeks Absent'])
+             : (4 * $data[$item->user_id]['Weeks Absent'] - 9);
 
         if (!array_key_exists('Opponent Count', $data[$item->user_id])) {
           $data[$item->user_id]['Opponent Count'] = 0;
