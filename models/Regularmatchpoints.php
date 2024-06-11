@@ -142,7 +142,7 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
         }
         $data[$item->user_id]['Weeks Played'] += 1;
 
-        $data[$item->user_id]['Weeks Absent'] = $weeksPlayed + 1
+        $data[$item->user_id]['Weeks Absent'] = $weeksPlayed 
                                                 - $data[$item->user_id]['Weeks Played'];
 
         $data[$item->user_id]['Attendance Bonus'] = 
