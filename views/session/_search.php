@@ -25,6 +25,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'location_id') ?>
 
+    <?= $form->field($model, 'backup_location_id') ?>
+
     <?php // echo $form->field($model, 'name') ?>
 
     <?php // echo $form->field($model, 'date') ?>

@@ -192,10 +192,13 @@ class Game extends \yii\db\ActiveRecord
     public function getWinnerId() {
       if ($this->status != 4) return NULL;
       $scores = $this->scores;
-      $top_score = -1;
+      $top_score = -20;
       $best_so_far = NULL;
       foreach ($scores as $score) {
-        if ($score->forfeit == 1) continue;
+        if ($score->forfeit == 1 && $top_score == -1 
+            && $score->player->id == $this->masterSelector->id) {
+          $best_so_far = $score->user_id;
+        } else 
         if ($score->value > $top_score) {
           $top_score = $score->value;
           $best_so_far = $score->user_id;
@@ -439,9 +442,9 @@ class Game extends \yii\db\ActiveRecord
 
         foreach ($scores as $score) {
           if ($score->value == $lastvalue) {
-            if ($pcount == 2) {
+            if ($pcount == 2 && $score->forfeit != 1) {
               Yii::error($score);
-              throw new \yii\base\UserException("Tied games are not allowed in 2-player".$score->value);
+              throw new \yii\base\UserException("Tied games are not allowed in 2-player: ".$score->value);
             } else {
               $score->matchpoints = $cur_mp_if_tied;
             }

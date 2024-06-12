@@ -27,7 +27,12 @@ $this->params['breadcrumbs'][] = $model->name;
 //            'statusString',
             [ 'attribute' => 'seasonName', 'format' => 'raw'],
             [
-              'attribute' => 'locationName',
+              'attribute' => 'Current Location Name',
+              'format' => 'raw',
+              'value' => $model->currentLocationName,
+            ],
+            [
+              'attribute' => 'Primary Location Name',
               'format' => 'raw',
               'value' => $model->locationName,
             ],

@@ -59,12 +59,12 @@ class Player extends BaseUser {
       if ($results->session->status == 2) {
         $answer .= "<p>Your last <b>regular session</b> was " . $results->session->season->name . " " 
                     . $results->session->name 
-                    . " at " . Html::a($results->session->location->name, ['/location/view', 'id' => $results->session->location->id])
+                    . " at " . Html::a($results->session->currentLocation->name, ['/location/view', 'id' => $results->session->currentLocation->id])
                     . ".</p>";
       } else {
         $answer .= "<p><b>You are playing</b> in " . $results->session->season->name . " " 
                     . $results->session->name 
-                    . " at " . Html::a($results->session->location->name, ['/location/view', 'id' => $results->session->location->id])
+                    . " at " . Html::a($results->session->currentLocation->name, ['/location/view', 'id' => $results->session->currentLocation->id])
                     . ".</p>";
       }
       if ($results->match_status == 3) {
@@ -81,7 +81,7 @@ class Player extends BaseUser {
           if ($next_session != null) {
             $answer .= "<LI>";
             $answer .= $next_session->name." (".$next_session->season->name.") @ "
-                        . Html::a($next_session->location->name, ['/location/view', 'id' => $next_session->location->id])
+                        . Html::a($next_session->currentLocation->name, ['/location/view', 'id' => $next_session->currentLocation->id])
                         . ". ";
             if ($next_session->currentPlayerIn) {
               $answer .= "You have signed up to play.";
@@ -129,12 +129,12 @@ class Player extends BaseUser {
       if ($results->session->status == 2) {
         $answer .= "<p>Your last <b>playoffs</b> was " . $results->session->season->name . " " 
                     . $results->session->name 
-                    . " at " . Html::a($results->session->location->name, ['/location/view', 'id' => $results->session->location->id])
+                    . " at " . Html::a($results->session->currentLocation->name, ['/location/view', 'id' => $results->session->currentLocation->id])
                     . ".</p>";
       } else {
         $answer .= "<p><b>You are playing</b> in " . $results->session->season->name . " " 
                     . $results->session->name 
-                    . " at " . Html::a($results->session->location->name, ['/location/view', 'id' => $results->session->location->id])
+                    . " at " . Html::a($results->session->currentLocation->name, ['/location/view', 'id' => $results->session->currentLocation->id])
                     . ".</p>";
       }
       if ($results->match_status == 3) {

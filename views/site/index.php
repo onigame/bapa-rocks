@@ -76,7 +76,7 @@ $this->title = 'BAPA Manager';
               ['class' => 'yii\grid\SerialColumn'],
               [ 'attribute' => 'seasonName', 'format' => 'html' ],
               'name',
-              [ 'attribute' => 'locationName', 'format' => 'html'],
+              [ 'attribute' => 'currentLocationName', 'format' => 'html'],
               'typeName',
               'statusString',
               [ 'attribute' => 'date', 'format' => 'date'],

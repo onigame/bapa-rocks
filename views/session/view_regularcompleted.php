@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $model->name;
 <div class="session-view">
 
     <h1><?= $model->season->name . " : " . $model->name ?></h1>
-    <p>at <?= $model->locationName ?>, <?= Yii::$app->formatter->format($model->date, 'date') ?> [COMPLETED]
+    <p>at <?= $model->currentLocationName ?>, <?= Yii::$app->formatter->format($model->date, 'date') ?> [COMPLETED]
 
     <h2>Matches</h2>
 <?php
@@ -67,10 +67,10 @@ $this->registerJs('
 ?>
    <?= $this->render('@app/views/regularresults/_content', [ 'regularresultsData' => $regularresultsData ]) ?>
 
-    <h2>Machines at <?= $model->locationName ?></h2>
+    <h2>Machines at <?= $model->currentLocationName ?></h2>
 <?php
     $machineData = new yii\data\ActiveDataProvider([
-          'query' => app\models\Machinerecentstatus::find()->where(['location_id' => $model->location_id]),
+          'query' => app\models\Machinerecentstatus::find()->where(['location_id' => $model->currentLocation->id]),
           'pagination' => [
             'pageSize' => 100,
           ],

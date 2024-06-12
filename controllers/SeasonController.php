@@ -111,8 +111,9 @@ class SeasonController extends Controller
  
           $season::getDb()->transaction(function($db) use ($season, $newPlayoffsModel) {
             if (!$newPlayoffsModel->save()) {
-              Yii::error($newPlayoffModel->errors);
-              throw new \yii\base\UserException("Error saving session (new playoffs)");
+              Yii::error($newPlayoffsModel->errors);
+              throw new \yii\base\UserException("Error saving session (new playoffs) :"
+                  . json_encode($newPlayoffsModel->getErrors()));
             }
             $seasonuserids = \yii\helpers\Json::decode($newPlayoffsModel->playoffdata);
             // make sessionuser for all of these.

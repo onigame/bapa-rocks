@@ -54,6 +54,7 @@ class Session extends \yii\db\ActiveRecord
             [['playoff_division'], 'string', 'max' => 20],
             [['season_id'], 'exist', 'skipOnError' => true, 'targetClass' => Season::className(), 'targetAttribute' => ['season_id' => 'id']],
             [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::className(), 'targetAttribute' => ['location_id' => 'id']],
+            [['backup_location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::className(), 'targetAttribute' => ['backup_location_id' => 'id']],
             [['playoffdata'], 'safe'],
         ];
     }
@@ -180,6 +181,23 @@ class Session extends \yii\db\ActiveRecord
         return $this->hasOne(Location::className(), ['id' => 'backup_location_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCurrentLocation()
+    {
+        if ($this->use_backup_location == 0) {
+          return $this->location;
+        } else if ($this->use_backup_location == 1) {
+          if ($this->backupLocation == NULL) {
+            Yii::$app->session->setFlash('error', "Warning! Session #"+($this->id)+" does not have a valid second location set.");
+          }
+          return $this->backupLocation;
+        } else {
+          throw new \yii\base\UserException("Session #".($this->id)." has invalid use_backup_location value of ".($this->use_backup_location));
+        }
+    }
+
     private function locationDisplayName($location) {
         if ($location == null) {
           return "(unassigned)";
@@ -195,6 +213,10 @@ class Session extends \yii\db\ActiveRecord
 
     public function getLocationName() {
       return $this->locationDisplayName($this->location);
+    }
+
+    public function getCurrentLocationName() {
+      return $this->locationDisplayName($this->currentLocation);
     }
 
     public function getBackupLocationName() {
@@ -214,15 +236,15 @@ class Session extends \yii\db\ActiveRecord
     }
 
     public function getAvailableMachines() {
-       return $this->location->availableMachines;
+       return $this->currentLocation->availableMachines;
     }
 
     public function getSelectableMachines() {
-       return $this->location->selectableMachines;
+       return $this->currentLocation->selectableMachines;
     }
 
     public function getUnselectableMachines() {
-       return $this->location->unselectableMachines;
+       return $this->currentLocation->unselectableMachines;
     }
 
     public function getCurrentPlayerIn() {

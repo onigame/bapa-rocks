@@ -22,11 +22,25 @@ use app\models\Location;
          ['prompt' => 'Select Location']
     ) ?>
 
+    <?= $form->field($model, 'backup_location_id')
+       ->label("Second Location")
+       ->dropDownList(
+         ArrayHelper::map(Location::find()->all(),'id','name'),
+         ['prompt' => 'Select Second Location']
+    ) ?>
+
     <?= $form->field($model, 'playoff_division')
        ->label("Playoff Division")
        ->dropDownList(
          ['A' => 'A', 'B' => 'B', 'C' => 'C', 'None' => 'None', 'Other' => 'Other'],
          ['prompt' => 'Select Division']
+    ) ?>
+
+    <?= $form->field($model, 'use_backup_location')
+       ->label("Starting with primary Location?")
+       ->dropDownList(
+         ['0' => 'Yes', '1' => 'No, use second location'],
+         ['prompt' => 'Select']
     ) ?>
 
 
