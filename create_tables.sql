@@ -88,6 +88,9 @@ CREATE TABLE session (
     FOREIGN KEY season_key (season_id) REFERENCES season(id),
     location_id INT NOT NULL,
     FOREIGN KEY location_key (location_id) REFERENCES location(id),
+    backup_location_id INT,
+    FOREIGN KEY backup_location_key (backup_location_id) REFERENCES location(id),
+    use_backup_location INT NOT NULL DEFAULT 0, -- 0 = no, 1 = yes, other numbers for future expansion
     name VARCHAR(255) NOT NULL,
     date int(11),
     created_at int(11),

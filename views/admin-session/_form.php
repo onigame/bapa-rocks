@@ -22,6 +22,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'location_id')->textInput() ?>
 
+    <?= $form->field($model, 'backup_location_id')->textInput() ?>
+
+    <?= $form->field($model, 'use_backup_location')->textInput() ?>
+
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'date')->textInput() ?>

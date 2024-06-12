@@ -17,6 +17,8 @@ use app\models\MatchUser;
  * @property string $playoff_division
  * @property integer $season_id
  * @property integer $location_id
+ * @property integer $backup_location_id
+ * @property integer $use_backup_location
  * @property string $name
  * @property integer $date
  * @property integer $created_at
@@ -46,8 +48,8 @@ class Session extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['type', 'status', 'season_id', 'location_id', 'name', 'date'], 'required'],
-            [['type', 'status', 'season_id', 'location_id', 'date', 'created_at', 'updated_at'], 'integer'],
+            [['type', 'status', 'season_id', 'location_id', 'use_backup_location', 'name', 'date'], 'required'],
+            [['type', 'status', 'season_id', 'location_id', 'backup_location_id', 'use_backup_location', 'date', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['playoff_division'], 'string', 'max' => 20],
             [['season_id'], 'exist', 'skipOnError' => true, 'targetClass' => Season::className(), 'targetAttribute' => ['season_id' => 'id']],
@@ -67,6 +69,9 @@ class Session extends \yii\db\ActiveRecord
             'status' => 'Status',
             'season_id' => 'Season ID',
             'location_id' => 'Location ID',
+            'backup_location_id' => '2nd Location ID',
+            'u_backup' => 'u Backup',
+            'foofy_lackup' => 'foofy Loc',
             'name' => 'Name',
             'date' => 'Date',
             'created_at' => 'Created At',
@@ -167,14 +172,33 @@ class Session extends \yii\db\ActiveRecord
         return $this->hasOne(Location::className(), ['id' => 'location_id']);
     }
 
-    public function getLocationName() {
-        return Html::a( $this->location->name,
-                      ["/location/view", 'id' => $this->location->id],
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBackupLocation()
+    {
+        return $this->hasOne(Location::className(), ['id' => 'backup_location_id']);
+    }
+
+    private function locationDisplayName($location) {
+        if ($location == null) {
+          return "(unassigned)";
+        }
+        return Html::a( $location->name,
+                      ["/location/view", 'id' => $location->id],
                       [
                         'title' => 'View Location',
                         'data-pjax' => '0',
                       ]
                     );
+    }
+
+    public function getLocationName() {
+      return $this->locationDisplayName($this->location);
+    }
+
+    public function getBackupLocationName() {
+      return $this->locationDisplayName($this->backupLocation);
     }
 
     /**

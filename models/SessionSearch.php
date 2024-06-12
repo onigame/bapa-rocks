@@ -18,7 +18,7 @@ class SessionSearch extends Session
     public function rules()
     {
         return [
-            [['id', 'type', 'status', 'season_id', 'location_id', 'date', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'type', 'status', 'season_id', 'location_id', 'backup_location_id', 'date', 'created_at', 'updated_at'], 'integer'],
             [['playoff_division', 'name'], 'safe'],
         ];
     }
@@ -64,6 +64,8 @@ class SessionSearch extends Session
             'status' => $this->status,
             'season_id' => $this->season_id,
             'location_id' => $this->location_id,
+            'backup_location_id' => $this->backup_location_id,
+            'use_backup_location' => $this->use_backup_location,
             'date' => $this->date,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

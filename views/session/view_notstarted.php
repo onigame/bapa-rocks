@@ -29,7 +29,17 @@ $this->params['breadcrumbs'][] = $model->name;
             [
               'attribute' => 'locationName',
               'format' => 'raw',
-              'value' => Html::a($model->locationName, ['/location/view', 'id' => $model->location_id]),
+              'value' => $model->locationName,
+            ],
+            [
+              'attribute' => 'Second Location Name',
+              'format' => 'raw',
+              'value' => $model->backupLocationName,
+            ],
+            [
+              'attribute' => 'Using Second Location?',
+              'format' => 'raw',
+              'value' => ($model->use_backup_location == 0) ? "No" : "Yes",
             ],
             'date:date',
         ],

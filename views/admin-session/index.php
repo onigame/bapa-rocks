@@ -30,6 +30,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'playoff_division',
             'season_id',
             'location_id',
+            'backup_location_id',
+            'use_backup_location',
             'name',
             'date',
             // 'created_at',
