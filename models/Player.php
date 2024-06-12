@@ -24,6 +24,10 @@ class Player extends BaseUser {
     return $this->profile->initials;
   }
 
+  public function getPhone() {
+    return $this->profile->phone_number;
+  }
+
   public function getMatches() {
     return $this->hasMany(\app\models\Match::className(), ['id' => 'match_id'])
                 ->viaTable('matchuser', ['user_id' => 'id']);

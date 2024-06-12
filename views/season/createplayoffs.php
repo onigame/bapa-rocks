@@ -23,44 +23,44 @@ $this->params['breadcrumbs'][] = $this->title;
    'model' => $newplayoffs
 ]) ?>
 
-<?= GridView::widget([
-        'dataProvider' => $dataProvider,
+<?php
+   $scoresData = app\models\Regularmatchpoints::seasonArrayDataProvider($season->id);
+   $scoresData->sort->defaultOrder = ['IFPA Points' => SORT_ASC];
+   $gvdata = [
+//        'dataProvider' => $dataProvider,
+        'dataProvider' => $scoresData,
         //'filterModel' => $searchModel,
         'id' => 'playergrid',
         'columns' => [
 //            ['class' => 'yii\grid\SerialColumn'],
-//            'season_id',
-//            'row_number',
-
-            'user_name',
-
-            'row_number',
-            'recommended_division',
-
+            'Name',
+//            'id',
+            'su_id',
             ['class' => 'yii\grid\CheckboxColumn',
-               // 'header' => 'A',
+               'header' => 'A',
                'checkboxOptions' => function($model, $key, $index, $column) {
-                  $options = ['value' => $model->id];
-                  if ($model->recommended_division === 'A8') {
-                    $options['checked'] = 'true';
-                  }
+                  $value = $model['su_id'];
+                  $options = ['value' => $value];
+//                  $options = ['value' => $model->id];
+//                  if ($model->recommended_division === 'A8') {
+//                    $options['checked'] = 'true';
+//                  }
                   return $options;
                }
             ],
 
-            'playoff_matchpoints',
-            'matchpoints',
-            'surplus_matchpoints',
-//            'game_count',
-//            'opponent_count',
-            'mpo',
-            'adjusted_mpo',
-            ['attribute' => 'x_weeks_string',
-                        'label'=> $season->playoff_qualification . ' Weeks?'],
-            ['attribute' => 'profile.vaccination', 'format'=>'vaccstatus',
-                        'label'=>'Vacc.'],
-            ['attribute' => 'dues_string', 'format' => 'html'],
+            ['attribute' => 'IFPA Points', 'label' => 'IFPA Points'],
+            ['attribute' => '5 Weeks?', 'label' => '5 Wks?'],
+            ['attribute' => 'Dues Paid?', 'format' => 'html'],
+            ['attribute' => 'MPO', 'label' => 'MPO', 'format' => ['decimal', 4]],
+            'Weeks Played',
+            'Weeks Absent',
+            'Surplus MP',
+            'Attendance Bonus',
 
         ],
-    ]); ?>
+
+    ] ;
+    echo GridView::widget($gvdata);
+?>
 <?php Pjax::end(); ?></div>

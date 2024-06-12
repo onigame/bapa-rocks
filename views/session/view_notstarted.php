@@ -202,8 +202,10 @@ $this->registerJs('
               ],
             ],
             'profile.user.username',
-            'profile.vaccination:vaccStatus',
-            ['label' => 'Toggle', 'attribute' => 'VaccToggleButton', 'format' => 'html'],
+            'profile.user.initials',
+            'profile.user.phone',
+//            'profile.vaccination:vaccStatus',
+//            ['label' => 'Toggle', 'attribute' => 'VaccToggleButton', 'format' => 'html'],
 /*
             'notes',
             'matchpoints',

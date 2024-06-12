@@ -96,6 +96,9 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
 
       $items = Regularmatchpoints::find()->where(['season_id' => $season_id])->all();
       foreach ($items as $item) {  // iterate through the players
+
+        $seasonuser = SeasonUser::find()->where(['season_id' => $season_id, 
+                                                 'user_id' => $item->user_id])->one();
         if ($item->session->type != 1) continue;
         $groupblah = explode(" ", $item->code);
         if (count($groupblah) >= 2) {
@@ -104,6 +107,7 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
           $groupnum = "?";
         }
         $profile = Profile::find()->where(['user_id' => $item->user_id])->one();
+        $data[$item->user_id]['su_id'] = $seasonuser->id;
         $data[$item->user_id]['id'] = $item->user_id;
         $data[$item->user_id]['Name'] = $item->name;
         $data[$item->user_id]['ifpa_id'] = $profile->ifpa;
@@ -248,6 +252,7 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
         'pagination' => [
           'pageSize' => 0,
         ],
+        'key' => 'su_id',
         'sort' => [
           'attributes' => [
             'id',
