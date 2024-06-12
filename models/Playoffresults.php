@@ -65,6 +65,7 @@ class Playoffresults extends \yii\db\ActiveRecord
             'true_seed_min' => 'Worst Result',
             'seed_max' => 'Best Result',
             'seed' => 'Seed',
+            'starting_seed' => 'Start Seed',
         ];
     }
 
@@ -82,8 +83,8 @@ class Playoffresults extends \yii\db\ActiveRecord
       return $this->sessionUser->infoButton;
     }
 
-    public function getStartingSeed() {
-      return $this->sessionUser->startingSeed;
+    public function getStarting_seed() {
+      return $this->sessionUser->starting_seed;
     }
 
     /**

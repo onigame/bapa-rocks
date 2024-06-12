@@ -51,6 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ['attribute' => 'IFPA Points', 'label' => 'IFPA Points'],
             ['attribute' => '5 Weeks?', 'label' => '5 Wks?'],
+            ['attribute' => '4 Weeks?', 'label' => '4 Wks?'],
             ['attribute' => 'Dues Paid?', 'format' => 'html'],
             ['attribute' => 'MPO', 'label' => 'MPO', 'format' => ['decimal', 4]],
             'Weeks Played',
