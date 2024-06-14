@@ -646,7 +646,8 @@ class SessionController extends Controller
           $match->session_id = $session->id;
           $match->code = $egmatch->code;
           if ($egmatch->bracket === "S") {
-            $match->format = 7;  // Championship is best of 7
+            //$match->format = 7;  // Championship is best of 7
+            $match->format = 5;  // Championship was best of 7, but is now 5
           } else if ($egmatch->bracket === "W") {
             $match->format = 5;  // Winner's is best of 5
           } else {
