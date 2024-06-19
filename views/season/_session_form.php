@@ -22,6 +22,20 @@ use app\models\Location;
          ['prompt' => 'Select Location']
     ) ?>
 
+    <?= $form->field($model, 'backup_location_id')
+       ->label("Second Location")
+       ->dropDownList(
+         ArrayHelper::map(Location::find()->all(),'id','name'),
+         ['prompt' => 'Select Second Location']
+    ) ?>
+
+    <?= $form->field($model, 'use_backup_location')
+       ->label("Starting with primary Location?")
+       ->dropDownList(
+         ['0' => 'Yes', '1' => 'No, use second location'],
+         ['prompt' => 'Select']
+    ) ?>
+
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'date')->widget(DateControl::className(), [
