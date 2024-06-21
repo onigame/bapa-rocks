@@ -95,6 +95,7 @@ $this->params['breadcrumbs'][] = $model->code;
             [ 'attribute' => 'statusString', 'format' => 'html' ],
 //            'statusDetailCode',
             [ 'label' => 'Winner', 'attribute' => 'WinnerName', 'format' => 'html'],
+            [ 'attribute' => 'updated_at', 'format' => ['datetime', 'H:mm'] ],
             [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
         ],
     ]); ?>

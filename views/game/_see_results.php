@@ -53,6 +53,7 @@ use yii\widgets\ActiveForm;
           'contentOptions' => ['style' => 'text-align:left'],
           'headerOptions' => ['style' => 'text-align:left'],
         ],
+        [ 'attribute' => 'updated_at', 'format' => ['datetime', 'H:mm']],
         [ 'attribute' => 'id'],
      ],
    ]);
