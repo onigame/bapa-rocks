@@ -23,11 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            //'id',
-            //'username',
+            [ 'attribute' => 'id', 'visible' => Yii::$app->user->can('GenericManagerPermission') ],
+            [ 'attribute' => 'username', 'visible' => Yii::$app->user->can('GenericManagerPermission') ],
             'name',
             'initials',
-            //'email:email',
+            'profile.ifpa',
+            [ 'attribute' => 'profile.phone_number', 'visible' => Yii::$app->user->can('GenericManagerPermission') ],
+            [ 'attribute' => 'email', 'format' => 'email', 'visible' => Yii::$app->user->can('GenericManagerPermission') ],
             //'password_hash',
             //'auth_key',
             //'confirmed_at',

@@ -37,7 +37,7 @@ class SeasonController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['view', 'view2'],
-                        'roles' => ['@'],
+                        'roles' => ['@','?'],
                     ],
                 ],
             ],

@@ -22,6 +22,7 @@ use kartik\grid\GridView;
               },
             ],
             ['attribute' => 'sessionUserInfoButton', 'label' => 'Info', 'format' => 'html'],
+            ['attribute' => 'user.profile.ifpa', 'label' => 'IFPA'],
             ['attribute' => 'match.bracket', 'label' => 'Bracket'],
             ['attribute' => 'match.statusString', 'format' => 'html'],
             ['attribute' => 'match.code', 'header' => 'Match<br>Code'],

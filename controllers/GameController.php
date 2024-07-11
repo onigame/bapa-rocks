@@ -42,7 +42,7 @@ class GameController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['view'],
-                        'roles' => ['@'],
+                        'roles' => ['@', '?'],
                     ],
                 ],
             ],
