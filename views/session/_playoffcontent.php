@@ -60,6 +60,7 @@ use kartik\grid\GridView;
             'matchusersString',
             ['attribute' => 'statusString', 'format' => 'html'],
 //            'statusDetailCode',
+            [ 'label' => 'Last Change', 'attribute' => 'lastChangeTime', 'format' => ['relativetime'] ],
             [ 'label' => 'Go', 'attribute' => 'GoButton', 'format' => 'html'],
         ],
     ]); ?>

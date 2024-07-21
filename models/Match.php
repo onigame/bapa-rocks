@@ -151,6 +151,16 @@ class Match extends \yii\db\ActiveRecord
         return $this->hasMany(Game::className(), ['match_id' => 'id'])->orderBy(['created_at' => SORT_ASC]);
     }
 
+    public function getLastChangeTime() {
+      $result = $this->updated_at;
+      foreach ($this->games as $game) {
+        if ($game->updated_at > $result) {
+          $result = $game->updated_at;
+        }
+      }
+      return $result;
+    }
+
     public function getMachinesPlayed() {
         // don't count DQ'd machines
       $result = [];

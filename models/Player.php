@@ -45,6 +45,26 @@ class Player extends BaseUser {
 
   public function getRegularStatusHtml() {
     $answer = "";
+    // is the player a manager.
+    if (Yii::$app->user->can('GenericManagerPermission')) {
+      $answer .= "<p>You are a BAPA.rocks manager. Thank you for helping to manage BAPA.rocks!";
+      $currentMatches = Match::find()->where(['status' => 2])->all();
+      $overdueMatches = [];
+      foreach ($currentMatches as $match) {
+        $now = time();
+        if ($now - $match->lastChangeTime > 600) {
+          $overdueMatches[] = $match;
+        }
+      }
+      if ($overdueMatches) {
+        $answer .= "<p>The following matches have had no activity for 10 minutes, please check on them:<ul>";
+        foreach ($overdueMatches as $match) {
+          $answer .= "<li>(" . Yii::$app->formatter->asRelativeTime($match->lastChangeTime) . ") ";
+          $answer .= $match->code . ": " . $match->matchusersString;
+        }
+        $answer .= "</ul>";
+      }
+    }
     // is the player currently in a game?
     $results = Regularresults::find()
                  ->where(["user_id" => $this->id])->orderBy(['date' => SORT_DESC])->one();
@@ -80,7 +100,9 @@ class Player extends BaseUser {
         $answer .= ".</p>";
         // Is there an upcoming session?
         $next_sessions = Session::find()->where(['status' => 0])->orderBy(['date' => SORT_ASC])->all();
-        $answer .= "<p>Upcoming Sessions:";
+        if ($next_sessions != null) {
+          $answer .= "<p>Upcoming Sessions:";
+        }
         foreach ($next_sessions as $next_session) {
           if ($next_session != null) {
             $answer .= "<LI>";

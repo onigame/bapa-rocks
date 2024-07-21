@@ -44,6 +44,7 @@ $this->params['breadcrumbs'][] = $model->code;
             'formatString',
             [ 'label' => 'Status', 'value' => $model->statusString, 'format' => 'html', ],
             'matchusersString',
+            [ 'label' => 'Last Change', 'value' => $model->lastChangeTime, 'format' => ['relativetime'] ],
         ],
     ]) ?>
 
