@@ -37,13 +37,17 @@ AppAsset::register($this);
     ]);
     $navItems=[
         ['label' => 'Home', 'url' => ['/site/index']],
-        ['label' => 'Status', 'url' => null,
-                    'linkOptions' => ['target' => '_blank', 'href' => 'https://trello.com/b/DL8y7BeG/baparocks-bug-tracker']],
         ['label' => 'About', 'url' => ['/site/about']],
+        ['label' => 'Calendar', 'url' => null,
+                    'linkOptions' => ['target' => '_blank',
+                                      'href' => 'https://calendar.google.com/calendar/embed?src=events%40bapa.rocks&ctz=America%2FLos_Angeles',
+                                     ]],
         ['label' => 'Rules', 'url' => null,
                     'linkOptions' => ['target' => '_blank',
                                       'href' => 'https://docs.google.com/document/d/1DdaCtYqLbNSkym_TIn4lrRld6scwP5uvyGoT0ES44k0/view',
                                      ]],
+        ['label' => 'Bugs', 'url' => null,
+                    'linkOptions' => ['target' => '_blank', 'href' => 'https://trello.com/b/DL8y7BeG/baparocks-bug-tracker']],
         ['label' => 'Vote', 'url' => ['/vote']],
         ['label' => 'Contact', 'url' => ['/site/contact']]
       ];
