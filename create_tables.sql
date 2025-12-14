@@ -231,10 +231,13 @@ CREATE TABLE seasonuser (
     playoff_mpo_matchpoints INT AS (matchpoints - surplus_mpo_matchpoints - forfeit_opponent_count) STORED,
     playoff_mpo_opponent_count INT AS (opponent_count - surplus_mpo_opponent_count - forfeit_opponent_count) STORED,
 
-    mpg DOUBLE AS (IF(game_count=0,NULL,(matchpoints / game_count))) STORED,
-    mpo DOUBLE AS (IF(game_count=0,NULL,(matchpoints - forfeit_opponent_count) 
-                                 / (opponent_count - forfeit_opponent_count))) STORED,
-    adjusted_mpo DOUBLE AS (IF(game_count=0,NULL,(playoff_mpo_matchpoints / playoff_mpo_opponent_count))) STORED,
+    mpg DOUBLE AS (IF(game_count = 0, NULL, (matchpoints / game_count))) STORED,
+    mpo DOUBLE AS (IF((opponent_count - forfeit_opponent_count) = 0, NULL, 
+                     (matchpoints - forfeit_opponent_count) / (opponent_count - forfeit_opponent_count)
+                  )) STORED,
+    adjusted_mpo DOUBLE AS (IF(playoff_mpo_opponent_count = 0, NULL, 
+                              (playoff_mpo_matchpoints / playoff_mpo_opponent_count)
+                           )) STORED,
 
     user_id INT NOT NULL,
     FOREIGN KEY user_key (user_id) REFERENCES user(id),
@@ -404,6 +407,7 @@ CREATE OR REPLACE VIEW playoffresults AS (
 SELECT
   q.session_id,
   q.user_id,
+  p.name as name,
   sess.season_id as season_id,
   seau.id as seasonuser_id,
   su.id as sessionuser_id,
@@ -442,6 +446,8 @@ JOIN sessionuser su
   ON (su.session_id = q.session_id AND su.user_id = q.user_id)
 JOIN seasonuser seau
   ON (seau.season_id = sess.season_id AND su.user_id = seau.user_id)
+JOIN profile p
+  ON (p.user_id = q.user_id)
 JOIN eliminationgraph eg
   ON (m.code = eg.code)
 );
@@ -812,4 +818,3 @@ INSERT INTO seasonuser (id, notes, matchpoints, game_count, opponent_count, matc
   KEY `fk_audit_data_entry_id` (`entry_id`)
  )
   CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB;
-

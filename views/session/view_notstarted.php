@@ -107,9 +107,11 @@ $this->params['breadcrumbs'][] = $model->name;
             ['attribute' => 'x_weeks_string',
                  'label' => $model->season->playoff_qualification . ' Wks?'],
             ['attribute' => 'dues_string', 'format' => 'html'],
+/*
             ['attribute' => 'profile.vaccination', 'format'=>'vaccstatus',
                         'options'=>['style'=>'word-wrap:break-word;width:100px'],
                         'label'=>'Vacc.'],
+*/
         ],
     ]); ?>
 <?php 

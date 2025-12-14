@@ -22,8 +22,8 @@ use kartik\grid\GridView;
                 'seed_max' => [ 'label' => 'Max Rank' ],
                 'seed' => [ 'label' => 'Rank' ],
                 'user.name' => [
-                  'asc' => ['user.name' => SORT_ASC],
-                  'desc' => ['user.name' => SORT_DESC],
+                  'asc' => ['name' => SORT_ASC],
+                  'desc' => ['name' => SORT_DESC],
                 ],
                 'seasonuser.mpo' => [
                   'asc' => ['seasonuser.mpo' => SORT_ASC],

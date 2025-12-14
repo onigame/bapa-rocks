@@ -103,7 +103,6 @@ class ScoreController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
         if ($game->status != 3) {
             Yii::$app->session->setFlash('error', "Only scores on games in progress can be modified!");
             return $this->redirect(['view', 'id' => $model->id]);

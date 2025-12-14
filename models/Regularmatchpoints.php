@@ -213,7 +213,14 @@ class Regularmatchpoints extends \yii\db\ActiveRecord
       foreach ($data as $key => &$datum) {
         $datum['Effective Opponent Count'] = $datum['Opponent Count'] - $datum['Forfeit Opponent Count'];
         $datum['Effective Matchpoints'] = $datum['Total'] - $datum['Forfeit Opponent Count'];
-        $datum['MPO'] = $datum['Effective Matchpoints'] / $datum['Effective Opponent Count'];
+        if ($datum['Effective Opponent Count'] > 0) {
+            $datum['MPO'] = $datum['Effective Matchpoints'] / $datum['Effective Opponent Count'];
+        } else {
+            $datum['MPO'] = 0;
+            if ($datum['Weeks Played'] > 0) {
+                Yii::warning("Player with user_id: {$key} has an Effective Opponent Count of 0, likely due to forfeiting all games. Setting MPO to 0.");
+            }
+        }
         $datum[$season->playoff_qualification . ' Weeks?'] 
             = ($datum['Weeks Played'] >= $season->playoff_qualification) ? 'Yes' : 'No';
         $datum['5 Weeks?'] = ($datum['Weeks Played'] >= 5) ? 'Yes' : 'No';
