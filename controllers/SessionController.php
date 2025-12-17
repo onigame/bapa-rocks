@@ -274,6 +274,13 @@ class SessionController extends Controller
       }
     }
 
+    /**
+     * Closes the session and calculates final points.
+     * - Aggregates matchpoints, bonus points (attendance), and surplus points.
+     * - Updates SeasonUser records with new totals.
+     * - Marks session as Completed (Status 2).
+     * @param int $id Session ID
+     */
     public function actionFinish($id) {
       $session = $this->findModel($id);
       if ($session->type == 1) {
@@ -503,6 +510,13 @@ class SessionController extends Controller
     }
 
 
+    /**
+     * Locks the session and generates matches.
+     * - Validates player counts (min 6 for Regular, 2 for Playoff).
+     * - Calls makeRegularMatches or makePlayoffMatches based on type.
+     * - Sets status to 1 (In Progress).
+     * @param int $id Session ID
+     */
     public function actionStart($id) {
       $session = $this->findModel($id);
       if ($session->status != 0) {
@@ -566,6 +580,13 @@ class SessionController extends Controller
       return $groupnum;
     }
 
+    /**
+     * Generates matches for a Regular Season session.
+     * - Sorts players by previous performance.
+     * - Groups them into 3-player or 4-player matches.
+     * - Creates Match and MatchUser records.
+     * @param int $id Session ID
+     */
     public function makeRegularMatches($id) {
       $session = $this->findModel($id);
       $sessionUsers = SessionUser::find()->where(['session_id' => $id])->all();
@@ -616,6 +637,13 @@ class SessionController extends Controller
       });
     }
 
+    /**
+     * Generates bracket for Playoff session.
+     * - Seeding based on Season MPO and other tiebreakers.
+     * - Uses Eliminationgraph to determine match structure.
+     * - Assigns players to initial matches based on seeds.
+     * @param int $id Session ID
+     */
     public function makePlayoffMatches($id) {
       $session = $this->findModel($id);
       $sessionUsers = SessionUser::find()->where(['session_id' => $id])->all();

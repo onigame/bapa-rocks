@@ -7,6 +7,14 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $model app\models\Game */
 /* @var $form yii\widgets\ActiveForm */
+
+/**
+ * View Component: Master Selection
+ * 
+ * Displays the initial choice for the "Master Selector" of a game.
+ * They can choose either "Machine" or "Player Order".
+ * Includes PJAX for async updates and safety checks for other users.
+ */
 ?>
 
 <div class="game-master-selection-form">

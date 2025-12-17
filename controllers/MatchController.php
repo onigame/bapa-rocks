@@ -150,6 +150,10 @@ class MatchController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * Recursively deletes a match and its children (games, scores).
+     * @param int $id Match ID
+     */
     public function actionDeleterecurse($id)
     {
       $match = $this->findModel($id);
@@ -165,6 +169,11 @@ class MatchController extends Controller
 
     /* Does the appropriate thing on the match,
      * for example, creates games if needed.
+     */
+    /**
+     * Triggers the next automated step for a match.
+     * E.g. creating games if they don't exist.
+     * @param int $id Match ID
      */
     public function actionGo($id) {
       $match = $this->findModel($id);

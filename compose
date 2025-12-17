@@ -1,0 +1,7 @@
+vendor/boundstate/yii2-mailgun/README.md:Yii::$app->mailer->compose('contact/html', ['contactForm' => $form])
+vendor/dektrium/yii2-user/Mailer.php:        $mailer->viewPath = $this->viewPath;
+vendor/dektrium/yii2-user/Mailer.php:        $mailer->getView()->theme = Yii::$app->view->theme;
+vendor/dektrium/yii2-user/Mailer.php:        return $mailer->compose(['html' => $view, 'text' => 'text/' . $view], $params)
+vendor/mailgun/mailgun-php/README.md:* [tehplague/swiftmailer-mailgun-bundle](https://github.com/tehplague/swiftmailer-mailgun-bundle) for Symfony
+vendor/yiisoft/yii2-swiftmailer/Mailer.php: * Yii::$app->mailer->compose('contact/html', ['contactForm' => $form])
+vendor/yiisoft/yii2-swiftmailer/README.md:Yii::$app->mailer->compose('contact/html')

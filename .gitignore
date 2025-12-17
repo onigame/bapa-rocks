@@ -28,3 +28,23 @@ phpunit.phar
 
 tests/_output/*
 tests/_support/_generatedconfig/web.php
+
+# Backups
+202*-*
+*.newbroken
+*-old
+*-force
+
+# Temporary
+temp
+backtem
+hardcopy.1
+foo
+ma
+*.tar.gz
+
+# Yii Runtime & Assets
+runtime/
+web/assets/*
+!web/assets/.gitignore
+

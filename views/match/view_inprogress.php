@@ -7,6 +7,16 @@ use kartik\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Match */
 
+/**
+ * View: Match In-Progress Dashboard
+ * 
+ * Displays the main interface for an active match.
+ * Sections:
+ * 1. Match Details (Status, Timestamps)
+ * 2. Games Grid (List of games, current status, "Go" buttons)
+ * 3. Player Standings (Current matchpoints ranking)
+ */
+
 $this->title = $model->code;
 $this->params['breadcrumbs'][] = [
    'label' => $model->season->name, 'url' => ['/season/view', 'id' => $model->season->id]

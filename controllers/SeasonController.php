@@ -94,7 +94,8 @@ class SeasonController extends Controller
 
     /**
      * Displays the "make playoffs" page.
-     * @param integer $season_id
+     * Handles creation of the playoff session and initial population of playoff metadata.
+     * @param int $season_id
      * @return mixed
      */
     public function actionCreatePlayoffs($season_id) {
@@ -143,6 +144,11 @@ class SeasonController extends Controller
         ]);
     }
 
+    /**
+     * Marks the season as "Playoffs Completed" (status 3).
+     * @param int $id Season ID
+     * @return mixed
+     */
     public function actionFinish($id) {
       $season = $this->findModel($id);
       $season->status = 3;

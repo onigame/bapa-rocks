@@ -74,6 +74,11 @@ class Score extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * Formats the score value for display.
+     * Handles "Forfeit" and null (not set) cases.
+     * @return string HTML-formatted string
+     */
     public function getScoreDisplay() {
       if ($this->forfeit) {
         return "<i>FORFEIT</i>";
@@ -182,6 +187,13 @@ class Score extends \yii\db\ActiveRecord
       return $this->verifier->name;
     }
 
+    /**
+     * Generates the Verification button/status HTML.
+     * - "Verify" button if user didn't record it.
+     * - "Verify(!)" warning if recorder tries to verify.
+     * - "(not needed)" if already verified by another.
+     * @return string HTML content
+     */
     public function getVerifycolumn() {
       if (!$this->entered) {
         return "<span class='not-set'>(no score)</span>";

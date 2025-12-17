@@ -165,6 +165,10 @@ class Game extends \yii\db\ActiveRecord
        return count($this->scores);
     }
 
+    /**
+     * Returns a human-readable string for the current game status.
+     * @return string Status description (often containing HTML breaks)
+     */
     public function getStatusString() {
       if ($this->status == 0) return ("Awaiting<br>Master Selection");
       if ($this->status == 1) return ("Awaiting<br>Machine/Player-Order Selection");
@@ -189,6 +193,11 @@ class Game extends \yii\db\ActiveRecord
       return $winner->name;
     }
 
+    /**
+     * Identifies the user ID of the winner of this game.
+     * Logic depends on the highest score submitted.
+     * @return int|null User ID of the winner, or NULL if not finished/unknown.
+     */
     public function getWinnerId() {
       if ($this->status != 4) return NULL;
       $scores = $this->scores;
@@ -261,6 +270,11 @@ class Game extends \yii\db\ActiveRecord
       return true;
     }
 
+    /**
+     * Checks if the game is complete (all scores entered).
+     * If all scores are also verified, it triggers finishGame().
+     * @return bool True if all scores are entered.
+     */
     public function maybeCompleted() {
       if (!$this->allEntered) return false;
       //if ($this->allVerified) $this->finishGame();
@@ -276,6 +290,11 @@ class Game extends \yii\db\ActiveRecord
       $game->match->maybeStartGame();
     }
 
+    /**
+     * Cancels the current machine selection.
+     * If 2 (Queue), removes from QueueGame.
+     * If 3 (In Progress), resets scores and returns machine to queue availability.
+     */
     public function cancelSelection() {
       $game = $this;
       if ($game->status == 2) {
@@ -310,6 +329,12 @@ class Game extends \yii\db\ActiveRecord
       }
     }
 
+    /**
+     * Assigns the game to a specific machine and updates status to 3 (In Progress).
+     * creates an "In Use" MachineStatus and initializes empty scores.
+     * @param Machine $machine The machine to assign
+     * @throws \yii\base\UserException If machine is not available
+     */
     public function startOnMachine($machine) {
 
       $this->machine_id = $machine->id;
@@ -343,6 +368,12 @@ class Game extends \yii\db\ActiveRecord
       });
     }
 
+    /**
+     * Initializes blank Score records for all players in the session.
+     * Determines player order based on match number and player count (e.g. 4-2-1-0 rotation).
+     * @param int $machine_id
+     * @throws \yii\base\UserException If used in Playoffs or invalid player counts
+     */
     public function createScores($machine_id) {
       if ($this->session->type == 2) {
         throw new \yii\base\UserException("createScores cannot be called for Playoffs");
@@ -394,6 +425,11 @@ class Game extends \yii\db\ActiveRecord
       });
     }
 
+    /**
+     * Attempts to start the game on the assigned machine.
+     * If machine is busy, adds a QueueGame entry instead.
+     * @throws \yii\base\UserException If machine status is invalid (e.g. Broken)
+     */
     public function startOrEnqueueGame() {
       $game = $this;
       $game::getDb()->transaction(function($db) use ($game) {
@@ -415,6 +451,15 @@ class Game extends \yii\db\ActiveRecord
       });
     }
 
+    /**
+     * Finalizes the game.
+     * - Uses a Mutex to prevent race conditions.
+     * - Calculates Matchpoints (MP) properly handling ties.
+     * - Updates MachineStatus to 'Available'.
+     * - Updates MatchUser stats (opponent counts).
+     * - Triggers next game or queue progression via maybeStartQueuedGame/maybeStartRegularSeasonGame.
+     * @throws \yii\base\UserException If concurrency issues or save failures occur.
+     */
     public function finishGame() {
 
       // we assume that all checks are done and there won't be errors.
@@ -578,6 +623,11 @@ class Game extends \yii\db\ActiveRecord
     }
 
     // do autoselection unless this is a playoff game.
+    /**
+     * Determines who selects the machine/order.
+     * - Playoffs: Higher/Lower seed (based on game number).
+     * - Regular: Finds first available machine. If none, queues the game.
+     */
     public function appointMasterSelect() {
       if ($this->master_selector != null) {
         throw new \yii\base\UserException("Master Selector already exists!");

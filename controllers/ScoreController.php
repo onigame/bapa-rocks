@@ -130,6 +130,11 @@ class ScoreController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * Marks a score entry as "Forfeited" (-1).
+     * Sets recorder to current user and clears verification.
+     * @param int $id Score ID
+     */
     public function actionForfeit($id) {
       $score = $this->findModel($id);
       if ($score->game->status != 3) {
@@ -150,6 +155,10 @@ class ScoreController extends Controller
       return $this->redirect(Yii::$app->request->referrer);
     }
 
+    /**
+     * Removes the "Forfeit" status, resetting score to NULL.
+     * @param int $id Score ID
+     */
     public function actionUnforfeit($id) {
       $score = $this->findModel($id);
       if ($score->game->status != 3) {
@@ -169,6 +178,11 @@ class ScoreController extends Controller
       return $this->redirect(Yii::$app->request->referrer);
     }
 
+    /**
+     * Verifies a score entry.
+     * Checks if value is present and prevents self-verification dominance if not allowed.
+     * @param int $id Score ID
+     */
     public function actionVerify($id) {
       $score = $this->findModel($id);
       if ($score->value == NULL && $score->forfeit == 0) {

@@ -203,6 +203,11 @@ class Match extends \yii\db\ActiveRecord
       throw new \yii\base\UserException("Unrecognized Match Format");
     }
 
+    /**
+     * Checks if all games in the match are completed.
+     * Logic varies by format (e.g. Best of 3, 4-player 4-game).
+     * @return bool True if match is finished.
+     */
     public function getGamesAllCompleted() {
         // if there's a game in progress, we're not all completed.
         if ($this->currentGame != null) return false;
@@ -535,6 +540,15 @@ class Match extends \yii\db\ActiveRecord
     // starts the match.  Should be called when the player roster fills up,
     // or when the previous game has finished.
     // returns true if a game was started.
+    /**
+     * Checks if a new game should be started.
+     * Use cases:
+     * - Match just started (status became 2)
+     * - Previous game finished
+     * - Checks if match limits (e.g. max games) are reached.
+     * @return bool True if a new game was created.
+     * @throws \yii\base\UserException If save fails.
+     */
     public function maybeStartGame() {
       Yii::trace("maybeStartGame ".$this->code);
       // don't start a game if we don't have full players.
@@ -580,6 +594,13 @@ class Match extends \yii\db\ActiveRecord
     }
 
     // completes the Match when all games are done.
+    /**
+     * Finalizes the match.
+     * - Calculates ranks for all players.
+     * - Assigns bonus points (e.g. for winning all games in 4-player).
+     * - Triggers playoff advancement if applicable.
+     * @throws \yii\base\UserException If match isn't actually done or save fails.
+     */
     public function completeMatch() {
       Yii::trace("completeMatch ".$this->code);
       // check just in case.
@@ -661,6 +682,12 @@ class Match extends \yii\db\ActiveRecord
     }
 
     // Advances players to next match.
+    /**
+     * Moves the winner and loser of this match to their next matches in the bracket.
+     * - Uses Eliminationgraph to find next match codes (Winner's/Loser's bracket).
+     * - Updates SeasonUser rank if the player is eliminated (no next match).
+     * @throws \yii\base\UserException If next match is full or invalid.
+     */
     private function playoffAdvancePlayers() {
       Yii::trace('playoffAdvancePlayers called '.$this->code);
       if ($this->status != 3 || !$this->isPlayoffs) {
@@ -717,6 +744,13 @@ class Match extends \yii\db\ActiveRecord
       }
     }
 
+    /**
+     * Adds a player to a playoff match based on their seed.
+     * Determines correct player number (1 or 2) based on the bracket graph.
+     * @param string $code Match Code
+     * @param int $user_id
+     * @param int $seed
+     */
     public function addPlayoffPlayer($code, $user_id, $seed) {
       Yii::trace(join(', ',['Match.addPlayoffPlayer ',$code,Player::findOne($user_id)->name,$seed]));
       $graph = Eliminationgraph::findCode($code);

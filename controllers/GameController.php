@@ -73,6 +73,11 @@ class GameController extends Controller
     }
 
     // should only be called when something is wrong
+    /**
+     * Emergency action to kick a game out of a machine.
+     * Sets status to "Awaiting Available Machine" (6).
+     * @param int $id Game ID
+     */
     public function actionKick($id) {
       $game = $this->findModel($id); 
       $game::getDb()->transaction(function($db) use ($game) {
@@ -138,6 +143,11 @@ class GameController extends Controller
         ]);
     }
 
+    /**
+     * Finishes a game if all data is entered.
+     * Triggers match progress updates.
+     * @param int $id Game ID
+     */
     public function actionFinish($id) {
         $model = $this->findModel($id);
         if ($model->allEntered && $model->status != 4) $model->finishGame();
@@ -194,6 +204,10 @@ class GameController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * Recursively deletes a game and its related children (scores, etc.).
+     * @param int $id Game ID
+     */
     public function actionDeleterecurse($id)
     {
       $game = $this->findModel($id); 
@@ -210,6 +224,11 @@ class GameController extends Controller
      * Do whatever is the appropriate next automated step.
      * (which is currently -- choose a master selector if there isn't one.  Shrug.)
      */
+    /**
+     * Automated next step for a game.
+     * Typically appoints a Master Selector if needed.
+     * @param int $id Game ID
+     */
     public function actionGo($id) {
       $game = $this->findModel($id);
       if ($game->master_selector == null && $game->status == 0) {
@@ -221,6 +240,10 @@ class GameController extends Controller
     }
 
     // master selector chooses machine.
+    /**
+     * Master Selector chooses to pick the Machine.
+     * @param int $id Game ID
+     */
     public function actionMastermachine($id) {
       $game = $this->findModel($id);
       if ($game->status != 0) {
@@ -240,6 +263,10 @@ class GameController extends Controller
     }
 
     // master selector chooses machine.
+    /**
+     * Master Selector chooses to pick the Player Order.
+     * @param int $id Game ID
+     */
     public function actionMasterplayer($id) {
       $game = $this->findModel($id);
       if ($game->status != 0) {
@@ -266,6 +293,12 @@ class GameController extends Controller
 
     // choosing player order
     // This basically means we make the "score" objects
+    /**
+     * Sets the player order for the game.
+     * Creates Score objects for each player.
+     * @param int $id Game ID
+     * @param int $order 1 or 2 (which player goes first)
+     */
     public function actionPlayerorder($id, $order) {
       $game = $this->findModel($id);
       if ($game->status != 1) {
@@ -308,6 +341,12 @@ class GameController extends Controller
     }
 
     // selecting a machine
+    /**
+     * Assigns a machine to the game.
+     * Checks machine status (broken/missing) before assignment.
+     * @param int $id Game ID
+     * @param int $machine_id Machine ID
+     */
     public function actionSelectmachine($id, $machine_id) {
       $game = $this->findModel($id);
       if ($game->status == 0) {

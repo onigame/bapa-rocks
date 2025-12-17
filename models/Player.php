@@ -43,6 +43,11 @@ class Player extends BaseUser {
                 ->viaTable('seasonuser', ['user_id' => 'id']);
   }
 
+  /**
+   * Generates HTML status summary for a user in a Regular Season.
+   * Includes dues status, current match info, and past results.
+   * @return string HTML content
+   */
   public function getRegularStatusHtml() {
     $answer = "";
     // is the player a manager.
@@ -147,6 +152,11 @@ class Player extends BaseUser {
     return $answer;
   }
 
+  /**
+   * Generates HTML status summary for a user in Playoffs.
+   * Includes current bracket match info, opponents, and potential next matches.
+   * @return string HTML content
+   */
   public function getPlayoffStatusHtml() {
     $answer = "";
     $results = Playoffresults::find()

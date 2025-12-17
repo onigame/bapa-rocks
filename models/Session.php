@@ -184,6 +184,12 @@ class Session extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    /**
+     * Determines the active location for the session.
+     * Checks `use_backup_location` flag.
+     * @return Location|null
+     * @throws \yii\base\UserException If flag is invalid.
+     */
     public function getCurrentLocation()
     {
         if ($this->use_backup_location == 0) {
@@ -286,6 +292,12 @@ class Session extends \yii\db\ActiveRecord
                     );
     }
 
+    /**
+     * Adds a registered season player to this session.
+     * Initializes status to 1 (Normal).
+     * @param SeasonUser $seasonuser
+     * @throws \yii\base\UserException If save fails.
+     */
     public function addPlayer($seasonuser) {
       $newSessionUser = new SessionUser();
       $newSessionUser->user_id = $seasonuser->user_id;
@@ -299,6 +311,12 @@ class Session extends \yii\db\ActiveRecord
       }
     }
 
+    /**
+     * Adds a player who arrived late.
+     * Initializes status to 2 (Late).
+     * @param int $user_id
+     * @throws \yii\base\UserException If save fails.
+     */
     public function addLatePlayer($user_id) {
       $newSessionUser = new SessionUser();
       $newSessionUser->user_id = $user_id;

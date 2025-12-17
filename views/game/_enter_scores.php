@@ -10,6 +10,17 @@ use app\models\Score;
 /* @var $this yii\web\View */
 /* @var $model app\models\Game */
 /* @var $form yii\widgets\ActiveForm */
+
+/**
+ * View Component: Score Entry Interface
+ * 
+ * Renders the grid for entering/verifying scores for a game.
+ * Features:
+ * - Editable columns for score input (using AutoNumeric)
+ * - Custom Javascript for popover handling and auto-submit
+ * - Verify/Forfeit actions
+ * - Verification status display
+ */
 ?>
 
 <div class="game-master-selection-form">

@@ -83,6 +83,11 @@ class Season extends \yii\db\ActiveRecord
         return $this->hasMany(Seasonuser::className(), ['season_id' => 'id']);
     }
 
+    /**
+     * Returns SessionUsers sorted by their Playoff Rank.
+     * Filters out users who do not have a rank assigned.
+     * @return SeasonUser[]
+     */
     public function getSeasonusersByPlayoffRank() {
       $sus = $this->seasonusers;
       foreach ($sus as $key=>$su) {
@@ -264,6 +269,12 @@ class Season extends \yii\db\ActiveRecord
       return $this->createPlayoffsButton;
     }
 
+    /**
+     * Registers a new player for the season.
+     * Initializes stats (matchpoints=0, etc.) and seeding rank.
+     * @param int $player_id
+     * @throws \yii\base\UserException If save fails.
+     */
     public function addplayer($player_id) {
       $su = new SeasonUser();
       $su->matchpoints = 0;

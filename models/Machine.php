@@ -113,6 +113,10 @@ class Machine extends \yii\db\ActiveRecord
       return count($this->queuegames);
     }
 
+    /**
+     * Checks if there is a specific game queued for this machine.
+     * If so, promotes it to "In Progress".
+     */
     public function maybeStartQueuedGame() {
       $next = QueueGame::find()->where(['machine_id' => $this->id])->orderBy(['created_at' => SORT_ASC])->one();
       if ($next == null) return;  // Queue empty
@@ -121,6 +125,11 @@ class Machine extends \yii\db\ActiveRecord
       $game->startOrEnqueueGame();
     }
 
+    /**
+     * Checks if a Regular Season game is waiting for this machine.
+     * If so, assigns it and starts the game.
+     * Used when a machine becomes available (e.g. game finished).
+     */
     public function maybeStartRegularSeasonGame() {
       // don't bother unless this machine is available.
       if ($this->machinerecentstatus->status != 1) return; 
